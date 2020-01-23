@@ -18,10 +18,7 @@
 *.ppt
 /*.pptx
 /*.ppt
-/../../*.html
-*.html
-'Course Information'/
-
+doc/*.html
 
 # BlueJ files
 *.ctxt
