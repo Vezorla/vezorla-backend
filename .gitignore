@@ -123,6 +123,7 @@ local.properties
 */*/src/META-INF
 *.xml
 .idea/*.xml
+.idea/
 
 
 # Generated files
