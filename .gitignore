@@ -18,10 +18,7 @@
 *.ppt
 /*.pptx
 /*.ppt
-/../../*.html
-*.html
-'Course Information'/
-
+doc/*.html
 
 # BlueJ files
 *.ctxt
@@ -123,6 +120,7 @@ local.properties
 */*/src/META-INF
 *.xml
 .idea/*.xml
+.idea/
 
 
 # Generated files
