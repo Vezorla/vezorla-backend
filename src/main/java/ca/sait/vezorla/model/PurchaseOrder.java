@@ -1,6 +1,7 @@
 package ca.sait.vezorla.model;
 
 import java.sql.Date;
+import java.util.List;
 
 import javax.persistence.Column;
 import javax.persistence.Entity;
@@ -33,5 +34,5 @@ public class PurchaseOrder {
 	private boolean received;
 
 	@OneToMany(mappedBy = "purchaseOrder")
-	private List<Lot> lotList = new ArrayList<Lot>();
+	private List<Lot> lotList;
 }
