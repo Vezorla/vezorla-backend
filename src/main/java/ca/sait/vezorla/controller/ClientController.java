@@ -5,33 +5,35 @@ import org.springframework.stereotype.Controller;
 import org.springframework.ui.Model;
 import org.springframework.validation.BindingResult;
 import org.springframework.web.bind.annotation.GetMapping;
+import org.springframework.web.bind.annotation.RequestMapping;
 
 @Controller
+@RequestMapping(ClientController.URL)
 public class ClientController {
 
-    private final String URL = "/client/";
+    protected static final String URL = "/client/";
 
-    @GetMapping(URL + "settings")
+    @GetMapping("settings")
     public String getSettingsPage() {
         return null;
     }
 
-    @GetMapping(URL + "account/update")
+    @GetMapping("account/update")
     public String updateAccount(Account account, Model model, BindingResult bindingResult) {
         return null;
     }
 
-    @GetMapping(URL + "account/confirm")
+    @GetMapping("account/confirm")
     public String getAccountConfirmationPage(Long id) {
         return null;
     }
 
-    @GetMapping(URL + "shop")
+    @GetMapping("shop")
     public String getShopPage() {
         return null;
     }
 
-    @GetMapping(URL + "account/orders/history")
+    @GetMapping("account/orders/history")
     public String getOrderHistoryPage() {
         return null;
     }

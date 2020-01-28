@@ -6,57 +6,59 @@ import ca.sait.vezorla.model.Invoice;
 import ca.sait.vezorla.model.Product;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.PathVariable;
+import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RestController;
 
 import java.util.Date;
 import java.util.List;
 
 @RestController
+@RequestMapping(AdminRestController.URL)
 public class AdminRestController {
 
-    private final String URL = "/admin/";
+    protected final static String URL = "/admin/";
 
-    @GetMapping(URL + "inventory/all")
+    @GetMapping("inventory/all")
     public List<Product> getAllProducts() {
         return null;
     }
 
-    @GetMapping(URL + "businessorder/pending")
+    @GetMapping("businessorder/pending")
     public List<Invoice> getPendingBusinessOrder() {
         return null;
     }
 
-    @GetMapping(URL + "report/create")
+    @GetMapping("report/create")
     public void createReport(String type, Date start, Date end) {
 
     }
 
-    @GetMapping(URL + "backup/export")
+    @GetMapping("backup/export")
     public void exportData(Date start, Date end) {
 
     }
 
-    @GetMapping(URL + "sales/all")
+    @GetMapping("sales/all")
     public List<Invoice> getAllSales() {
         return null;
     }
 
-    @GetMapping(URL + "discount/create")
+    @GetMapping("discount/create")
     public boolean createDiscount(Discount discount) {
         return false;
     }
 
-    @GetMapping(URL + "backup/get")
+    @GetMapping("backup/get")
     public List<Backup> getBackupList() {
         return null;
     }
 
-    @GetMapping(URL + "backup/restore")
+    @GetMapping("backup/restore")
     public void restoreBackup(Long id) {
 
     }
 
-    @GetMapping(URL + "orders/get/{id}")
+    @GetMapping("orders/get/{id}")
     public List<Invoice> getOrder(@PathVariable Long id) {
         return null;
     }

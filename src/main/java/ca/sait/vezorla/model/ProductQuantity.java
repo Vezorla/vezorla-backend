@@ -2,6 +2,8 @@ package ca.sait.vezorla.model;
 
 import java.math.BigDecimal;
 
+import javax.validation.constraints.Min;
+
 import lombok.Data;
 
 /**
@@ -14,10 +16,13 @@ public class ProductQuantity {
 	
 	private Product product;
 	
+	@Min(0)
 	private int quantity;
 	
+	@Min(0)
 	private BigDecimal cost;
 	
+	@Min(0)
 	private BigDecimal price;
 	
 	private Inventory inventory;

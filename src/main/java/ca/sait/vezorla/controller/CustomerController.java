@@ -7,58 +7,60 @@ import org.springframework.ui.Model;
 import org.springframework.validation.BindingResult;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.PathVariable;
+import org.springframework.web.bind.annotation.RequestMapping;
 
 @Controller
+@RequestMapping(CustomerController.URL)
 public class CustomerController {
 
-    private final String URL = "/customer/";
+    protected static final String URL = "/customer/";
 
-    @GetMapping(URL + "register")
+    @GetMapping("register")
     public String getRegistrationPage() {
         return null;
     }
 
-    @GetMapping(URL + "cart")
+    @GetMapping("cart")
     public String getCartPage() {
         return null;
     }
 
-    @GetMapping(URL + "checkout")
+    @GetMapping("checkout")
     public String getCheckoutPage() {
         return null;
     }
 
-    @GetMapping(URL + "subscription/confirm")
+    @GetMapping("subscription/confirm")
     public String getSubscriptionConfirmationPage(String email) {
         return null;
     }
 
-    @GetMapping(URL + "account/create")
+    @GetMapping("account/create")
     public String createAccount(Account account, Model model, BindingResult bindingResult) {
         return null;
     }
 
-    @GetMapping(URL + "account/forgotpassword")
+    @GetMapping("account/forgotpassword")
     public String forgotPassword(String email, Model model) {
         return null;
     }
 
-    @GetMapping(URL + "order/place")
+    @GetMapping("order/place")
     public void placeOrder() {
 
     }
 
-    @GetMapping(URL + "inventory/products")
+    @GetMapping("inventory/products")
     public String getProductPage(Long id, Model model) {
         return null;
     }
 
-    @GetMapping(URL + "cart/lineitem/create")
+    @GetMapping("cart/lineitem/create")
     public void createLineItem(LineItem lineItem, Model model, BindingResult bindingResult) {
 
     }
 
-    @GetMapping(URL + "cart/remove/{id}")
+    @GetMapping("cart/remove/{id}")
     public void removeFromCart(@PathVariable Long id) {
 
     }

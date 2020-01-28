@@ -6,118 +6,120 @@ import org.springframework.ui.Model;
 import org.springframework.validation.BindingResult;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.PathVariable;
+import org.springframework.web.bind.annotation.RequestMapping;
 
 @Controller
+@RequestMapping(AdminController.URL)
 public class AdminController {
 
-    private final String URL = "/admin/";
+    protected final static String URL = "/admin/";
 
-    @GetMapping(URL + "inventory")
+    @GetMapping("inventory")
     public String getInventoryPage() {
         return null;
     }
 
-    @GetMapping(URL + "inventory/create")
+    @GetMapping("inventory/create")
     public String getCreateProductPage() {
         return null;
     }
 
-    @GetMapping(URL + "inventory/create/product")
+    @GetMapping("inventory/create/product")
     public void createProduct(Product product, Model model, BindingResult bindingResult) {
 
     }
 
-    @GetMapping(URL + "inventory/update")
+    @GetMapping("inventory/update")
     public String getProductUpdatePage() {
         return null;
     }
 
-    @GetMapping(URL + "inventory/update/product/{id}")
+    @GetMapping("inventory/update/product/{id}")
     public String updateProduct(@PathVariable Long id, BindingResult bindingResult) {
         return null;
     }
 
-    @GetMapping(URL + "warehouse/create")
+    @GetMapping("warehouse/create")
     public String createWarehousePage() {
         return null;
     }
 
-    @GetMapping(URL + "warehouse/create/warehouse")
+    @GetMapping("warehouse/create/warehouse")
     public String createWarehouse(Warehouse warehouse, Model model, BindingResult bindingResult) {
         return null;
     }
 
-    @GetMapping(URL + "report")
+    @GetMapping("report")
     public String getReportPage() {
         return null;
     }
 
-    @GetMapping(URL + "purchases/create")
+    @GetMapping("purchases/create")
     public String getCreatePurchasePage() {
         return null;
     }
 
-    @GetMapping(URL + "purchases/create/order")
+    @GetMapping("purchases/create/order")
     public String createPurchaseOrder(PurchaseOrder purchaseOrder, String to, String additionText, Model model, BindingResult bindingResult) {
         return null;
     }
 
-    @GetMapping(URL + "businessorder")
+    @GetMapping("businessorder")
     public String getBusinessOrderPage(Long id, Model model) {
         return null;
     }
 
-    @GetMapping(URL + "businessorder/decline")
+    @GetMapping("businessorder/decline")
     public String declineBusinessOrder(Long id, String additionText, Model model) {
         return null;
     }
 
-    @GetMapping(URL + "businessorder/accept")
+    @GetMapping("businessorder/accept")
     public void acceptBusinessOrder(Invoice invoice) {
 
     }
 
-    @GetMapping(URL + "account/create")
+    @GetMapping("account/create")
     public boolean createAccount(Account account) {
         return false;
     }
 
-    @GetMapping(URL + "settings")
+    @GetMapping("settings")
     public String getSettingsPage() {
         return null;
     }
 
-    @GetMapping(URL + "account/update")
+    @GetMapping("account/update")
     public String updateAccount(Account account, Model model, BindingResult bindingResult) {
         return null;
     }
 
-    @GetMapping(URL + "account/create/retail/confirm")
+    @GetMapping("account/create/retail/confirm")
     public String getCreateRetailAccountConfirmPage(Account account, Model model, BindingResult bindingResult) {
         return null;
     }
 
-    @GetMapping(URL + "discounts/create")
+    @GetMapping("discounts/create")
     public String getCreateDiscountPage() {
         return null;
     }
 
-    @GetMapping(URL + "account/create/get")
+    @GetMapping("account/create/get")
     public String getCreateAccount() {
         return null;
     }
 
-    @GetMapping(URL + "backup/restore")
+    @GetMapping("backup/restore")
     public String getRestoreBackupPage() {
         return null;
     }
 
-    @GetMapping(URL + "orders/history")
+    @GetMapping("orders/history")
     public String getOrderHistoryPage() {
         return null;
     }
 
-    @GetMapping(URL + "orders/invoice/{id}")
+    @GetMapping("orders/invoice/{id}")
     public Invoice getInvoice(@PathVariable Long id) {
         return null;
     }

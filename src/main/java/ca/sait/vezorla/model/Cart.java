@@ -28,4 +28,5 @@ public class Cart {
     @Column(name = "from_account")
     private boolean fromAccount;
 
+    //lineItem
 }

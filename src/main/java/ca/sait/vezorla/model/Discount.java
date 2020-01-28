@@ -12,6 +12,8 @@ import org.hibernate.annotations.Type;
 import javax.persistence.Column;
 import javax.persistence.Entity;
 import javax.persistence.Id;
+import javax.validation.constraints.Min;
+
 import java.math.BigDecimal;
 import java.util.Date;
 
@@ -26,6 +28,7 @@ public class Discount {
     private String type;
 
     @Column(name = "percent")
+    @Min(0)
     private float percent;
 
     @Column(name = "is_highlighted", columnDefinition = "BIT")
@@ -47,4 +50,6 @@ public class Discount {
     @Column(name = "active", columnDefinition = "BIT")
     @Type(type = "org.hibernate.type.NumericBooleanType")
     private boolean active;
+    
+    //Product and Discount
 }
