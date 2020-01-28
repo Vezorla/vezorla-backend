@@ -49,5 +49,4 @@ public class LineItem {
     @JoinColumn(name = "lot_num")
     private Lot lot;
 
-
 }

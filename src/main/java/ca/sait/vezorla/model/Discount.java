@@ -9,9 +9,7 @@ package ca.sait.vezorla.model;
 import lombok.Data;
 import org.hibernate.annotations.Type;
 
-import javax.persistence.Column;
-import javax.persistence.Entity;
-import javax.persistence.Id;
+import javax.persistence.*;
 import javax.validation.constraints.Min;
 
 import java.math.BigDecimal;
@@ -51,5 +49,7 @@ public class Discount {
     @Type(type = "org.hibernate.type.NumericBooleanType")
     private boolean active;
     
-    //Product and Discount
+    @ManyToOne
+    @JoinColumn(name = "code")
+    private Product product;
 }

@@ -1,12 +1,7 @@
 package ca.sait.vezorla.model;
 
 
-import javax.persistence.Column;
-import javax.persistence.Entity;
-import javax.persistence.GeneratedValue;
-import javax.persistence.GenerationType;
-import javax.persistence.Id;
-import javax.persistence.Table;
+import javax.persistence.*;
 
 import com.sun.istack.NotNull;
 
@@ -25,7 +20,13 @@ import lombok.Data;
 public class Invoice {
 	@Id
 	@GeneratedValue(strategy = GenerationType.IDENTITY)
+	@Column(name = "invoice_num")
 	private int invoiceNum;
+
+	@Column(name = "account")
+	@ManyToOne
+	@JoinColumn(name = "account_num")
+	private Account account;
 	
 	@NotNull
 	@Column(name = "date")

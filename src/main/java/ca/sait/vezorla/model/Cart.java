@@ -10,6 +10,7 @@ import lombok.Data;
 
 import javax.persistence.*;
 import java.math.BigDecimal;
+import java.util.List;
 
 @Entity
 @Data
@@ -21,12 +22,13 @@ public class Cart {
     private long orderNum;
 
     @Column(name = "account")
-    @OneToOne(fetch = FetchType.LAZY)
+    @ManyToOne
     @JoinColumn(name = "account_num")
     private Account account;
 
     @Column(name = "from_account")
     private boolean fromAccount;
 
-    //lineItem
+    @OneToMany(mappedBy = "order_num")
+    private List<LineItem> lineItems;
 }

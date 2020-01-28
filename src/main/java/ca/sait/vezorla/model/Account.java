@@ -13,6 +13,7 @@ import org.hibernate.annotations.Type;
 import javax.persistence.*;
 import javax.validation.constraints.Pattern;
 import javax.validation.constraints.Size;
+import java.util.List;
 
 @Entity
 @Data
@@ -62,6 +63,12 @@ public class Account {
     @Column(name = "is_confirmed", columnDefinition = "BIT")
     @Type(type = "org.hibernate.type.NumericBooleanType")
     private boolean isConfirmed;
-    
-    //Cart and Invoice
+
+    @Column(name = "cart")
+    @OneToMany(mappedBy = "account")
+    private List<Cart> carts;
+
+    @Column(name = "invoice")
+    @OneToMany(mappedBy ="account")
+    private List<Invoice> invoices;
 }
