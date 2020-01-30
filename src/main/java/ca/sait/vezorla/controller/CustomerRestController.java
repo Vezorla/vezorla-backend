@@ -6,67 +6,69 @@ import ca.sait.vezorla.model.Discount;
 import ca.sait.vezorla.model.Product;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.PathVariable;
+import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RestController;
 
 import java.util.Date;
 import java.util.List;
 
 @RestController
+@RequestMapping(CustomerRestController.URL)
 public class CustomerRestController {
 
-    private final String URL = "/customer/";
+    protected static final String URL = "/customer/";
 
-    @GetMapping(URL + "cart/get")
+    @GetMapping("cart/get")
     public Cart getCart() {
         return null;
     }
 
-    @GetMapping(URL + "cart/update/{id}/{quantity}")
+    @GetMapping("cart/update/{id}/{quantity}")
     public void updateCart(@PathVariable Long id, @PathVariable int quantity) {
 
     }
 
-    @GetMapping(URL + "cart/remove/{id}")
+    @GetMapping("cart/remove/{id}")
     public void removeFromCart(@PathVariable Long id) {
 
     }
 
-    @GetMapping(URL + "subscribe/{email}")
+    @GetMapping("subscribe/{email}")
     public void subscribeEmail(@PathVariable String email) {
 
     }
 
-    @GetMapping(URL + "contact")
+    @GetMapping("contact")
     public void contactBusiness(String sender, String message) {
 
     }
 
-    @GetMapping(URL + "cart/update/{id}")
+    @GetMapping("cart/update/{id}")
     public void updateCart(@PathVariable Long id) {
 
     }
 
-    @GetMapping(URL + "account/find/{id}")
+    @GetMapping("account/find/{id}")
     public Account findAccountById(@PathVariable Long id) {
         return null;
     }
 
-    @GetMapping(URL + "discounts/valid/get")
+    @GetMapping("discounts/valid/get")
     public List<Discount> getValidDiscounts(Date date) {
         return null;
     }
 
-    @GetMapping(URL + "discounts/apply")
+    @GetMapping("discounts/apply")
     public boolean applyDiscount(Discount discount) {
         return false;
     }
 
-    @GetMapping(URL + "account/forgotpassword/{email}")
+    @GetMapping("account/forgotpassword/{email}")
     public void forgotPassword(@PathVariable String email) {
 
     }
 
-    @GetMapping(URL + "inventory/products/all")
+    @GetMapping("inventory/products/all")
     public List<Product> getAllProducts() {
         return null;
     }
