@@ -13,7 +13,7 @@ import java.util.List;
 @RestController
 public class ClientRestController {
 
-    private final String URL = "/client/";
+    private final String URL = "api/client/";
 
     @GetMapping(URL + "find/{id}")
     public void findById(@PathVariable Long id) {

@@ -11,7 +11,9 @@ import javax.persistence.Table;
 
 import com.sun.istack.NotNull;
 
+import lombok.AllArgsConstructor;
 import lombok.Data;
+import lombok.NoArgsConstructor;
 
 /**
  * Entity class for backup
@@ -19,6 +21,8 @@ import lombok.Data;
  * @version		1.0
  * */
 
+@AllArgsConstructor
+@NoArgsConstructor
 @Entity
 @Data
 @Table(name = "backup")

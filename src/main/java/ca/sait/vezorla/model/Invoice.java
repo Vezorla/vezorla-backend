@@ -8,12 +8,18 @@ import com.sun.istack.NotNull;
 import java.math.BigDecimal;
 import java.sql.Date;
 
+import lombok.AllArgsConstructor;
 import lombok.Data;
+import lombok.NoArgsConstructor;
+
 /**
  * Entity class for invoice
  * @author		Minh Lam
  * @version		1.0
  * */
+
+@AllArgsConstructor
+@NoArgsConstructor
 @Data
 @Entity
 @Table(name = "invoice")
@@ -23,7 +29,6 @@ public class Invoice {
 	@Column(name = "invoice_num")
 	private int invoiceNum;
 
-	@Column(name = "account")
 	@ManyToOne
 	@JoinColumn(name = "account_num")
 	private Account account;

@@ -14,7 +14,9 @@ import javax.persistence.Table;
 
 import com.sun.istack.NotNull;
 
+import lombok.AllArgsConstructor;
 import lombok.Data;
+import lombok.NoArgsConstructor;
 
 /**
  * Entity class for lot
@@ -25,6 +27,8 @@ import lombok.Data;
 @Entity
 @Data
 @Table(name = "lot")
+@AllArgsConstructor
+@NoArgsConstructor
 public class Lot {
 
 	@Id

@@ -16,7 +16,7 @@ import java.util.List;
 @RequestMapping(AdminRestController.URL)
 public class AdminRestController {
 
-    protected final static String URL = "/admin/";
+    protected final static String URL = "api/admin/";
 
     @GetMapping("inventory/all")
     public List<Product> getAllProducts() {
@@ -54,8 +54,8 @@ public class AdminRestController {
     }
 
     @GetMapping("backup/restore")
-    public void restoreBackup(Long id) {
-
+    public boolean restoreBackup(Long id) {
+        return false;
     }
 
     @GetMapping("orders/get/{id}")

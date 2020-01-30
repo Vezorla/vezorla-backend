@@ -6,7 +6,9 @@
  */
 package ca.sait.vezorla.model;
 
+import lombok.AllArgsConstructor;
 import lombok.Data;
+import lombok.NoArgsConstructor;
 import org.hibernate.annotations.Type;
 
 import javax.persistence.*;
@@ -15,8 +17,11 @@ import javax.validation.constraints.Min;
 import java.math.BigDecimal;
 import java.util.Date;
 
+@AllArgsConstructor
+@NoArgsConstructor
 @Entity
 @Data
+@Table(name = "discount")
 public class Discount {
 
     @Id
@@ -50,6 +55,5 @@ public class Discount {
     private boolean active;
     
     @ManyToOne
-    @JoinColumn(name = "code")
     private Product product;
 }

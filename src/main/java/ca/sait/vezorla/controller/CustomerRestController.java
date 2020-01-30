@@ -16,7 +16,7 @@ import java.util.List;
 @RequestMapping(CustomerRestController.URL)
 public class CustomerRestController {
 
-    protected static final String URL = "/customer/";
+    protected static final String URL = "api/customer/";
 
     @GetMapping("cart/get")
     public Cart getCart() {
