@@ -6,13 +6,18 @@
  */
 package ca.sait.vezorla.model;
 
+import lombok.AllArgsConstructor;
 import lombok.Data;
+import lombok.NoArgsConstructor;
 
 import javax.persistence.*;
-import java.math.BigDecimal;
+import java.util.List;
 
+@AllArgsConstructor
+@NoArgsConstructor
 @Entity
 @Data
+@Table(name = "cart")
 public class Cart {
 
     @Id
@@ -20,12 +25,13 @@ public class Cart {
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     private long orderNum;
 
-    @Column(name = "account")
-    @OneToOne(fetch = FetchType.LAZY)
+    @ManyToOne
     @JoinColumn(name = "account_num")
     private Account account;
 
     @Column(name = "from_account")
     private boolean fromAccount;
 
+    @OneToMany(mappedBy = "cart")
+    private List<LineItem> lineItems;
 }

@@ -13,7 +13,9 @@ import javax.validation.constraints.Min;
 
 import com.sun.istack.NotNull;
 
+import lombok.AllArgsConstructor;
 import lombok.Data;
+import lombok.NoArgsConstructor;
 
 /**
  * Entity class for product
@@ -23,6 +25,8 @@ import lombok.Data;
 @Entity
 @Data
 @Table(name = "product")
+@AllArgsConstructor
+@NoArgsConstructor
 public class Product {
 	
 	@Id
@@ -54,4 +58,7 @@ public class Product {
 	
 	@OneToMany(mappedBy = "product")
 	private List<Lot> lotList = new ArrayList<Lot>();
+
+	@OneToMany(mappedBy = "product")
+	private List<Discount> discounts = new ArrayList<Discount>();
 }

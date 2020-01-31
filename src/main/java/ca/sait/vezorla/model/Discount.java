@@ -6,17 +6,22 @@
  */
 package ca.sait.vezorla.model;
 
+import lombok.AllArgsConstructor;
 import lombok.Data;
+import lombok.NoArgsConstructor;
 import org.hibernate.annotations.Type;
 
-import javax.persistence.Column;
-import javax.persistence.Entity;
-import javax.persistence.Id;
+import javax.persistence.*;
+import javax.validation.constraints.Min;
+
 import java.math.BigDecimal;
 import java.util.Date;
 
+@AllArgsConstructor
+@NoArgsConstructor
 @Entity
 @Data
+@Table(name = "discount")
 public class Discount {
 
     @Id
@@ -26,6 +31,7 @@ public class Discount {
     private String type;
 
     @Column(name = "percent")
+    @Min(0)
     private float percent;
 
     @Column(name = "is_highlighted", columnDefinition = "BIT")
@@ -47,4 +53,7 @@ public class Discount {
     @Column(name = "active", columnDefinition = "BIT")
     @Type(type = "org.hibernate.type.NumericBooleanType")
     private boolean active;
+    
+    @ManyToOne
+    private Product product;
 }

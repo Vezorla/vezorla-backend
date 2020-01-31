@@ -1,31 +1,37 @@
 package ca.sait.vezorla.model;
 
 
-import javax.persistence.Column;
-import javax.persistence.Entity;
-import javax.persistence.GeneratedValue;
-import javax.persistence.GenerationType;
-import javax.persistence.Id;
-import javax.persistence.Table;
+import javax.persistence.*;
 
 import com.sun.istack.NotNull;
 
 import java.math.BigDecimal;
 import java.sql.Date;
 
+import lombok.AllArgsConstructor;
 import lombok.Data;
+import lombok.NoArgsConstructor;
+
 /**
  * Entity class for invoice
  * @author		Minh Lam
  * @version		1.0
  * */
+
+@AllArgsConstructor
+@NoArgsConstructor
 @Data
 @Entity
 @Table(name = "invoice")
 public class Invoice {
 	@Id
 	@GeneratedValue(strategy = GenerationType.IDENTITY)
+	@Column(name = "invoice_num")
 	private int invoiceNum;
+
+	@ManyToOne
+	@JoinColumn(name = "account_num")
+	private Account account;
 	
 	@NotNull
 	@Column(name = "date")

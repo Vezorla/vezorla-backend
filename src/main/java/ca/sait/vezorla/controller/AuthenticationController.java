@@ -2,23 +2,25 @@ package ca.sait.vezorla.controller;
 
 import org.springframework.stereotype.Controller;
 import org.springframework.web.bind.annotation.GetMapping;
+import org.springframework.web.bind.annotation.RequestMapping;
 
 @Controller
+@RequestMapping(AuthenticationController.URL)
 public class AuthenticationController {
 
-    private final String URL = "/client/";
+    protected static final String URL = "/client/";
 
-    @GetMapping(URL + "login/auth")
+    @GetMapping("login/auth")
     public void login(String email, String password) {
 
     }
 
-    @GetMapping(URL + "login")
+    @GetMapping("login")
     public String getLoginPage() {
         return null;
     }
 
-    @GetMapping(URL + "logout")
+    @GetMapping("logout")
     public void logout() {
 
     }

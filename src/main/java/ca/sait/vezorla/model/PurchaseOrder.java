@@ -11,7 +11,9 @@ import javax.persistence.Table;
 
 import com.sun.istack.NotNull;
 
+import lombok.AllArgsConstructor;
 import lombok.Data;
+import lombok.NoArgsConstructor;
 
 /**
  * Entity class for purchase order
@@ -22,6 +24,8 @@ import lombok.Data;
 @Data
 @Entity
 @Table(name = "purchase_order")
+@AllArgsConstructor
+@NoArgsConstructor
 public class PurchaseOrder {
 	@Id
 	private int poNum;

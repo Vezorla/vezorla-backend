@@ -7,15 +7,20 @@
  */
 package ca.sait.vezorla.model;
 
+import lombok.AllArgsConstructor;
 import lombok.Data;
+import lombok.NoArgsConstructor;
 import org.hibernate.annotations.Type;
 
 import javax.persistence.*;
 import javax.validation.constraints.Pattern;
-import javax.validation.constraints.Size;
+import java.util.List;
 
+@AllArgsConstructor
+@NoArgsConstructor
 @Entity
 @Data
+@Table(name = "account")
 public class Account {
 
     @Id
@@ -62,4 +67,12 @@ public class Account {
     @Column(name = "is_confirmed", columnDefinition = "BIT")
     @Type(type = "org.hibernate.type.NumericBooleanType")
     private boolean isConfirmed;
+
+    @Column(name = "cart")
+    @OneToMany(mappedBy = "account")
+    private List<Cart> carts;
+
+    @Column(name = "invoice")
+    @OneToMany(mappedBy ="account")
+    private List<Invoice> invoices;
 }

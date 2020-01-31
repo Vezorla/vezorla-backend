@@ -8,7 +8,9 @@
  */
 package ca.sait.vezorla.model;
 
+import lombok.AllArgsConstructor;
 import lombok.Data;
+import lombok.NoArgsConstructor;
 import org.hibernate.annotations.Formula;
 
 import javax.persistence.*;
@@ -17,6 +19,9 @@ import java.util.Currency;
 
 @Entity
 @Data
+@AllArgsConstructor
+@NoArgsConstructor
+@Table(name = "line_item")
 public class LineItem {
 
     @Id
@@ -40,7 +45,6 @@ public class LineItem {
     @JoinColumn(name = "order_num", nullable = false)
     private Cart cart;
 
-    @Column(name = "invoice")
     @ManyToOne
     @JoinColumn(name = "invoice_num")
     private Invoice invoice;
@@ -48,6 +52,5 @@ public class LineItem {
     @ManyToOne
     @JoinColumn(name = "lot_num")
     private Lot lot;
-
 
 }
