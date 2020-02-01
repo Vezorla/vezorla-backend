@@ -15,7 +15,9 @@ import javax.persistence.*;
 import javax.validation.constraints.Min;
 
 import java.math.BigDecimal;
+import java.util.ArrayList;
 import java.util.Date;
+import java.util.List;
 
 @AllArgsConstructor
 @NoArgsConstructor
@@ -56,4 +58,7 @@ public class Discount {
     
     @ManyToOne
     private Product product;
+    
+    @ManyToMany(mappedBy = "discountList")
+    private List<Account> accountList = new ArrayList<Account>();
 }

@@ -41,4 +41,8 @@ public class Backup {
 	@NotNull
 	@Column(name = "date")
 	private Date dateCreated;
+	
+	@NotNull
+	@Column(name = "URL")
+	private String url;
 }

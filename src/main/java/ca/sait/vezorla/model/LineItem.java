@@ -26,7 +26,7 @@ public class LineItem {
 
     @Id
     @Column(name = "line_num")
-    private long lineNum;
+    private Long lineNum;
 
     @Column(name = "quantity")
     private int quantity;

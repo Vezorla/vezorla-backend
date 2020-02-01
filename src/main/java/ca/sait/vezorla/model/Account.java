@@ -14,6 +14,8 @@ import org.hibernate.annotations.Type;
 
 import javax.persistence.*;
 import javax.validation.constraints.Pattern;
+
+import java.util.ArrayList;
 import java.util.List;
 
 @AllArgsConstructor
@@ -24,8 +26,7 @@ import java.util.List;
 public class Account {
 
     @Id
-    @GeneratedValue(strategy = GenerationType.IDENTITY)
-    private long accountNum;
+    private String email;
 
     @Column(name = "account_type")
     private char accountType;
@@ -67,6 +68,10 @@ public class Account {
     @Column(name = "is_confirmed", columnDefinition = "BIT")
     @Type(type = "org.hibernate.type.NumericBooleanType")
     private boolean isConfirmed;
+    
+    @Column(name = "is_subscript", columnDefinition = "BIT")
+    @Type(type = "org.hibernate.type.NumericBooleanType")
+    private boolean isSubscript;
 
     @Column(name = "cart")
     @OneToMany(mappedBy = "account")
@@ -75,4 +80,10 @@ public class Account {
     @Column(name = "invoice")
     @OneToMany(mappedBy ="account")
     private List<Invoice> invoices;
+    
+    @ManyToMany
+    @JoinTable(name = "account_discount",
+    		joinColumns = @JoinColumn(name = "email"),
+    		inverseJoinColumns = @JoinColumn(name = "code"))
+    private List<Discount> discountList = new ArrayList<Discount>();
 }

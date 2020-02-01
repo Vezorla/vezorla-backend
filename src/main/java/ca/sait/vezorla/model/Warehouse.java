@@ -28,7 +28,7 @@ public class Warehouse {
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     @Column(name = "warehouse_num")
-    private long warehouseNum;
+    private Long warehouseNum;
 
     @Column(name = "address")
     @NotNull
@@ -58,7 +58,6 @@ public class Warehouse {
     @Pattern(regexp = "([01])")
     private boolean active;
 
-    @Column(name = "warehouse")
     @OneToMany(mappedBy = "warehouse")
     private List<Lot> lots;
 

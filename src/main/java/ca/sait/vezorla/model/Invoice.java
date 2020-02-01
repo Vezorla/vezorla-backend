@@ -7,6 +7,8 @@ import com.sun.istack.NotNull;
 
 import java.math.BigDecimal;
 import java.sql.Date;
+import java.util.ArrayList;
+import java.util.List;
 
 import lombok.AllArgsConstructor;
 import lombok.Data;
@@ -27,11 +29,14 @@ public class Invoice {
 	@Id
 	@GeneratedValue(strategy = GenerationType.IDENTITY)
 	@Column(name = "invoice_num")
-	private int invoiceNum;
+	private Long invoiceNum;
 
 	@ManyToOne
 	@JoinColumn(name = "account_num")
 	private Account account;
+	
+	@OneToMany(mappedBy = "invoice")
+	private List<LineItem> lineItemList = new ArrayList<LineItem>();
 	
 	@NotNull
 	@Column(name = "date")
@@ -51,4 +56,5 @@ public class Invoice {
 	
 	@Column(name = "message")
 	private String message;
+	
 }
