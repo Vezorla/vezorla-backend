@@ -2,6 +2,7 @@ package ca.sait.vezorla.service;
 
 import java.util.Date;
 import java.util.List;
+import java.util.Optional;
 
 import ca.sait.vezorla.model.Cart;
 import ca.sait.vezorla.model.Discount;
@@ -15,7 +16,7 @@ public interface UserServices {
     public List<Product> getAllProducts();
     public Cart getCart();
     public List<Lot> getLots(Long id);
-    public Product getProduct(Long id);
+    public Optional<Product> getProduct(Long id);
     public void getStoreProducts(Long id);
     public List<Discount> getValidDiscounts(Date date);
     public List<Lot> obtainSufficientQtyLots();

@@ -16,6 +16,7 @@ import com.sun.istack.NotNull;
 import lombok.AllArgsConstructor;
 import lombok.Data;
 import lombok.NoArgsConstructor;
+import org.hibernate.annotations.Type;
 
 /**
  * Entity class for product
@@ -43,8 +44,9 @@ public class Product {
 	@NotNull
 	@Column(name = "image")
 	private String image;
-	
-	@Column(name = "active")
+
+	@Column(name = "active", columnDefinition = "BIT")
+	@Type(type = "org.hibernate.type.NumericBooleanType")
 	private boolean active;
 	
 	@NotNull
