@@ -28,7 +28,7 @@ import lombok.NoArgsConstructor;
 @NoArgsConstructor
 public class PurchaseOrder {
 	@Id
-	private int poNum;
+	private Long poNum;
 	
 	@NotNull
 	private Date dateOrdered;

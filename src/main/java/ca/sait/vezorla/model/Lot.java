@@ -51,7 +51,7 @@ public class Lot {
 	@ManyToOne
 	private PurchaseOrder purchaseOrder;
 	
-	@OneToMany
+	@OneToMany(mappedBy = "lot")
 	private List<LineItem> lineItemList = new ArrayList<LineItem>();
 	
 	@ManyToOne
