@@ -4,13 +4,19 @@ import ca.sait.vezorla.model.Cart;
 import ca.sait.vezorla.model.Discount;
 import ca.sait.vezorla.model.Lot;
 import ca.sait.vezorla.model.Product;
+import ca.sait.vezorla.repository.ProductRepo;
+import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
+import java.util.ArrayList;
 import java.util.Date;
 import java.util.List;
 
 @Service
-public class UserServicesImp implements UserServices{
+public class UserServicesImp implements UserServices {
+
+    @Autowired
+    private ProductRepo productRepo;
 
     public void applyDiscount(Discount discount) {
 
@@ -21,7 +27,7 @@ public class UserServicesImp implements UserServices{
     }
 
     public List<Product> getAllProducts() {
-        return null;
+        return new ArrayList<>(productRepo.findAll());
     }
 
     public Cart getCart() {

@@ -4,6 +4,8 @@ import ca.sait.vezorla.model.Account;
 import ca.sait.vezorla.model.Cart;
 import ca.sait.vezorla.model.Discount;
 import ca.sait.vezorla.model.Product;
+import ca.sait.vezorla.service.UserServices;
+import ca.sait.vezorla.service.UserServicesImp;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.RequestMapping;
@@ -17,6 +19,7 @@ import java.util.List;
 public class CustomerRestController {
 
     protected static final String URL = "api/customer/";
+    private final UserServices userServices = new UserServicesImp();
 
     @GetMapping("cart/get")
     public Cart getCart() {
@@ -68,9 +71,11 @@ public class CustomerRestController {
 
     }
 
+    ///////////////////////////////////////////////
+
     @GetMapping("inventory/products/all")
     public List<Product> getAllProducts() {
-        return null;
+        return userServices.getAllProducts();
     }
 
 }
