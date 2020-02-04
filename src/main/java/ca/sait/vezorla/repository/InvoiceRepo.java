@@ -27,7 +27,7 @@ public interface InvoiceRepo extends JpaRepository<Invoice, Long>{
     * @return list of all invoices specified by the state
     */
 //	@Query("SELECT i FROM Invoice i WHERE i.state = ?1") in case cant use the naming 
-	List<Invoice> findByState(boolean state);
+	//List<Invoice> findByState(boolean state);
 	
 	/**
      * Find an invoice based on the ID and state
@@ -35,7 +35,7 @@ public interface InvoiceRepo extends JpaRepository<Invoice, Long>{
      * @param state State of the invoice
      * @return invoice
      */
-    List<Invoice> findByIdAndState(Long id, boolean state);
+    //List<Invoice> findByIdAndState(Long id, boolean state);
     
     /**
      * Find all sales between the specified start and end dates
@@ -51,7 +51,7 @@ public interface InvoiceRepo extends JpaRepository<Invoice, Long>{
      * @param id invoice ID
      * @return email in invoice
      */
-    String findEmailByID(Long id);
+//    String findEmailByID(Long id);
     
     //=======Not sure yet==========
 //    /**

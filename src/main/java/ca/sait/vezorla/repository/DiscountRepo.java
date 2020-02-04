@@ -14,5 +14,5 @@ public interface DiscountRepo extends JpaRepository<Discount, String>{
      * @param date date to find
      * @return List of discounts
      */
-    List<Discount> findValidDiscounts(Date date); 
+    //List<Discount> findValidDiscounts(Date date);
 }
