@@ -19,7 +19,7 @@ import javax.xml.ws.Response;
 import java.util.Optional;
 
 @Controller
-@RequestMapping("/")
+@RequestMapping(CustomerController.URL)
 public class CustomerController {
 
     @Autowired
@@ -62,11 +62,9 @@ public class CustomerController {
 
     }
 
-    @GetMapping("/inventory/product/{id}")
-    public ResponseEntity<Product> getProductPage(@PathVariable Long id) { //Changed to ResponseEntity
-        Optional<Product> product = userServices.getProduct(id);
-
-        return product.map(response -> ResponseEntity.ok().body(response)).orElse(new ResponseEntity<>(HttpStatus.NOT_FOUND));
+    @GetMapping("inventory/product/")
+    public String getProductPage(@PathVariable Long id, Model model) {
+        return null;
     }
 
     @GetMapping("cart/lineitem/create")
