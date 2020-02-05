@@ -6,13 +6,10 @@ import ca.sait.vezorla.model.Discount;
 import ca.sait.vezorla.model.Product;
 import ca.sait.vezorla.service.UserServices;
 import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.web.bind.annotation.GetMapping;
-import org.springframework.web.bind.annotation.PathVariable;
-import org.springframework.web.bind.annotation.RequestMapping;
-import org.springframework.web.bind.annotation.RestController;
+import org.springframework.http.MediaType;
+import org.springframework.web.bind.annotation.*;
 
-import java.util.Date;
-import java.util.List;
+import java.util.*;
 
 @RestController
 @RequestMapping(CustomerRestController.URL)
@@ -79,9 +76,32 @@ public class CustomerRestController {
 
     ///////////////////////////////////////////////
 
+    // EXAMPLE CODE FOR CART QUANTITY
+    @GetMapping("quantity")
+    public Map<String, Integer> quantity() {
+        Hello h = new Hello();
+        return Collections.singletonMap("quantity", h.getHi().size());
+    }
+
+    // -------------------------------
+
     @GetMapping("inventory/products/all")
     public List<Product> getAllProducts() {
         return userServices.getAllProducts();
     }
 
+}
+
+class Hello {
+    ArrayList<Integer> hi;
+    public Hello() {
+        hi = new ArrayList<>();
+        hi.add(1);
+        hi.add(2);
+        hi.add(3);
+        hi.add(4);
+    }
+    public ArrayList<Integer> getHi() {
+        return hi;
+    }
 }
