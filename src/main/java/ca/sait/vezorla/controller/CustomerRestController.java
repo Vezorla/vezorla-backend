@@ -48,16 +48,16 @@ public class CustomerRestController {
 //        return cart.map(response -> ResponseEntity.ok().body(response)).orElse(new ResponseEntity<>(HttpStatus.NOT_FOUND));
 //    }
 
-    @RequestMapping(value = "cart/get" method = RequestMethod.GET, produces)
+    @RequestMapping(value = "cart/get", method = RequestMethod.GET, produces = {"application/json"})
     public String getSessionCart() {
 
         Cart cart = new Cart();//userServices.getSessionCart();
 
         //get number of items in cart
         String numOfItemsString;
-        int numOfItems = cart.getLineItems().size();
-        numOfItemsString = numOfItems + "";
-        System.out.println(numOfItemsString);
+        //int numOfItems = cart.getLineItems().size();
+        //numOfItemsString = numOfItems + "";
+        return "Hello";
     }
 
     @GetMapping("cart/update/{id}/{quantity}")
