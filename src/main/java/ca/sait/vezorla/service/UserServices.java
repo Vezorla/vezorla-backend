@@ -24,4 +24,5 @@ public interface UserServices {
     public boolean searchEmail(String email);
     public boolean subscribeEmail(String email);
     public void updateCart(Cart cart);
+    public Cart getSessionCart();
 }

@@ -1,18 +1,18 @@
 package ca.sait.vezorla.controller;
 
-import ca.sait.vezorla.model.Account;
-import ca.sait.vezorla.model.Cart;
-import ca.sait.vezorla.model.Discount;
-import ca.sait.vezorla.model.Product;
+import ca.sait.vezorla.model.*;
+import ca.sait.vezorla.repository.CartRepo;
 import ca.sait.vezorla.service.UserServices;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.http.HttpRequest;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
-import org.springframework.web.bind.annotation.GetMapping;
-import org.springframework.web.bind.annotation.PathVariable;
-import org.springframework.web.bind.annotation.RequestMapping;
-import org.springframework.web.bind.annotation.RestController;
+import org.springframework.web.bind.annotation.*;
 
+import javax.servlet.http.HttpSession;
+import javax.validation.Valid;
+import java.net.URI;
+import java.util.ArrayList;
 import java.util.Date;
 import java.util.List;
 import java.util.Optional;
@@ -24,9 +24,12 @@ public class CustomerRestController {
     protected static final String URL = "/api/customer/";
 
     private UserServices userServices;
+    private CartRepo cartRepo;
 
-    public CustomerRestController(UserServices userServices) {
+
+    public CustomerRestController(UserServices userServices, CartRepo cartRepo) {
         this.userServices = userServices;
+        this.cartRepo = cartRepo;
     }
 
     @GetMapping("inventory/product/{id}")
@@ -36,9 +39,25 @@ public class CustomerRestController {
         return product.map(response -> ResponseEntity.ok().body(response)).orElse(new ResponseEntity<>(HttpStatus.NOT_FOUND));
     }
 
-    @GetMapping("cart/get")
-    public Cart getCart() {
-        return null;
+
+
+//    @GetMapping("cart/get")
+//    public ResponseEntity<Cart> getSessionCart() {
+//        Optional<Cart> cart = Optional.ofNullable(userServices.getSessionCart());
+//
+//        return cart.map(response -> ResponseEntity.ok().body(response)).orElse(new ResponseEntity<>(HttpStatus.NOT_FOUND));
+//    }
+
+    @RequestMapping(value = "cart/get" method = RequestMethod.GET, produces)
+    public String getSessionCart() {
+
+        Cart cart = new Cart();//userServices.getSessionCart();
+
+        //get number of items in cart
+        String numOfItemsString;
+        int numOfItems = cart.getLineItems().size();
+        numOfItemsString = numOfItems + "";
+        System.out.println(numOfItemsString);
     }
 
     @GetMapping("cart/update/{id}/{quantity}")
