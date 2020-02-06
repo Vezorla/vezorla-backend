@@ -1,9 +1,6 @@
 package ca.sait.vezorla.service;
 
-import ca.sait.vezorla.model.Cart;
-import ca.sait.vezorla.model.Discount;
-import ca.sait.vezorla.model.Lot;
-import ca.sait.vezorla.model.Product;
+import ca.sait.vezorla.model.*;
 import ca.sait.vezorla.repository.ProductRepo;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
@@ -12,6 +9,7 @@ import org.springframework.web.context.request.RequestContextHolder;
 import org.springframework.web.context.request.ServletRequestAttributes;
 
 import javax.servlet.http.HttpSession;
+import java.util.ArrayList;
 import java.util.Date;
 import java.util.List;
 import java.util.Optional;
@@ -56,6 +54,16 @@ public class UserServicesImp implements UserServices {
         }
         return cart;
     }
+
+    public Cart updateSessionCart(LineItem lineItem) {
+        Cart cart = getSessionCart();
+        ArrayList<LineItem> lineItemList = (ArrayList<LineItem>) cart.getLineItems();
+        lineItemList.add(lineItem);
+        cart.setLineItems(lineItemList);
+        return cart;
+    }
+
+
 
     public void createLineItems(Long id) {
 

@@ -4,10 +4,7 @@ import java.util.Date;
 import java.util.List;
 import java.util.Optional;
 
-import ca.sait.vezorla.model.Cart;
-import ca.sait.vezorla.model.Discount;
-import ca.sait.vezorla.model.Lot;
-import ca.sait.vezorla.model.Product;
+import ca.sait.vezorla.model.*;
 
 public interface UserServices {
 
@@ -25,4 +22,6 @@ public interface UserServices {
     public boolean subscribeEmail(String email);
     public void updateCart(Cart cart);
     public Cart getSessionCart();
+    public void createSessionCart();
+    public Cart updateSessionCart(LineItem lineItem);
 }

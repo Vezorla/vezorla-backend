@@ -12,10 +12,7 @@ import org.springframework.web.bind.annotation.*;
 import javax.servlet.http.HttpSession;
 import javax.validation.Valid;
 import java.net.URI;
-import java.util.ArrayList;
-import java.util.Date;
-import java.util.List;
-import java.util.Optional;
+import java.util.*;
 
 @RestController
 @RequestMapping(CustomerRestController.URL)
@@ -25,6 +22,7 @@ public class CustomerRestController {
 
     private UserServices userServices;
     private CartRepo cartRepo;
+    ArrayList<LineItem> lineItems = new ArrayList<>();
 
 
     public CustomerRestController(UserServices userServices, CartRepo cartRepo) {
@@ -40,7 +38,6 @@ public class CustomerRestController {
     }
 
 
-
 //    @GetMapping("cart/get")
 //    public ResponseEntity<Cart> getSessionCart() {
 //        Optional<Cart> cart = Optional.ofNullable(userServices.getSessionCart());
@@ -48,16 +45,24 @@ public class CustomerRestController {
 //        return cart.map(response -> ResponseEntity.ok().body(response)).orElse(new ResponseEntity<>(HttpStatus.NOT_FOUND));
 //    }
 
-    @RequestMapping(value = "cart/get", method = RequestMethod.GET, produces = {"application/json"})
-    public String getSessionCart() {
+    @GetMapping("cart/get")
+    public Map<String, String> getSessionCart() {
+        userServices.createSessionCart();
+        Cart cart = userServices.getSessionCart();
+//       LineItem test = new LineItem();
+//       ArrayList<LineItem> testList = new ArrayList<>();
+//      testList.add(test);
+        cart.setLineItems(lineItems);
+        String quantity = cart.getLineItems().size() + "";
+//       cart.setLineItems(testList);
+        return Collections.singletonMap("quantity", quantity);
+    }
 
-        Cart cart = new Cart();//userServices.getSessionCart();
+    @PutMapping("cart/get")
+    public ResponseEntity<?> updateCart(@Valid @RequestBody LineItem lineItem) { //used ResponseEntity<> so backend handles errors
+        Cart result = userServices.updateSessionCart(lineItem);
 
-        //get number of items in cart
-        String numOfItemsString;
-        //int numOfItems = cart.getLineItems().size();
-        //numOfItemsString = numOfItems + "";
-        return "Hello";
+        return ResponseEntity.ok().body(result);
     }
 
     @GetMapping("cart/update/{id}/{quantity}")
