@@ -11,6 +11,7 @@ import javax.persistence.OneToMany;
 import javax.persistence.Table;
 import javax.validation.constraints.Min;
 
+import com.fasterxml.jackson.annotation.JsonIgnore;
 import com.sun.istack.NotNull;
 
 import lombok.AllArgsConstructor;
@@ -40,10 +41,16 @@ public class Product {
 	@NotNull
 	@Column(name = "description")
 	private String description;
+
+	@Column(name = "subdescription")
+	private String subdescription;
+
+	@Column(name = "harvest_time")
+	private String harvestTime;
 	
 	@NotNull
 	@Column(name = "image")
-	private String image;
+	private List<String> image;
 
 	@Column(name = "active", columnDefinition = "BIT")
 	@Type(type = "org.hibernate.type.NumericBooleanType")
@@ -57,10 +64,15 @@ public class Product {
 	@NotNull
 	@Column(name = "price")
 	private BigDecimal price;
-	
+
+	@Column(name = "old_price")
+	private BigDecimal oldPrice;
+
+	@JsonIgnore
 	@OneToMany(mappedBy = "product")
-	private List<Lot> lotList = new ArrayList<Lot>();
+	private List<Lot> lotList = new ArrayList<>();
+
 
 	@OneToMany(mappedBy = "product")
-	private List<Discount> discounts = new ArrayList<Discount>();
+	private List<Discount> discounts = new ArrayList<>();
 }
