@@ -75,6 +75,12 @@ public class CustomerRestController {
 
     }
 
+    @PutMapping("cart/get")
+    public String saveLineItem(@ModelAttribute("lineItem") LineItem lineItem){
+        userServices.saveLineItem()
+
+    }
+
     @GetMapping("subscribe/{email}")
     public void subscribeEmail(@PathVariable String email) {
 
@@ -114,5 +120,4 @@ public class CustomerRestController {
     public List<Product> getAllProducts() {
         return null;
     }
-
 }
