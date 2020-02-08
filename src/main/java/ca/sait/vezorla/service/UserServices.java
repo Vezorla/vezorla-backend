@@ -1,5 +1,6 @@
 package ca.sait.vezorla.service;
 
+import java.util.ArrayList;
 import java.util.Date;
 import java.util.List;
 import java.util.Optional;
@@ -24,4 +25,5 @@ public interface UserServices {
     public Cart getSessionCart();
     public void createSessionCart();
     public Cart updateSessionCart(LineItem lineItem);
+    public String getTotalSessionCartQuantity(ArrayList<LineItem> lineItems);
 }

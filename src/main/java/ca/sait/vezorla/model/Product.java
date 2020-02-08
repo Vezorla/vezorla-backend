@@ -49,8 +49,17 @@ public class Product {
 	private String harvestTime;
 	
 	@NotNull
-	@Column(name = "image")
-	private List<String> image;
+	@Column(name = "image_main")
+	private String imageMain;
+
+	@Column(name = "image_one")
+	private String imageOne;
+
+	@Column(name = "image_two")
+	private String imageTwo;
+
+	@Column(name = "image_three")
+	private String imageThree;
 
 	@Column(name = "active", columnDefinition = "BIT")
 	@Type(type = "org.hibernate.type.NumericBooleanType")

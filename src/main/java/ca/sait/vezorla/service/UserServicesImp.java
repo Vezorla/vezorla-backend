@@ -63,6 +63,13 @@ public class UserServicesImp implements UserServices {
         return cart;
     }
 
+    public String getTotalSessionCartQuantity(ArrayList<LineItem> lineItems){
+        //loop through lineItems to get total quantity on order
+        int counter = lineItems.stream().mapToInt(LineItem::getQuantity).sum();
+
+        return counter + "";
+    }
+
 
 
     public void createLineItems(Long id) {

@@ -22,7 +22,7 @@ public class CustomerRestController {
 
     private UserServices userServices;
     private CartRepo cartRepo;
-    ArrayList<LineItem> lineItems = new ArrayList<>();
+    private ArrayList<LineItem> lineItems = new ArrayList<>();
 
 
     public CustomerRestController(UserServices userServices, CartRepo cartRepo) {
@@ -37,31 +37,18 @@ public class CustomerRestController {
         return product.map(response -> ResponseEntity.ok().body(response)).orElse(new ResponseEntity<>(HttpStatus.NOT_FOUND));
     }
 
-
-//    @GetMapping("cart/get")
-//    public ResponseEntity<Cart> getSessionCart() {
-//        Optional<Cart> cart = Optional.ofNullable(userServices.getSessionCart());
-//
-//        return cart.map(response -> ResponseEntity.ok().body(response)).orElse(new ResponseEntity<>(HttpStatus.NOT_FOUND));
-//    }
-
-    @GetMapping("cart/get")
-    public Map<String, String> getSessionCart() {
+    @RequestMapping(value = "cart/get", method = RequestMethod.GET,
+                    produces = {"application/json"})
+    public String getSessionCart() {
         userServices.createSessionCart();
         Cart cart = userServices.getSessionCart();
-//       LineItem test = new LineItem();
-//       ArrayList<LineItem> testList = new ArrayList<>();
-//      testList.add(test);
         cart.setLineItems(lineItems);
-        String quantity = cart.getLineItems().size() + "";
-//       cart.setLineItems(testList);
-        return Collections.singletonMap("quantity", quantity);
+        return userServices.getTotalSessionCartQuantity(lineItems); //cart.getLineItems().size() + "";
     }
 
     @PutMapping("cart/get")
-    public ResponseEntity<?> updateCart(@Valid @RequestBody LineItem lineItem) { //used ResponseEntity<> so backend handles errors
+    public ResponseEntity<?> updateSessionCart(@Valid @RequestBody LineItem lineItem) { //used ResponseEntity<> so backend handles errors
         Cart result = userServices.updateSessionCart(lineItem);
-
         return ResponseEntity.ok().body(result);
     }
 
@@ -75,11 +62,6 @@ public class CustomerRestController {
 
     }
 
-    @PutMapping("cart/get")
-    public String saveLineItem(@ModelAttribute("lineItem") LineItem lineItem){
-        userServices.saveLineItem()
-
-    }
 
     @GetMapping("subscribe/{email}")
     public void subscribeEmail(@PathVariable String email) {
