@@ -6,7 +6,9 @@ import org.springframework.data.jpa.repository.JpaRepository;
 import org.springframework.data.jpa.repository.Query;
 
 import ca.sait.vezorla.model.LineItem;
+import org.springframework.stereotype.Repository;
 
+@Repository
 public interface LineItemRepo extends JpaRepository<LineItem, Long>{
 
 //	=========Line item dont have date==========

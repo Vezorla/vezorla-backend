@@ -25,6 +25,7 @@ import java.util.Currency;
 public class LineItem {
 
     @Id
+    @GeneratedValue(strategy = GenerationType.IDENTITY)
     @Column(name = "line_num")
     private Long lineNum;
 

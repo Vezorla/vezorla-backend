@@ -1,26 +1,55 @@
 package ca.sait.vezorla.controller;
 
-import ca.sait.vezorla.model.Account;
-import ca.sait.vezorla.model.Cart;
-import ca.sait.vezorla.model.Discount;
-import ca.sait.vezorla.model.Product;
-import org.springframework.web.bind.annotation.GetMapping;
-import org.springframework.web.bind.annotation.PathVariable;
-import org.springframework.web.bind.annotation.RequestMapping;
-import org.springframework.web.bind.annotation.RestController;
+import ca.sait.vezorla.model.*;
+import ca.sait.vezorla.repository.CartRepo;
+import ca.sait.vezorla.service.UserServices;
+import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.http.HttpRequest;
+import org.springframework.http.HttpStatus;
+import org.springframework.http.ResponseEntity;
+import org.springframework.web.bind.annotation.*;
 
-import java.util.Date;
-import java.util.List;
+import javax.servlet.http.HttpSession;
+import javax.validation.Valid;
+import java.net.URI;
+import java.util.*;
 
 @RestController
 @RequestMapping(CustomerRestController.URL)
 public class CustomerRestController {
 
-    protected static final String URL = "api/customer/";
+    protected static final String URL = "/api/customer/";
 
-    @GetMapping("cart/get")
-    public Cart getCart() {
-        return null;
+    private UserServices userServices;
+    private CartRepo cartRepo;
+    private ArrayList<LineItem> lineItems = new ArrayList<>();
+
+
+    public CustomerRestController(UserServices userServices, CartRepo cartRepo) {
+        this.userServices = userServices;
+        this.cartRepo = cartRepo;
+    }
+
+    @GetMapping("inventory/product/{id}")
+    public ResponseEntity<Product> getProductPage(@PathVariable Long id) { //Changed to ResponseEntity
+        Optional<Product> product = userServices.getProduct(id);
+
+        return product.map(response -> ResponseEntity.ok().body(response)).orElse(new ResponseEntity<>(HttpStatus.NOT_FOUND));
+    }
+
+    @RequestMapping(value = "cart/get", method = RequestMethod.GET,
+                    produces = {"application/json"})
+    public String getSessionCart() {
+        userServices.createSessionCart();
+        Cart cart = userServices.getSessionCart();
+        cart.setLineItems(lineItems);
+        return userServices.getTotalSessionCartQuantity(lineItems); //cart.getLineItems().size() + "";
+    }
+
+    @PutMapping("cart/get")
+    public ResponseEntity<?> updateSessionCart(@Valid @RequestBody LineItem lineItem) { //used ResponseEntity<> so backend handles errors
+        Cart result = userServices.updateSessionCart(lineItem);
+        return ResponseEntity.ok().body(result);
     }
 
     @GetMapping("cart/update/{id}/{quantity}")
@@ -32,6 +61,7 @@ public class CustomerRestController {
     public void removeFromCart(@PathVariable Long id) {
 
     }
+
 
     @GetMapping("subscribe/{email}")
     public void subscribeEmail(@PathVariable String email) {
@@ -72,5 +102,4 @@ public class CustomerRestController {
     public List<Product> getAllProducts() {
         return null;
     }
-
 }
