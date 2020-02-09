@@ -7,7 +7,9 @@ import org.springframework.data.jpa.repository.Modifying;
 import org.springframework.data.jpa.repository.Query;
 
 import ca.sait.vezorla.model.Account;
+import org.springframework.stereotype.Repository;
 
+@Repository
 public interface AccountRepo extends JpaRepository<Account, String>{
 	
 	 /**
@@ -15,7 +17,7 @@ public interface AccountRepo extends JpaRepository<Account, String>{
      * @param id Account email
      * @return int number of Account got modify
      */
-	@Modifying
+	@Modifying //TODO MINH WHAT IS THIS?
 	@Query("UPDATE Account a SET a.isConfirmed = true WHERE a.email = ?1")
 	int confirm(String email);
 	
@@ -25,5 +27,6 @@ public interface AccountRepo extends JpaRepository<Account, String>{
      * @param password user password
      * @return <code>true</code> if account exists, <code>false</code> if account does not
      */
-	//List<Account> findByEmailAndPassword(String email, String password);
+
+//	List<Account> findByEmailAndPassword(String email, String password);
 }

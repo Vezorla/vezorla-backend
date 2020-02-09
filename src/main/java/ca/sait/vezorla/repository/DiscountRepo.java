@@ -6,7 +6,9 @@ import java.util.List;
 import org.springframework.data.jpa.repository.JpaRepository;
 
 import ca.sait.vezorla.model.Discount;
+import org.springframework.stereotype.Repository;
 
+@Repository
 public interface DiscountRepo extends JpaRepository<Discount, String>{
 	
 	/**
@@ -14,5 +16,5 @@ public interface DiscountRepo extends JpaRepository<Discount, String>{
      * @param date date to find
      * @return List of discounts
      */
-    //List<Discount> findValidDiscounts(Date date);
+//    List<Discount> findValidDiscounts(Date date);
 }
