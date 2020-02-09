@@ -32,6 +32,11 @@ public class CustomerController {
         return null;
     }
 
+    @GetMapping("shop")
+    public String getShopPage() {
+        return "shopCustomerClientPage";
+    }
+
     @GetMapping("cart")
     public String getCartPage() {
         return null;

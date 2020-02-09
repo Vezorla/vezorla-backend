@@ -27,5 +27,6 @@ public interface AccountRepo extends JpaRepository<Account, String>{
      * @param password user password
      * @return <code>true</code> if account exists, <code>false</code> if account does not
      */
+
 //	List<Account> findByEmailAndPassword(String email, String password);
 }
