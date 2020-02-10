@@ -54,4 +54,8 @@ public class LineItem {
     @JoinColumn(name = "lot_num")
     private Lot lot;
 
+    @ManyToOne
+    @JoinColumn(name = "prod_num")
+    private Product product;
+
 }

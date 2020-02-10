@@ -2,9 +2,7 @@ package ca.sait.vezorla.service;
 
 import ca.sait.vezorla.model.*;
 import ca.sait.vezorla.repository.ProductRepo;
-import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
-import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.context.request.RequestContextHolder;
 import org.springframework.web.context.request.ServletRequestAttributes;
 
@@ -63,14 +61,46 @@ public class UserServicesImp implements UserServices {
         return cart;
     }
 
-    public String getTotalSessionCartQuantity(ArrayList<LineItem> lineItems){
+    public String getTotalSessionCartQuantity(ArrayList<LineItem> lineItems) {
         //loop through lineItems to get total quantity on order
         int counter = lineItems.stream().mapToInt(LineItem::getQuantity).sum();
-
         return counter + "";
     }
 
+    /**
+     * Method to return the total quantity in
+     * stock per one product id.
+     *
+     * @param id the id of the product
+     * @return an int for the total quantity
+     */
+    public int getProductQuantity(Long id) {
+        Optional<Product> product = getProduct(id);
+        int counter = 0;
 
+        for (int i = 0; i < product.get().getLotList().size(); i++) {
+            counter += product.get().getLotList().get(i).getQuantity();
+        }
+
+        return counter;
+    }
+
+    @Override
+    public void createLineItems(Product product) {
+
+    }
+
+    public LineItem createLineItemSession(Optional<Product> product, String sentQuantity) {
+        LineItem lineItem = new LineItem();
+        int quantity = Integer.parseInt(sentQuantity);
+
+        lineItem.setQuantity(quantity);
+        lineItem.setCurrentName(product.get().getName());
+        lineItem.setCurrentPrice(product.get().getPrice());
+        lineItem.setCart(getSessionCart());
+        lineItem.setProduct(product.get());
+        return lineItem;
+    }
 
     public void createLineItems(Long id) {
 

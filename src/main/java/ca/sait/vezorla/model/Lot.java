@@ -41,7 +41,7 @@ public class Lot {
 	@Column(name = "cost")
 	private Currency cost;
 	
-	@NotNull
+
 	@Column(name = "best_before")
 	private Date bestBefore;
 	

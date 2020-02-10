@@ -37,6 +37,12 @@ public class CustomerRestController {
         return product.map(response -> ResponseEntity.ok().body(response)).orElse(new ResponseEntity<>(HttpStatus.NOT_FOUND));
     }
 
+    @RequestMapping(value = "inventory/product/quantity/{id}", method = RequestMethod.GET,
+            produces = {"application/json"})
+    public String getProductQuantity(@PathVariable Long id) { //Changed to ResponseEntity
+       return userServices.getProductQuantity(id) + "";
+    }
+
     @RequestMapping(value = "cart/get", method = RequestMethod.GET,
                     produces = {"application/json"})
     public String getSessionCart() {
@@ -49,6 +55,19 @@ public class CustomerRestController {
     @PutMapping("cart/get")
     public ResponseEntity<?> updateSessionCart(@Valid @RequestBody LineItem lineItem) { //used ResponseEntity<> so backend handles errors
         Cart result = userServices.updateSessionCart(lineItem);
+        return ResponseEntity.ok().body(result);
+    }
+
+    @PostMapping ("cart/add/{id}")
+    public ResponseEntity<?> createLineItem(@PathVariable Long id, @RequestBody String quantity){
+        Optional<Product> product = userServices.getProduct(id);
+        System.out.println(quantity);
+        LineItem lineItem = userServices.createLineItemSession(product, quantity);
+        boolean result = false;
+        if(lineItem != null){
+            result = true;
+        }
+
         return ResponseEntity.ok().body(result);
     }
 
