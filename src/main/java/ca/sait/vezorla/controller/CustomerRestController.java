@@ -28,7 +28,7 @@ public class CustomerRestController {
 
     private UserServices userServices;
     private CartRepo cartRepo;
-    private ArrayList<LineItem> lineItems = new ArrayList<>();
+//    private ArrayList<LineItem> lineItems = new ArrayList<>();
     @Autowired
     ObjectMapper objectMapper;
 
@@ -53,16 +53,16 @@ public class CustomerRestController {
 
     @RequestMapping(value = "cart/get", method = RequestMethod.GET,
             produces = {"application/json"})
-    public String getSessionCart() {
-        userServices.createSessionCart();
+    public String getSessionCartQuantity() {
+//        userServices.createSessionCart();
         Cart cart = userServices.getSessionCart();
-        cart.setLineItems(lineItems);
-        return userServices.getTotalSessionCartQuantity(lineItems); //cart.getLineItems().size() + "";
+//        cart.setLineItems(lineItems);
+        return userServices.getTotalSessionCartQuantity((ArrayList<LineItem>) cart.getLineItems()); //cart.getLineItems().size() + "";
     }
 
     @RequestMapping(value = "inventory/product/quantity/{id}", method = RequestMethod.GET,
             produces = {"application/json"})
-    public int getSessionCart(@PathVariable Long id) {
+    public int getProductQuantity(@PathVariable Long id) {
         return userServices.getProductQuantity(id);
     }
 

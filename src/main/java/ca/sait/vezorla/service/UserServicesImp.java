@@ -58,6 +58,11 @@ public class UserServicesImp implements UserServices {
         ArrayList<LineItem> lineItemList = (ArrayList<LineItem>) cart.getLineItems();
         lineItemList.add(lineItem);
         cart.setLineItems(lineItemList);
+
+        //Fix me later. Grabbing the session
+        attr = (ServletRequestAttributes) RequestContextHolder.currentRequestAttributes();
+        HttpSession session = attr.getRequest().getSession();
+        session.setAttribute("cart", cart);
         return cart;
     }
 
