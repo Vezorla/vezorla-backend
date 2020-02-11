@@ -87,7 +87,7 @@ public class UserServicesImp implements UserServices {
 //            counter += product.get().getLotList().get(i).getQuantity();
 //        }
 
-        int quantity = productRepo.findTotalQuantity((long) 1);
+        int quantity = productRepo.findTotalQuantity(id);
 
         System.out.println("DB Quant " + quantity);
 
