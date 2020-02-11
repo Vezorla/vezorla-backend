@@ -34,9 +34,9 @@ public class UserServicesImp implements UserServices {
         ServletRequestAttributes attr = (ServletRequestAttributes) RequestContextHolder.currentRequestAttributes();
         HttpSession session = attr.getRequest().getSession();
         Cart cart = new Cart();
+        cart.setLineItems(new ArrayList<>());
         session.setAttribute("cart", cart);
     }
-
 
     /**
      * Method to get a Cart from the session
@@ -75,14 +75,24 @@ public class UserServicesImp implements UserServices {
      * @return an int for the total quantity
      */
     public int getProductQuantity(Long id) {
-        Optional<Product> product = getProduct(id);
+        Optional<Product> product = productRepo.findById(id);
         int counter = 0;
 
-        for (int i = 0; i < product.get().getLotList().size(); i++) {
-            counter += product.get().getLotList().get(i).getQuantity();
-        }
+//        for (int i = 0; i < product.get().getLotList().size(); i++) {
+//            counter += product.get().getLotList().get(i).getQuantity();
+//        }
 
-        return counter;
+        int quantity = productRepo.findTotalQuantity((long) 1);
+
+        System.out.println("DB Quant " + quantity);
+
+        return quantity;
+    }
+
+    public int validateOrderedQuantity(String orderedQuantitySent, int inStockQuantity){
+        orderedQuantitySent = orderedQuantitySent.replaceAll("\"", "");
+        int orderedQuantity = Integer.parseInt(orderedQuantitySent);
+        return inStockQuantity - orderedQuantity;
     }
 
     @Override
@@ -101,7 +111,7 @@ public class UserServicesImp implements UserServices {
         lineItem.setCart(getSessionCart());
         lineItem.setProduct(product.get());
 
-        System.out.println(lineItem.getCurrentName());
+        System.out.println("D" + lineItem.getCurrentName());
         return lineItem;
     }
 

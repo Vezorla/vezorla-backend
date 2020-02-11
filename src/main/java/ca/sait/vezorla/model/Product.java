@@ -32,7 +32,7 @@ import org.hibernate.annotations.Type;
 public class Product {
 	
 	@Id
-	private Long ProdId;
+	private Long prodId;
 	
 	@NotNull
 	@Column(name = "name")

@@ -45,11 +45,11 @@ public class CustomerRestController {
         return product.map(response -> ResponseEntity.ok().body(response)).orElse(new ResponseEntity<>(HttpStatus.NOT_FOUND));
     }
 
-    @RequestMapping(value = "inventory/product/quantity/{id}", method = RequestMethod.GET,
-            produces = {"application/json"})
-    public String getProductQuantity(@PathVariable Long id) { //Changed to ResponseEntity
-        return userServices.getProductQuantity(id) + "";
-    }
+//    @RequestMapping(value = "inventory/product/quantity/{id}", method = RequestMethod.PUT,
+//            produces = {"application/json"})
+//    public int getProductQuantity(@PathVariable Long id) { //Changed to ResponseEntity
+//        return userServices.getProductQuantity(id);
+//    }
 
     @RequestMapping(value = "cart/get", method = RequestMethod.GET,
             produces = {"application/json"})
@@ -60,45 +60,39 @@ public class CustomerRestController {
         return userServices.getTotalSessionCartQuantity(lineItems); //cart.getLineItems().size() + "";
     }
 
-    @PutMapping("cart/get")
-    public ResponseEntity<?> updateSessionCart(@Valid @RequestBody LineItem lineItem) { //used ResponseEntity<> so backend handles errors
-        Cart result = userServices.updateSessionCart(lineItem);
-        return ResponseEntity.ok().body(result);
+    @RequestMapping(value = "inventory/product/quantity/{id}", method = RequestMethod.GET,
+            produces = {"application/json"})
+    public int getSessionCart(@PathVariable Long id) {
+        return userServices.getProductQuantity(id);
     }
 
-//    @PostMapping("cart/add/{id}")
-//    public ObjectNode createLineItem(@PathVariable Long id, @RequestBody String quantity) throws JsonProcessingException {
-//        Optional<Product> product = userServices.getProduct(id);
-//        System.out.println(quantity);
-//        LineItem lineItem = userServices.createLineItemSession(product, quantity);
-//
-//        boolean result = false;
-//        if (lineItem != null) {
-//            result = true;
-//            lineItems.add(lineItem);
-//        }
-//
-//        ObjectNode objectNode = objectMapper.createObjectNode();
-//        objectNode.put("value",result+"");
-//
-//        return objectNode;
-//    }
+    //@PutMapping("cart/get")
+    public void updateSessionCart(LineItem lineItem) { //used ResponseEntity<> so backend handles errors
+        Cart result = userServices.updateSessionCart(lineItem);
+        //return ResponseEntity.ok().body(result);
+    }
 
     @RequestMapping(value = "cart/add/{id}", method = RequestMethod.PUT,
             produces = {"application/json"})
     public boolean createLineItem(@PathVariable Long id, @RequestBody String quantity) throws JsonProcessingException {
-        Optional<Product> product = userServices.getProduct(id);
-        System.out.println(quantity);
-        LineItem lineItem = userServices.createLineItemSession(product, quantity);
 
+        LineItem lineItem = null;
         boolean result = false;
-        if (lineItem != null) {
-            result = true;
-            lineItems.add(lineItem);
+        Optional<Product> product = userServices.getProduct(id);
+//        System.out.println("S" + quantity);
+        int productInStock = userServices.getProductQuantity(id);
+//        System.out.println("prod in stock" + productInStock);
+        int checkProductStock = userServices.validateOrderedQuantity(quantity, productInStock);
+//        System.out.println("check me" + checkProductStock);
+
+        if(checkProductStock >= 0) {
+            lineItem = userServices.createLineItemSession(product, quantity);
         }
 
-//        ObjectNode objectNode = objectMapper.createObjectNode();
-//        objectNode.put("value",result+"");
+        if (lineItem != null) {
+            userServices.updateSessionCart(lineItem);
+            result = true;
+        }
 
         return result;
     }

@@ -28,6 +28,7 @@ public interface UserServices {
     public String getTotalSessionCartQuantity(ArrayList<LineItem> lineItems);
     public int getProductQuantity(Long id);
     public void createLineItems(Product product);
+    public int validateOrderedQuantity(String orderedQuantitySent, int inStockQuantity);
 
     public LineItem createLineItemSession(Optional<Product> product, String quantity);
 }
