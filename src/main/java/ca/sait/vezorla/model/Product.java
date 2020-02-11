@@ -84,4 +84,7 @@ public class Product {
 
 	@OneToMany(mappedBy = "product")
 	private List<Discount> discounts = new ArrayList<>();
+
+	@OneToMany (mappedBy = "product")
+	private List<LineItem> lineItems = new ArrayList<>();
 }
