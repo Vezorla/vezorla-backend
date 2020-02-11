@@ -130,8 +130,33 @@ public class CustomerRestController {
 
     }
 
+    ///////////////////////////////////////////////
+
+    // EXAMPLE CODE FOR CART QUANTITY
+    @GetMapping("quantity")
+    public Map<String, Integer> quantity() {
+        Hello h = new Hello();
+        return Collections.singletonMap("quantity", h.getHi().size());
+    }
+
+    // -------------------------------
+
     @GetMapping("inventory/products/all")
     public List<Product> getAllProducts() {
-        return null;
+        return userServices.getAllProducts();
+    }
+}
+
+class Hello {
+    ArrayList<Integer> hi;
+    public Hello() {
+        hi = new ArrayList<>();
+        hi.add(1);
+        hi.add(2);
+        hi.add(3);
+        hi.add(4);
+    }
+    public ArrayList<Integer> getHi() {
+        return hi;
     }
 }

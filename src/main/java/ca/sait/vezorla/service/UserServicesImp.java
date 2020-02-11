@@ -110,7 +110,7 @@ public class UserServicesImp implements UserServices {
     }
 
     public List<Product> getAllProducts() {
-        return null;
+        return new ArrayList<>(productRepo.findAll());
     }
 
     public Cart getCart() {
