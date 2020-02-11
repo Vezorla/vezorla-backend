@@ -66,27 +66,8 @@ public class CustomerRestController {
         return ResponseEntity.ok().body(result);
     }
 
-//    @PostMapping("cart/add/{id}")
-//    public ObjectNode createLineItem(@PathVariable Long id, @RequestBody String quantity) throws JsonProcessingException {
-//        Optional<Product> product = userServices.getProduct(id);
-//        System.out.println(quantity);
-//        LineItem lineItem = userServices.createLineItemSession(product, quantity);
-//
-//        boolean result = false;
-//        if (lineItem != null) {
-//            result = true;
-//            lineItems.add(lineItem);
-//        }
-//
-//        ObjectNode objectNode = objectMapper.createObjectNode();
-//        objectNode.put("value",result+"");
-//
-//        return objectNode;
-//    }
-
-    @RequestMapping(value = "cart/add/{id}", method = RequestMethod.POST,
-            produces = {"application/json"})
-    public boolean createLineItem(@PathVariable Long id, @RequestBody String quantity) throws JsonProcessingException {
+    @PostMapping("cart/add/{id}")
+    public ObjectNode createLineItem(@PathVariable Long id, @RequestBody String quantity) throws JsonProcessingException {
         Optional<Product> product = userServices.getProduct(id);
         System.out.println(quantity);
         LineItem lineItem = userServices.createLineItemSession(product, quantity);
@@ -97,10 +78,10 @@ public class CustomerRestController {
             lineItems.add(lineItem);
         }
 
-//        ObjectNode objectNode = objectMapper.createObjectNode();
-//        objectNode.put("value",result+"");
+        ObjectNode objectNode = objectMapper.createObjectNode();
+        objectNode.put("value",result+"");
 
-        return result;
+        return objectNode;
     }
 
     @GetMapping("cart/update/{id}/{quantity}")
@@ -163,19 +144,5 @@ public class CustomerRestController {
     @GetMapping("inventory/products/all")
     public List<Product> getAllProducts() {
         return userServices.getAllProducts();
-    }
-}
-
-class Hello {
-    ArrayList<Integer> hi;
-    public Hello() {
-        hi = new ArrayList<>();
-        hi.add(1);
-        hi.add(2);
-        hi.add(3);
-        hi.add(4);
-    }
-    public ArrayList<Integer> getHi() {
-        return hi;
     }
 }
