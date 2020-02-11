@@ -66,8 +66,27 @@ public class CustomerRestController {
         return ResponseEntity.ok().body(result);
     }
 
-    @PostMapping("cart/add/{id}")
-    public ObjectNode createLineItem(@PathVariable Long id, @RequestBody String quantity) throws JsonProcessingException {
+//    @PostMapping("cart/add/{id}")
+//    public ObjectNode createLineItem(@PathVariable Long id, @RequestBody String quantity) throws JsonProcessingException {
+//        Optional<Product> product = userServices.getProduct(id);
+//        System.out.println(quantity);
+//        LineItem lineItem = userServices.createLineItemSession(product, quantity);
+//
+//        boolean result = false;
+//        if (lineItem != null) {
+//            result = true;
+//            lineItems.add(lineItem);
+//        }
+//
+//        ObjectNode objectNode = objectMapper.createObjectNode();
+//        objectNode.put("value",result+"");
+//
+//        return objectNode;
+//    }
+
+    @RequestMapping(value = "cart/add/{id}", method = RequestMethod.PUT,
+            produces = {"application/json"})
+    public boolean createLineItem(@PathVariable Long id, @RequestBody String quantity) throws JsonProcessingException {
         Optional<Product> product = userServices.getProduct(id);
         System.out.println(quantity);
         LineItem lineItem = userServices.createLineItemSession(product, quantity);
@@ -78,11 +97,12 @@ public class CustomerRestController {
             lineItems.add(lineItem);
         }
 
-        ObjectNode objectNode = objectMapper.createObjectNode();
-        objectNode.put("value",result+"");
+//        ObjectNode objectNode = objectMapper.createObjectNode();
+//        objectNode.put("value",result+"");
 
-        return objectNode;
+        return result;
     }
+
 
     @GetMapping("cart/update/{id}/{quantity}")
     public void updateCart(@PathVariable Long id, @PathVariable int quantity) {
@@ -129,17 +149,6 @@ public class CustomerRestController {
     public void forgotPassword(@PathVariable String email) {
 
     }
-
-    ///////////////////////////////////////////////
-
-    // EXAMPLE CODE FOR CART QUANTITY
-    @GetMapping("quantity")
-    public Map<String, Integer> quantity() {
-        Hello h = new Hello();
-        return Collections.singletonMap("quantity", h.getHi().size());
-    }
-
-    // -------------------------------
 
     @GetMapping("inventory/products/all")
     public List<Product> getAllProducts() {
