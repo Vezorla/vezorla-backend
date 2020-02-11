@@ -146,17 +146,3 @@ public class CustomerRestController {
         return userServices.getAllProducts();
     }
 }
-
-class Hello {
-    ArrayList<Integer> hi;
-    public Hello() {
-        hi = new ArrayList<>();
-        hi.add(1);
-        hi.add(2);
-        hi.add(3);
-        hi.add(4);
-    }
-    public ArrayList<Integer> getHi() {
-        return hi;
-    }
-}
