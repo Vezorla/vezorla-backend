@@ -92,6 +92,7 @@ public class UserServicesImp implements UserServices {
 
     public LineItem createLineItemSession(Optional<Product> product, String sentQuantity) {
         LineItem lineItem = new LineItem();
+        sentQuantity = sentQuantity.replaceAll("\"", "");
         int quantity = Integer.parseInt(sentQuantity);
 
         lineItem.setQuantity(quantity);
@@ -99,6 +100,8 @@ public class UserServicesImp implements UserServices {
         lineItem.setCurrentPrice(product.get().getPrice());
         lineItem.setCart(getSessionCart());
         lineItem.setProduct(product.get());
+
+        System.out.println(lineItem.getCurrentName());
         return lineItem;
     }
 
