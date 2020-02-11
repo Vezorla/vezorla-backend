@@ -66,8 +66,27 @@ public class CustomerRestController {
         return ResponseEntity.ok().body(result);
     }
 
-    @PostMapping("cart/add/{id}")
-    public ObjectNode createLineItem(@PathVariable Long id, @RequestBody String quantity) throws JsonProcessingException {
+//    @PostMapping("cart/add/{id}")
+//    public ObjectNode createLineItem(@PathVariable Long id, @RequestBody String quantity) throws JsonProcessingException {
+//        Optional<Product> product = userServices.getProduct(id);
+//        System.out.println(quantity);
+//        LineItem lineItem = userServices.createLineItemSession(product, quantity);
+//
+//        boolean result = false;
+//        if (lineItem != null) {
+//            result = true;
+//            lineItems.add(lineItem);
+//        }
+//
+//        ObjectNode objectNode = objectMapper.createObjectNode();
+//        objectNode.put("value",result+"");
+//
+//        return objectNode;
+//    }
+
+    @RequestMapping(value = "cart/add/{id}", method = RequestMethod.POST,
+            produces = {"application/json"})
+    public boolean createLineItem(@PathVariable Long id, @RequestBody String quantity) throws JsonProcessingException {
         Optional<Product> product = userServices.getProduct(id);
         System.out.println(quantity);
         LineItem lineItem = userServices.createLineItemSession(product, quantity);
@@ -78,10 +97,10 @@ public class CustomerRestController {
             lineItems.add(lineItem);
         }
 
-        ObjectNode objectNode = objectMapper.createObjectNode();
-        objectNode.put("value",result+"");
+//        ObjectNode objectNode = objectMapper.createObjectNode();
+//        objectNode.put("value",result+"");
 
-        return objectNode;
+        return result;
     }
 
     @GetMapping("cart/update/{id}/{quantity}")
