@@ -2,6 +2,7 @@ package ca.sait.vezorla.service;
 
 import ca.sait.vezorla.model.*;
 
+import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpSession;
 import java.util.ArrayList;
 import java.util.Date;
@@ -23,13 +24,13 @@ public interface UserServices {
     public boolean searchEmail(String email);
     public boolean subscribeEmail(String email);
     public void updateCart(Cart cart);
-    public Cart getSessionCart(HttpSession session);
-    public void createSessionCart(HttpSession session);
-    public Cart updateSessionCart(LineItem lineItem, HttpSession session);
+    public Cart getSessionCart(HttpServletRequest request);
+    public Cart updateSessionCart(LineItem lineItem, HttpServletRequest request);
+    public void createSessionCart(HttpServletRequest request);
     public String getTotalSessionCartQuantity(ArrayList<LineItem> lineItems);
     public int getProductQuantity(Long id);
     public void createLineItems(Product product);
     public int validateOrderedQuantity(String orderedQuantitySent, int inStockQuantity);
 
-    public LineItem createLineItemSession(Optional<Product> product, String quantity, HttpSession session);
+    public LineItem createLineItemSession(Optional<Product> product, String quantity, HttpServletRequest request);
 }

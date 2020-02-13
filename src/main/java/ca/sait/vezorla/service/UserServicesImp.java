@@ -6,6 +6,7 @@ import org.springframework.stereotype.Service;
 import org.springframework.web.context.request.RequestContextHolder;
 import org.springframework.web.context.request.ServletRequestAttributes;
 
+import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpSession;
 import java.util.ArrayList;
 import java.util.Date;
@@ -17,9 +18,13 @@ public class UserServicesImp implements UserServices {
 
     private ProductRepo productRepo;
     private ServletRequestAttributes attr;
+    private HttpServletRequest request;
+    private HttpSession session;
 
-    public UserServicesImp(ProductRepo productRepo) {
+    public UserServicesImp(ProductRepo productRepo, HttpServletRequest request) {
         this.productRepo = productRepo;
+        this.request = request;
+        this.session = request.getSession();
     }
 
     public void applyDiscount(Discount discount) {
@@ -30,32 +35,38 @@ public class UserServicesImp implements UserServices {
      * Method to create a new cart object and
      * store it in the session.
      */
-    public void createSessionCart(HttpSession session) {
+    public void createSessionCart(HttpServletRequest request) {
 //        attr = (ServletRequestAttributes) RequestContextHolder.currentRequestAttributes();
 //        HttpSession session = attr.getRequest().getSession(true);
-        System.out.println("session " + session.getId());
+//        System.out.println("session new " + session.getId());
         Cart cart = new Cart();
         cart.setLineItems(new ArrayList<LineItem>());
-        session.setAttribute("cart", cart);
+        request.getSession().setAttribute("cart", cart);
     }
 
     /**
      * Method to get a Cart from the session
      */
-    public Cart getSessionCart(HttpSession session) {
+    public Cart getSessionCart(HttpServletRequest request) {
 //        attr = (ServletRequestAttributes) RequestContextHolder.currentRequestAttributes();
 //        HttpSession session = attr.getRequest().getSession();
+        HttpSession session = request.getSession();
+
+        System.out.println("cart session " + session.getId());
         Cart cart = null;
         if (session.getAttribute("cart") == null) {
-            createSessionCart(session);
+            createSessionCart(request);
         } else {
+            System.out.println("session existing " + session.getId());
             cart = (Cart) session.getAttribute("cart");
         }
         return cart;
     }
 
-    public Cart updateSessionCart(LineItem lineItem, HttpSession session) {
-        Cart cart = getSessionCart(session);
+    public Cart updateSessionCart(LineItem lineItem, HttpServletRequest request) {
+        HttpSession session = request.getSession();
+        System.out.println();
+        Cart cart = getSessionCart(request);
         ArrayList<LineItem> lineItemList = (ArrayList<LineItem>) cart.getLineItems();
         lineItemList.add(lineItem);
         cart.setLineItems(lineItemList);
@@ -106,7 +117,7 @@ public class UserServicesImp implements UserServices {
 
     }
 
-    public LineItem createLineItemSession(Optional<Product> product, String sentQuantity, HttpSession session) {
+    public LineItem createLineItemSession(Optional<Product> product, String sentQuantity, HttpServletRequest request) {
         LineItem lineItem = new LineItem();
         sentQuantity = sentQuantity.replaceAll("\"", "");
         int quantity = Integer.parseInt(sentQuantity);
@@ -114,10 +125,11 @@ public class UserServicesImp implements UserServices {
         lineItem.setQuantity(quantity);
         lineItem.setCurrentName(product.get().getName());
         lineItem.setCurrentPrice(product.get().getPrice());
-        lineItem.setCart(getSessionCart(session));
+        lineItem.setCart(getSessionCart(request));
         lineItem.setProduct(product.get());
 
-        System.out.println("D" + lineItem.getCurrentName());
+        System.out.println("create line item session " + request.getSession().getId());
+        System.out.println("Line Item Name " + lineItem.getCurrentName());
         return lineItem;
     }
 

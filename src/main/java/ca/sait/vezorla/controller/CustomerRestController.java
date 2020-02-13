@@ -3,15 +3,17 @@ package ca.sait.vezorla.controller;
 import ca.sait.vezorla.model.*;
 import ca.sait.vezorla.repository.CartRepo;
 import ca.sait.vezorla.service.UserServices;
-import com.fasterxml.jackson.core.JsonProcessingException;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 
-import javax.servlet.http.HttpSession;
-import java.util.*;
+import javax.servlet.http.HttpServletRequest;
+import java.util.ArrayList;
+import java.util.Date;
+import java.util.List;
+import java.util.Optional;
 
 @CrossOrigin
 @RestController
@@ -22,17 +24,20 @@ public class CustomerRestController {
 
     private UserServices userServices;
     private CartRepo cartRepo;
-//    private ArrayList<LineItem> lineItems = new ArrayList<>();
+    //    private ArrayList<LineItem> lineItems = new ArrayList<>();
     @Autowired
     ObjectMapper objectMapper;
 
-    @Autowired
-    private HttpSession session;
+//    @Autowired
+//    private HttpSession session;
+
+    private HttpServletRequest request;
 
 
-    public CustomerRestController(UserServices userServices, CartRepo cartRepo) {
+    public CustomerRestController(UserServices userServices, CartRepo cartRepo, HttpServletRequest request) {
         this.userServices = userServices;
         this.cartRepo = cartRepo;
+        this.request = request;
     }
 
     @GetMapping("inventory/product/{id}")
@@ -52,7 +57,7 @@ public class CustomerRestController {
             produces = {"application/json"})
     public String getSessionCartQuantity() {
 //        userServices.createSessionCart();
-        Cart cart = userServices.getSessionCart(session); //TODO Issue
+        Cart cart = userServices.getSessionCart(request); //TODO Issue
         System.out.println(cart.toString());
 //        cart.setLineItems(lineItems);
         System.out.println("Line Item List Size" + cart.getLineItems().size());
@@ -73,7 +78,7 @@ public class CustomerRestController {
 
     @RequestMapping(value = "cart/add/{id}", method = RequestMethod.PUT,
             produces = {"application/json"})
-    public boolean createLineItem(@PathVariable Long id, @RequestBody String quantity) throws JsonProcessingException {
+    public boolean createLineItem(@PathVariable Long id, @RequestBody String quantity) {
 
         LineItem lineItem = null;
         boolean result = false;
@@ -84,12 +89,12 @@ public class CustomerRestController {
         int checkProductStock = userServices.validateOrderedQuantity(quantity, productInStock);
 //        System.out.println("check me" + checkProductStock);
 
-        if(checkProductStock >= 0) {
-            lineItem = userServices.createLineItemSession(product, quantity, session);
+        if (checkProductStock >= 0) {
+            lineItem = userServices.createLineItemSession(product, quantity, request);
         }
 
         if (lineItem != null) {
-            userServices.updateSessionCart(lineItem, session);
+            userServices.updateSessionCart(lineItem, request);
             result = true;
         }
 

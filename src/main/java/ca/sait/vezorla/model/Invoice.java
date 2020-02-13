@@ -45,16 +45,19 @@ public class Invoice {
 	@NotNull
 	@Column(name = "shipped")
 	private boolean shipped;
-	
+
+	@NotNull
+	@Column(name = "pickup")
+	private boolean pickup;
+
 	@NotNull
 	@Column(name = "shipping_cost")
 	private BigDecimal shippingCost;
-	
+
 	@NotNull
 	@Column(name = "state")
 	private boolean state;
-	
+
 	@Column(name = "message")
 	private String message;
-	
 }
