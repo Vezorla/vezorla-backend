@@ -10,6 +10,7 @@ import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 
+import javax.servlet.http.HttpSession;
 import java.util.*;
 
 @CrossOrigin
@@ -24,6 +25,9 @@ public class CustomerRestController {
 //    private ArrayList<LineItem> lineItems = new ArrayList<>();
     @Autowired
     ObjectMapper objectMapper;
+
+    @Autowired
+    private HttpSession session;
 
 
     public CustomerRestController(UserServices userServices, CartRepo cartRepo) {
@@ -48,8 +52,10 @@ public class CustomerRestController {
             produces = {"application/json"})
     public String getSessionCartQuantity() {
 //        userServices.createSessionCart();
-        Cart cart = userServices.getSessionCart();
+        Cart cart = userServices.getSessionCart(session); //TODO Issue
+        System.out.println(cart.toString());
 //        cart.setLineItems(lineItems);
+        System.out.println("Line Item List Size" + cart.getLineItems().size());
         return userServices.getTotalSessionCartQuantity((ArrayList<LineItem>) cart.getLineItems()); //cart.getLineItems().size() + "";
     }
 
@@ -61,7 +67,7 @@ public class CustomerRestController {
 
     //@PutMapping("cart/get")
     public void updateSessionCart(LineItem lineItem) { //used ResponseEntity<> so backend handles errors
-        Cart result = userServices.updateSessionCart(lineItem);
+//        Cart result = userServices.updateSessionCart(lineItem);
         //return ResponseEntity.ok().body(result);
     }
 
@@ -79,11 +85,11 @@ public class CustomerRestController {
 //        System.out.println("check me" + checkProductStock);
 
         if(checkProductStock >= 0) {
-            lineItem = userServices.createLineItemSession(product, quantity);
+            lineItem = userServices.createLineItemSession(product, quantity, session);
         }
 
         if (lineItem != null) {
-            userServices.updateSessionCart(lineItem);
+            userServices.updateSessionCart(lineItem, session);
             result = true;
         }
 
