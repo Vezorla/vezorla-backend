@@ -55,9 +55,9 @@ public class CustomerRestController {
 
     @RequestMapping(value = "cart/get", method = RequestMethod.GET,
             produces = {"application/json"})
-    public String getSessionCartQuantity() {
+    public String getSessionCartQuantity(HttpServletRequest request) {
 //        userServices.createSessionCart();
-        Cart cart = userServices.getSessionCart(request); //TODO Issue
+        Cart cart = userServices.getSessionCart(); //TODO Issue
         System.out.println(cart.toString());
 //        cart.setLineItems(lineItems);
         System.out.println("Line Item List Size" + cart.getLineItems().size());
@@ -90,11 +90,11 @@ public class CustomerRestController {
 //        System.out.println("check me" + checkProductStock);
 
         if (checkProductStock >= 0) {
-            lineItem = userServices.createLineItemSession(product, quantity, request);
+            lineItem = userServices.createLineItemSession(product, quantity);
         }
 
         if (lineItem != null) {
-            userServices.updateSessionCart(lineItem, request);
+            userServices.updateSessionCart(lineItem);
             result = true;
         }
 

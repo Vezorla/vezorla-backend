@@ -33,5 +33,6 @@ public class Cart {
     private boolean fromAccount;
 
     @OneToMany(mappedBy = "cart")
+    @Column
     private List<LineItem> lineItems;
 }

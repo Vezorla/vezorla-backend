@@ -3,7 +3,6 @@ package ca.sait.vezorla.service;
 import ca.sait.vezorla.model.*;
 import ca.sait.vezorla.repository.ProductRepo;
 import org.springframework.stereotype.Service;
-import org.springframework.web.context.request.RequestContextHolder;
 import org.springframework.web.context.request.ServletRequestAttributes;
 
 import javax.servlet.http.HttpServletRequest;
@@ -21,10 +20,11 @@ public class UserServicesImp implements UserServices {
     private HttpServletRequest request;
     private HttpSession session;
 
-    public UserServicesImp(ProductRepo productRepo, HttpServletRequest request) {
+    public UserServicesImp(ProductRepo productRepo, HttpServletRequest request, HttpSession session) {
         this.productRepo = productRepo;
         this.request = request;
-        this.session = request.getSession();
+//        this.session = request.getSession();
+        this.session = session;
     }
 
     public void applyDiscount(Discount discount) {
@@ -35,27 +35,27 @@ public class UserServicesImp implements UserServices {
      * Method to create a new cart object and
      * store it in the session.
      */
-    public void createSessionCart(HttpServletRequest request) {
+    public void createSessionCart() {
 //        attr = (ServletRequestAttributes) RequestContextHolder.currentRequestAttributes();
 //        HttpSession session = attr.getRequest().getSession(true);
 //        System.out.println("session new " + session.getId());
         Cart cart = new Cart();
         cart.setLineItems(new ArrayList<LineItem>());
-        request.getSession().setAttribute("cart", cart);
+        this.request.getSession().setAttribute("cart", cart);
     }
 
     /**
      * Method to get a Cart from the session
      */
-    public Cart getSessionCart(HttpServletRequest request) {
+    public Cart getSessionCart() {
 //        attr = (ServletRequestAttributes) RequestContextHolder.currentRequestAttributes();
 //        HttpSession session = attr.getRequest().getSession();
-        HttpSession session = request.getSession();
+//        HttpSession session = request.getSession();
 
         System.out.println("cart session " + session.getId());
         Cart cart = null;
         if (session.getAttribute("cart") == null) {
-            createSessionCart(request);
+            createSessionCart();
         } else {
             System.out.println("session existing " + session.getId());
             cart = (Cart) session.getAttribute("cart");
@@ -63,13 +63,13 @@ public class UserServicesImp implements UserServices {
         return cart;
     }
 
-    public Cart updateSessionCart(LineItem lineItem, HttpServletRequest request) {
-        HttpSession session = request.getSession();
-        System.out.println();
-        Cart cart = getSessionCart(request);
+    public Cart updateSessionCart(LineItem lineItem) {
+        System.out.println("Update session cart " + session.getId());
+        Cart cart = getSessionCart();
         ArrayList<LineItem> lineItemList = (ArrayList<LineItem>) cart.getLineItems();
         lineItemList.add(lineItem);
         cart.setLineItems(lineItemList);
+        System.out.println("After add something to line item list " + lineItemList.size());
 
         //Fix me later. Grabbing the session
 //        attr = (ServletRequestAttributes) RequestContextHolder.currentRequestAttributes();
@@ -101,12 +101,12 @@ public class UserServicesImp implements UserServices {
 
         int quantity = productRepo.findTotalQuantity(id);
 
-        System.out.println("DB Quant " + quantity);
+        System.out.println("DB total quantity " + quantity);
 
         return quantity;
     }
 
-    public int validateOrderedQuantity(String orderedQuantitySent, int inStockQuantity){
+    public int validateOrderedQuantity(String orderedQuantitySent, int inStockQuantity) {
         orderedQuantitySent = orderedQuantitySent.replaceAll("\"", "");
         int orderedQuantity = Integer.parseInt(orderedQuantitySent);
         return inStockQuantity - orderedQuantity;
@@ -117,7 +117,7 @@ public class UserServicesImp implements UserServices {
 
     }
 
-    public LineItem createLineItemSession(Optional<Product> product, String sentQuantity, HttpServletRequest request) {
+    public LineItem createLineItemSession(Optional<Product> product, String sentQuantity) {
         LineItem lineItem = new LineItem();
         sentQuantity = sentQuantity.replaceAll("\"", "");
         int quantity = Integer.parseInt(sentQuantity);
@@ -125,7 +125,7 @@ public class UserServicesImp implements UserServices {
         lineItem.setQuantity(quantity);
         lineItem.setCurrentName(product.get().getName());
         lineItem.setCurrentPrice(product.get().getPrice());
-        lineItem.setCart(getSessionCart(request));
+        lineItem.setCart(getSessionCart());
         lineItem.setProduct(product.get());
 
         System.out.println("create line item session " + request.getSession().getId());
