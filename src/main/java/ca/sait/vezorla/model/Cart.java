@@ -8,7 +8,6 @@ package ca.sait.vezorla.model;
 
 import lombok.AllArgsConstructor;
 import lombok.Data;
-import lombok.NoArgsConstructor;
 
 import javax.persistence.*;
 import java.io.Serializable;
@@ -16,7 +15,6 @@ import java.util.ArrayList;
 import java.util.List;
 
 @AllArgsConstructor
-//@NoArgsConstructor
 @Entity
 @Data
 @Table(name = "cart")
@@ -38,6 +36,9 @@ public class Cart implements Serializable {
     @Column
     private List<LineItem> lineItems;
 
+    /**
+     * No args constructor to create a new list of line items
+     */
     public Cart() {
         this.lineItems = new ArrayList<>();
     }

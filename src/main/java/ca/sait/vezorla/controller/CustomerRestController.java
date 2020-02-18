@@ -3,8 +3,6 @@ package ca.sait.vezorla.controller;
 import ca.sait.vezorla.model.*;
 import ca.sait.vezorla.repository.CartRepo;
 import ca.sait.vezorla.service.UserServices;
-import com.fasterxml.jackson.databind.ObjectMapper;
-import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
@@ -16,7 +14,6 @@ import java.util.Date;
 import java.util.List;
 import java.util.Optional;
 
-//@CrossOrigin
 @RestController
 @RequestMapping(CustomerRestController.URL)
 public class CustomerRestController {
@@ -25,52 +22,42 @@ public class CustomerRestController {
 
     private UserServices userServices;
     private CartRepo cartRepo;
-    private ArrayList<LineItem> lineItems = new ArrayList<>();
-    @Autowired
-    ObjectMapper objectMapper;
 
     public CustomerRestController(UserServices userServices, CartRepo cartRepo) {
         this.userServices = userServices;
         this.cartRepo = cartRepo;
     }
 
+    /**
+     * Get all products
+     *
+     * @return List of all products
+     */
+    @GetMapping("inventory/products/all")
+    public List<Product> getAllProducts() {
+        return userServices.getAllProducts();
+    }
+
     @GetMapping("inventory/product/{id}")
-    public ResponseEntity<Product> getProductPage(@PathVariable Long id) { //Changed to ResponseEntity
+    public ResponseEntity<Product> getProductPage(@PathVariable Long id) {
         Optional<Product> product = userServices.getProduct(id);
 
         return product.map(response -> ResponseEntity.ok().body(response)).orElse(new ResponseEntity<>(HttpStatus.NOT_FOUND));
     }
 
-//    @RequestMapping(value = "inventory/product/quantity/{id}", method = RequestMethod.PUT,
-//            produces = {"application/json"})
-//    public int getProductQuantity(@PathVariable Long id) { //Changed to ResponseEntity
-//        return userServices.getProductQuantity(id);
-//    }
-
     @RequestMapping(value = "cart/get", method = RequestMethod.GET,
             produces = {"application/json"})
     public String getSessionCartQuantity(HttpSession session) {
         Cart cart = userServices.getSessionCart(session);
-//        System.out.println(cart.toString());
-//        cart.setLineItems(lineItems);
-//        System.out.println("Line Item List Size" + cart.getLineItems().size());
-        return userServices.getTotalSessionCartQuantity((ArrayList<LineItem>) cart.getLineItems()); //cart.getLineItems().size() + "";
+        return userServices.getTotalSessionCartQuantity((ArrayList<LineItem>) cart.getLineItems());
     }
 
-    @RequestMapping(value = "inventory/product/quantity/{id}", method = RequestMethod.GET,
-            produces = {"application/json"})
+    @RequestMapping(value = "inventory/product/quantity/{id}", method = RequestMethod.GET, produces = {"application/json"})
     public int getProductQuantity(@PathVariable Long id) {
         return userServices.getProductQuantity(id);
     }
 
-    //@PutMapping("cart/get")
-    public void updateSessionCart(LineItem lineItem) { //used ResponseEntity<> so backend handles errors
-//        Cart result = userServices.updateSessionCart(lineItem);
-        //return ResponseEntity.ok().body(result);
-    }
-
-    @RequestMapping(value = "cart/add/{id}", method = RequestMethod.POST,
-            produces = {"application/json"})
+    @RequestMapping(value = "cart/add/{id}", method = RequestMethod.PUT, produces = {"application/json"})
     public boolean createLineItem(@PathVariable Long id, @RequestBody String quantity, HttpServletRequest request) {
 
         System.out.println("sent quantity: " + quantity);
@@ -78,15 +65,11 @@ public class CustomerRestController {
         LineItem lineItem = null;
         boolean result = false;
         Optional<Product> product = userServices.getProduct(id);
-//        System.out.println("S" + quantity);
         int productInStock = userServices.getProductQuantity(id);
-//        System.out.println("prod in stock" + productInStock);
         int checkProductStock = userServices.validateOrderedQuantity(quantity, productInStock);
-//        System.out.println("check me" + checkProductStock);
 
-        if (checkProductStock >= 0) {
+        if (checkProductStock >= 0)
             lineItem = userServices.createLineItemSession(product, quantity, request);
-        }
 
         if (lineItem != null) {
             userServices.updateSessionCart(lineItem, request);
@@ -141,10 +124,5 @@ public class CustomerRestController {
     @GetMapping("account/forgotpassword/{email}")
     public void forgotPassword(@PathVariable String email) {
 
-    }
-
-    @GetMapping("inventory/products/all")
-    public List<Product> getAllProducts() {
-        return userServices.getAllProducts();
     }
 }

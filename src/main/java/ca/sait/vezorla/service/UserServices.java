@@ -26,11 +26,10 @@ public interface UserServices {
     public void updateCart(Cart cart);
     public Cart getSessionCart(HttpSession session);
     public Cart updateSessionCart(LineItem lineItem, HttpServletRequest request);
-    public void createSessionCart();
     public String getTotalSessionCartQuantity(ArrayList<LineItem> lineItems);
     public int getProductQuantity(Long id);
     public void createLineItems(Product product);
     public int validateOrderedQuantity(String orderedQuantitySent, int inStockQuantity);
-
     public LineItem createLineItemSession(Optional<Product> product, String quantity, HttpServletRequest request);
+    //    public void createSessionCart();
 }
