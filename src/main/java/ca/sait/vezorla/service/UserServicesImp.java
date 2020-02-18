@@ -16,15 +16,16 @@ import java.util.Optional;
 public class UserServicesImp implements UserServices {
 
     private ProductRepo productRepo;
-    private ServletRequestAttributes attr;
-    private HttpServletRequest request;
-    private HttpSession session;
+    //    private ServletRequestAttributes attr;
+//    private HttpServletRequest request;
+//    private HttpSession session;
+//    ArrayList<LineItem> lineItems = new ArrayList<>();
 
-    public UserServicesImp(ProductRepo productRepo, HttpServletRequest request, HttpSession session) {
+    public UserServicesImp(ProductRepo productRepo) {
         this.productRepo = productRepo;
-        this.request = request;
+//        this.request = request;
 //        this.session = request.getSession();
-        this.session = session;
+//        this.session = session;
     }
 
     public void applyDiscount(Discount discount) {
@@ -34,6 +35,8 @@ public class UserServicesImp implements UserServices {
     /**
      * Method to create a new cart object and
      * store it in the session.
+     * <p>
+     * MAYBE WE DON'T NEED THIS METHOD
      */
     public void createSessionCart() {
 //        attr = (ServletRequestAttributes) RequestContextHolder.currentRequestAttributes();
@@ -41,46 +44,59 @@ public class UserServicesImp implements UserServices {
 //        System.out.println("session new " + session.getId());
         Cart cart = new Cart();
         cart.setLineItems(new ArrayList<LineItem>());
-        this.request.getSession().setAttribute("cart", cart);
+        // this.request.getSession().setAttribute("cart", cart);
     }
 
     /**
      * Method to get a Cart from the session
      */
-    public Cart getSessionCart() {
-//        attr = (ServletRequestAttributes) RequestContextHolder.currentRequestAttributes();
-//        HttpSession session = attr.getRequest().getSession();
-//        HttpSession session = request.getSession();
-
+    public Cart getSessionCart(HttpSession session) {
         System.out.println("cart session " + session.getId());
-        Cart cart = null;
-        if (session.getAttribute("cart") == null) {
-            createSessionCart();
+        Cart cart = (Cart) session.getAttribute("CART");
+        if (cart == null) {
+            cart = new Cart();
         } else {
             System.out.println("session existing " + session.getId());
-            cart = (Cart) session.getAttribute("cart");
         }
         return cart;
     }
 
-    public Cart updateSessionCart(LineItem lineItem) {
-        System.out.println("Update session cart " + session.getId());
-        Cart cart = getSessionCart();
-        ArrayList<LineItem> lineItemList = (ArrayList<LineItem>) cart.getLineItems();
-        lineItemList.add(lineItem);
-        cart.setLineItems(lineItemList);
-        System.out.println("After add something to line item list " + lineItemList.size());
+    public Cart updateSessionCart(LineItem lineItem, HttpServletRequest request) {
+        //System.out.println("Update session cart " + session.getId());
+        Cart cart = (Cart) request.getSession().getAttribute("CART");
+        System.out.println("cart me " + cart.getOrderNum());
+
+        if (cart.getOrderNum() == null) { //TODO IS THIS RIGHT???
+            System.out.println("cart is null");
+            cart = new Cart();
+            request.getSession().setAttribute("CART", cart);
+        }
+
+        ArrayList<LineItem> lineItems = (ArrayList<LineItem>) cart.getLineItems();
+        System.out.println("list size old: " + lineItems.size());
+        lineItems.add(lineItem);
+        cart.setLineItems(lineItems);
+        //System.out.println("After add something to line item list " + lineItemList.size());
 
         //Fix me later. Grabbing the session
 //        attr = (ServletRequestAttributes) RequestContextHolder.currentRequestAttributes();
 //        HttpSession session = attr.getRequest().getSession();
-        session.setAttribute("cart", cart);
+        request.getSession().setAttribute("CART", cart);
+
+        for(LineItem item : lineItems) {
+            System.out.println("item in list" + item.toString());
+        }
+
+        System.out.println("list size new: " + lineItems.size());
+
+
         return cart;
     }
 
     public String getTotalSessionCartQuantity(ArrayList<LineItem> lineItems) {
         //loop through lineItems to get total quantity on order
         int counter = lineItems.stream().mapToInt(LineItem::getQuantity).sum();
+        System.out.println("num line items " + counter);
         return counter + "";
     }
 
@@ -117,7 +133,7 @@ public class UserServicesImp implements UserServices {
 
     }
 
-    public LineItem createLineItemSession(Optional<Product> product, String sentQuantity) {
+    public LineItem createLineItemSession(Optional<Product> product, String sentQuantity, HttpServletRequest request) {
         LineItem lineItem = new LineItem();
         sentQuantity = sentQuantity.replaceAll("\"", "");
         int quantity = Integer.parseInt(sentQuantity);
@@ -125,7 +141,7 @@ public class UserServicesImp implements UserServices {
         lineItem.setQuantity(quantity);
         lineItem.setCurrentName(product.get().getName());
         lineItem.setCurrentPrice(product.get().getPrice());
-        lineItem.setCart(getSessionCart());
+        lineItem.setCart((Cart) request.getSession().getAttribute("CART"));
         lineItem.setProduct(product.get());
 
         System.out.println("create line item session " + request.getSession().getId());

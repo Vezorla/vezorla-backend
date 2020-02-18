@@ -10,12 +10,13 @@ import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 
 import javax.servlet.http.HttpServletRequest;
+import javax.servlet.http.HttpSession;
 import java.util.ArrayList;
 import java.util.Date;
 import java.util.List;
 import java.util.Optional;
 
-@CrossOrigin
+//@CrossOrigin
 @RestController
 @RequestMapping(CustomerRestController.URL)
 public class CustomerRestController {
@@ -24,20 +25,13 @@ public class CustomerRestController {
 
     private UserServices userServices;
     private CartRepo cartRepo;
-    //    private ArrayList<LineItem> lineItems = new ArrayList<>();
+    private ArrayList<LineItem> lineItems = new ArrayList<>();
     @Autowired
     ObjectMapper objectMapper;
 
-//    @Autowired
-//    private HttpSession session;
-
-    private HttpServletRequest request;
-
-
-    public CustomerRestController(UserServices userServices, CartRepo cartRepo, HttpServletRequest request) {
+    public CustomerRestController(UserServices userServices, CartRepo cartRepo) {
         this.userServices = userServices;
         this.cartRepo = cartRepo;
-        this.request = request;
     }
 
     @GetMapping("inventory/product/{id}")
@@ -55,12 +49,11 @@ public class CustomerRestController {
 
     @RequestMapping(value = "cart/get", method = RequestMethod.GET,
             produces = {"application/json"})
-    public String getSessionCartQuantity(HttpServletRequest request) {
-//        userServices.createSessionCart();
-        Cart cart = userServices.getSessionCart(); //TODO Issue
+    public String getSessionCartQuantity(HttpSession session) {
+        Cart cart = userServices.getSessionCart(session); //TODO Issue
         System.out.println(cart.toString());
 //        cart.setLineItems(lineItems);
-        System.out.println("Line Item List Size" + cart.getLineItems().size());
+//        System.out.println("Line Item List Size" + cart.getLineItems().size());
         return userServices.getTotalSessionCartQuantity((ArrayList<LineItem>) cart.getLineItems()); //cart.getLineItems().size() + "";
     }
 
@@ -76,9 +69,11 @@ public class CustomerRestController {
         //return ResponseEntity.ok().body(result);
     }
 
-    @RequestMapping(value = "cart/add/{id}", method = RequestMethod.PUT,
+    @RequestMapping(value = "cart/add/{id}", method = RequestMethod.POST,
             produces = {"application/json"})
-    public boolean createLineItem(@PathVariable Long id, @RequestBody String quantity) {
+    public boolean createLineItem(@PathVariable Long id, @RequestBody String quantity, HttpServletRequest request) {
+
+        System.out.println("sent quantity: " + quantity);
 
         LineItem lineItem = null;
         boolean result = false;
@@ -90,11 +85,11 @@ public class CustomerRestController {
 //        System.out.println("check me" + checkProductStock);
 
         if (checkProductStock >= 0) {
-            lineItem = userServices.createLineItemSession(product, quantity);
+            lineItem = userServices.createLineItemSession(product, quantity, request);
         }
 
         if (lineItem != null) {
-            userServices.updateSessionCart(lineItem);
+            userServices.updateSessionCart(lineItem, request);
             result = true;
         }
 

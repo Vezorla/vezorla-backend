@@ -11,14 +11,16 @@ import lombok.Data;
 import lombok.NoArgsConstructor;
 
 import javax.persistence.*;
+import java.io.Serializable;
+import java.util.ArrayList;
 import java.util.List;
 
 @AllArgsConstructor
-@NoArgsConstructor
+//@NoArgsConstructor
 @Entity
 @Data
 @Table(name = "cart")
-public class Cart {
+public class Cart implements Serializable {
 
     @Id
     @Column(name = "order_num")
@@ -35,4 +37,8 @@ public class Cart {
     @OneToMany(mappedBy = "cart")
     @Column
     private List<LineItem> lineItems;
+
+    public Cart() {
+        this.lineItems = new ArrayList<>();
+    }
 }

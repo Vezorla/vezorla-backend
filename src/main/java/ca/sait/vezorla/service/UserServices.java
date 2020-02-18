@@ -24,13 +24,13 @@ public interface UserServices {
     public boolean searchEmail(String email);
     public boolean subscribeEmail(String email);
     public void updateCart(Cart cart);
-    public Cart getSessionCart();
-    public Cart updateSessionCart(LineItem lineItem);
+    public Cart getSessionCart(HttpSession session);
+    public Cart updateSessionCart(LineItem lineItem, HttpServletRequest request);
     public void createSessionCart();
     public String getTotalSessionCartQuantity(ArrayList<LineItem> lineItems);
     public int getProductQuantity(Long id);
     public void createLineItems(Product product);
     public int validateOrderedQuantity(String orderedQuantitySent, int inStockQuantity);
 
-    public LineItem createLineItemSession(Optional<Product> product, String quantity);
+    public LineItem createLineItemSession(Optional<Product> product, String quantity, HttpServletRequest request);
 }

@@ -79,12 +79,12 @@ public class Product {
 
 	@JsonIgnore
 	@OneToMany(mappedBy = "product")
-	private List<Lot> lotList = new ArrayList<>();
+	private List<Lot> lotList;
 
 
 	@OneToMany(mappedBy = "product")
-	private List<Discount> discounts = new ArrayList<>();
+	private List<Discount> discounts;
 
 	@OneToMany (mappedBy = "product")
-	private List<LineItem> lineItems = new ArrayList<>();
+	private List<LineItem> lineItems;
 }
