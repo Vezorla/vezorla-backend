@@ -64,9 +64,8 @@ public class UserServicesImp implements UserServices {
     public Cart updateSessionCart(LineItem lineItem, HttpServletRequest request) {
         //System.out.println("Update session cart " + session.getId());
         Cart cart = (Cart) request.getSession().getAttribute("CART");
-        System.out.println("cart me " + cart.getOrderNum());
 
-        if (cart.getOrderNum() == null) { //TODO IS THIS RIGHT???
+        if (cart == null) { //TODO IS THIS RIGHT???
             System.out.println("cart is null");
             cart = new Cart();
             request.getSession().setAttribute("CART", cart);
@@ -75,20 +74,13 @@ public class UserServicesImp implements UserServices {
         ArrayList<LineItem> lineItems = (ArrayList<LineItem>) cart.getLineItems();
         System.out.println("list size old: " + lineItems.size());
         lineItems.add(lineItem);
+        System.out.println("new size " + lineItems.size());
         cart.setLineItems(lineItems);
-        //System.out.println("After add something to line item list " + lineItemList.size());
-
-        //Fix me later. Grabbing the session
-//        attr = (ServletRequestAttributes) RequestContextHolder.currentRequestAttributes();
-//        HttpSession session = attr.getRequest().getSession();
         request.getSession().setAttribute("CART", cart);
 
-        for(LineItem item : lineItems) {
-            System.out.println("item in list" + item.toString());
-        }
-
-        System.out.println("list size new: " + lineItems.size());
-
+//        for(LineItem item : lineItems) {
+//            System.out.println("item in list " + item.toString());
+//        }
 
         return cart;
     }
@@ -165,9 +157,7 @@ public class UserServicesImp implements UserServices {
         return null;
     }
 
-    public Optional<Product> getProduct(Long id) { //It wanted Optional
-
-
+    public Optional<Product> getProduct(Long id) { //It wanted Optionals
         return productRepo.findById(id);
     }
 

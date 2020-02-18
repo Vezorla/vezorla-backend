@@ -50,8 +50,8 @@ public class CustomerRestController {
     @RequestMapping(value = "cart/get", method = RequestMethod.GET,
             produces = {"application/json"})
     public String getSessionCartQuantity(HttpSession session) {
-        Cart cart = userServices.getSessionCart(session); //TODO Issue
-        System.out.println(cart.toString());
+        Cart cart = userServices.getSessionCart(session);
+//        System.out.println(cart.toString());
 //        cart.setLineItems(lineItems);
 //        System.out.println("Line Item List Size" + cart.getLineItems().size());
         return userServices.getTotalSessionCartQuantity((ArrayList<LineItem>) cart.getLineItems()); //cart.getLineItems().size() + "";

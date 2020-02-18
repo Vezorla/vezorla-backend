@@ -1,17 +1,15 @@
 package ca.sait.vezorla.model;
 
+import java.io.Serializable;
 import java.math.BigDecimal;
 import java.util.ArrayList;
 import java.util.List;
 
-import javax.persistence.Column;
-import javax.persistence.Entity;
-import javax.persistence.Id;
-import javax.persistence.OneToMany;
-import javax.persistence.Table;
+import javax.persistence.*;
 import javax.validation.constraints.Min;
 
 import com.fasterxml.jackson.annotation.JsonIgnore;
+import com.fasterxml.jackson.annotation.JsonIgnoreProperties;
 import com.sun.istack.NotNull;
 
 import lombok.AllArgsConstructor;
@@ -29,7 +27,7 @@ import org.hibernate.annotations.Type;
 @Table(name = "product")
 @AllArgsConstructor
 @NoArgsConstructor
-public class Product {
+public class Product implements Serializable {
 	
 	@Id
 	private Long prodId;
@@ -78,9 +76,8 @@ public class Product {
 	private BigDecimal oldPrice;
 
 	@JsonIgnore
-	@OneToMany(mappedBy = "product")
+	@OneToMany (mappedBy = "product")
 	private List<Lot> lotList;
-
 
 	@OneToMany(mappedBy = "product")
 	private List<Discount> discounts;
