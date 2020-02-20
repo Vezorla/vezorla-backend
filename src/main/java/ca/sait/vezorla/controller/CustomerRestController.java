@@ -3,21 +3,16 @@ package ca.sait.vezorla.controller;
 import ca.sait.vezorla.model.*;
 import ca.sait.vezorla.repository.CartRepo;
 import ca.sait.vezorla.service.UserServices;
-import com.fasterxml.jackson.core.JsonProcessingException;
-import com.fasterxml.jackson.core.type.TypeReference;
-import com.fasterxml.jackson.databind.JsonNode;
-import com.fasterxml.jackson.databind.ObjectMapper;
-import com.fasterxml.jackson.databind.node.ObjectNode;
-import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.http.HttpRequest;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 
+import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpSession;
-import javax.validation.Valid;
-import java.net.URI;
-import java.util.*;
+import java.util.ArrayList;
+import java.util.Date;
+import java.util.List;
+import java.util.Optional;
 
 @CrossOrigin
 @RestController
@@ -28,77 +23,59 @@ public class CustomerRestController {
 
     private UserServices userServices;
     private CartRepo cartRepo;
-    private ArrayList<LineItem> lineItems = new ArrayList<>();
-    @Autowired
-    ObjectMapper objectMapper;
-
 
     public CustomerRestController(UserServices userServices, CartRepo cartRepo) {
         this.userServices = userServices;
         this.cartRepo = cartRepo;
     }
 
+    /**
+     * Get all products
+     *
+     * @return List of all products
+     */
+    @GetMapping("inventory/products/all")
+    public List<Product> getAllProducts() {
+        return userServices.getAllProducts();
+    }
+
     @GetMapping("inventory/product/{id}")
-    public ResponseEntity<Product> getProductPage(@PathVariable Long id) { //Changed to ResponseEntity
+    public ResponseEntity<Product> getProductPage(@PathVariable Long id) {
         Optional<Product> product = userServices.getProduct(id);
 
         return product.map(response -> ResponseEntity.ok().body(response)).orElse(new ResponseEntity<>(HttpStatus.NOT_FOUND));
     }
 
-    @RequestMapping(value = "inventory/product/quantity/{id}", method = RequestMethod.GET,
-            produces = {"application/json"})
-    public String getProductQuantity(@PathVariable Long id) { //Changed to ResponseEntity
-        return userServices.getProductQuantity(id) + "";
-    }
-
     @RequestMapping(value = "cart/get", method = RequestMethod.GET,
             produces = {"application/json"})
-    public String getSessionCart() {
-        userServices.createSessionCart();
-        Cart cart = userServices.getSessionCart();
-        cart.setLineItems(lineItems);
-        return userServices.getTotalSessionCartQuantity(lineItems); //cart.getLineItems().size() + "";
+    public String getSessionCartQuantity(HttpSession session) {
+        Cart cart = userServices.getSessionCart(session);
+        return userServices.getTotalSessionCartQuantity((ArrayList<LineItem>) cart.getLineItems());
     }
 
-    @PutMapping("cart/get")
-    public ResponseEntity<?> updateSessionCart(@Valid @RequestBody LineItem lineItem) { //used ResponseEntity<> so backend handles errors
-        Cart result = userServices.updateSessionCart(lineItem);
-        return ResponseEntity.ok().body(result);
+    @RequestMapping(value = "inventory/product/quantity/{id}", method = RequestMethod.GET, produces = {"application/json"})
+    public int getProductQuantity(@PathVariable Long id) {
+        return userServices.getProductQuantity(id);
     }
 
-//    @PostMapping("cart/add/{id}")
-//    public ObjectNode createLineItem(@PathVariable Long id, @RequestBody String quantity) throws JsonProcessingException {
-//        Optional<Product> product = userServices.getProduct(id);
-//        System.out.println(quantity);
-//        LineItem lineItem = userServices.createLineItemSession(product, quantity);
-//
-//        boolean result = false;
-//        if (lineItem != null) {
-//            result = true;
-//            lineItems.add(lineItem);
-//        }
-//
-//        ObjectNode objectNode = objectMapper.createObjectNode();
-//        objectNode.put("value",result+"");
-//
-//        return objectNode;
-//    }
+    @RequestMapping(value = "cart/add/{id}", method = RequestMethod.PUT, produces = {"application/json"})
+    public boolean createLineItem(@PathVariable Long id, @RequestBody String quantity, HttpServletRequest request) {
 
-    @RequestMapping(value = "cart/add/{id}", method = RequestMethod.PUT,
-            produces = {"application/json"})
-    public boolean createLineItem(@PathVariable Long id, @RequestBody String quantity) throws JsonProcessingException {
-        Optional<Product> product = userServices.getProduct(id);
-        System.out.println(quantity);
-        LineItem lineItem = userServices.createLineItemSession(product, quantity);
+        System.out.println("sent quantity: " + quantity);
 
+        LineItem lineItem = null;
         boolean result = false;
-        if (lineItem != null) {
-            result = true;
-            lineItems.add(lineItem);
-        }
+        Optional<Product> product = userServices.getProduct(id);
+        int productInStock = userServices.getProductQuantity(id);
+        int checkProductStock = userServices.validateOrderedQuantity(quantity, productInStock);
 
-//        ObjectNode objectNode = objectMapper.createObjectNode();
-//        objectNode.put("value",result+"");
+        if (checkProductStock >= 0)
+            lineItem = userServices.createLineItemSession(product, quantity, request);
+
+        if (lineItem != null) {
+            userServices.updateSessionCart(lineItem, request);
+            result = true;
+        }
 
         return result;
     }
@@ -148,10 +125,5 @@ public class CustomerRestController {
     @GetMapping("account/forgotpassword/{email}")
     public void forgotPassword(@PathVariable String email) {
 
-    }
-
-    @GetMapping("inventory/products/all")
-    public List<Product> getAllProducts() {
-        return userServices.getAllProducts();
     }
 }

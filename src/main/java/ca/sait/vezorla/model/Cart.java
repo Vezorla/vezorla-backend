@@ -8,17 +8,17 @@ package ca.sait.vezorla.model;
 
 import lombok.AllArgsConstructor;
 import lombok.Data;
-import lombok.NoArgsConstructor;
 
 import javax.persistence.*;
+import java.io.Serializable;
+import java.util.ArrayList;
 import java.util.List;
 
 @AllArgsConstructor
-@NoArgsConstructor
 @Entity
 @Data
 @Table(name = "cart")
-public class Cart {
+public class Cart implements Serializable {
 
     @Id
     @Column(name = "order_num")
@@ -33,5 +33,13 @@ public class Cart {
     private boolean fromAccount;
 
     @OneToMany(mappedBy = "cart")
+    @Column
     private List<LineItem> lineItems;
+
+    /**
+     * No args constructor to create a new list of line items
+     */
+    public Cart() {
+        this.lineItems = new ArrayList<>();
+    }
 }

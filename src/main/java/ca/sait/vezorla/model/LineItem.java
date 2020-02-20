@@ -14,6 +14,7 @@ import lombok.NoArgsConstructor;
 import org.hibernate.annotations.Formula;
 
 import javax.persistence.*;
+import java.io.Serializable;
 import java.math.BigDecimal;
 import java.util.Currency;
 
@@ -22,7 +23,7 @@ import java.util.Currency;
 @AllArgsConstructor
 @NoArgsConstructor
 @Table(name = "line_item")
-public class LineItem {
+public class LineItem implements Serializable {
 
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
