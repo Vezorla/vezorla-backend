@@ -8,6 +8,7 @@
  */
 package ca.sait.vezorla.model;
 
+import com.fasterxml.jackson.annotation.JsonIgnore;
 import lombok.AllArgsConstructor;
 import lombok.Data;
 import lombok.NoArgsConstructor;
@@ -50,6 +51,7 @@ public class LineItem implements Serializable {
     @ManyToOne
     @JoinColumn(name = "invoice_num")
     private Invoice invoice;
+
 
     @ManyToOne
     @JoinColumn(name = "lot_num")

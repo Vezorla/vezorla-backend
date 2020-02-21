@@ -4,7 +4,6 @@ import ca.sait.vezorla.model.*;
 import ca.sait.vezorla.repository.CartRepo;
 import ca.sait.vezorla.service.UserServices;
 import com.fasterxml.jackson.core.JsonProcessingException;
-import com.fasterxml.jackson.databind.JsonNode;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import com.fasterxml.jackson.databind.node.ArrayNode;
 import com.fasterxml.jackson.databind.node.ObjectNode;
@@ -90,28 +89,24 @@ public class CustomerRestController {
     }
 
     @GetMapping("cart/view")
-    public void viewSessionCart(HttpSession session) throws JsonProcessingException {
+    public String viewSessionCart(HttpSession session) throws JsonProcessingException {
         Cart cart = (Cart)session.getAttribute("CART");
 //        ObjectNode root = mapper.createObjectNode();
         ObjectNode root = mapper.createObjectNode();
-
-
         ArrayNode arrayNode = mapper.createArrayNode();
-        ObjectNode node = mapper.createObjectNode();
-        node.put("prodID", cart.getLineItems().get(0).getProduct().getProdId());
-        node.put("name", cart.getLineItems().get(0).getProduct().getName());
-        node.put("price", cart.getLineItems().get(0).getProduct().getPrice());
-        node.put("imageMain", cart.getLineItems().get(0).getProduct().getImageMain());
-        arrayNode.add(node);
-        root.putPOJO("product", arrayNode);
-        root.put("quantity", cart.getLineItems().get(0).getQuantity());
-
         System.out.println(mapper.writerWithDefaultPrettyPrinter().writeValueAsString(arrayNode));
 
-//        for(int i = 0; i < cart.getLineItems().size(); i++) {
-//
-//
-//        }
+        for(int i = 0; i < cart.getLineItems().size(); i++) {
+            ObjectNode node = mapper.createObjectNode();
+            node.put("prodID", cart.getLineItems().get(i).getProduct().getProdId());
+            node.put("name", cart.getLineItems().get(i).getProduct().getName());
+            node.put("price", cart.getLineItems().get(i).getProduct().getPrice());
+            node.put("imageMain", cart.getLineItems().get(i).getProduct().getImageMain());
+            node.put("quantity", cart.getLineItems().get(i).getQuantity());
+            arrayNode.add(node);
+        }
+
+        return mapper.writerWithDefaultPrettyPrinter().writeValueAsString(arrayNode);
     }
 
 
