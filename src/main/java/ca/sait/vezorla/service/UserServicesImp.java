@@ -124,7 +124,7 @@ public class UserServicesImp implements UserServices {
      * @param quantity
      * @param cart
      */
-    public boolean updateLineItem(Long id, int quantity, Cart cart, HttpServletRequest request) {
+    public boolean updateLineItemSession(Long id, int quantity, Cart cart, HttpServletRequest request) {
         boolean result = false;
         ArrayList<LineItem> lineItems = (ArrayList) cart.getLineItems();
         for(int i = 0; i < lineItems.size(); i++) {
@@ -137,6 +137,21 @@ public class UserServicesImp implements UserServices {
 
         return result;
 
+    }
+
+    public boolean removeLineItemSession(Long id, Cart cart, HttpServletRequest request) {
+        boolean result = false;
+        ArrayList<LineItem> lineItems = (ArrayList) cart.getLineItems();
+        for(int i = 0; i < lineItems.size(); i++) {
+            if(lineItems.get(i).getProduct().getProdId().equals(id)) {
+                lineItems.remove(lineItems.get(i));
+                result = true;
+            }
+        }
+
+        request.getSession().setAttribute("CART", cart);
+
+        return result;
     }
 
     public void createLineItems(Long id) {
@@ -169,10 +184,6 @@ public class UserServicesImp implements UserServices {
 
     public List<Lot> obtainSufficientQtyLots() {
         return null;
-    }
-
-    public void removeFromCart(Long id) {
-
     }
 
     public boolean searchEmail(String email) {
