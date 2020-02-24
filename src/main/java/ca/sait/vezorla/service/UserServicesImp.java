@@ -124,12 +124,19 @@ public class UserServicesImp implements UserServices {
      * @param quantity
      * @param cart
      */
-    public void updateLineItem(Long id, int quantity, Cart cart) {
+    public boolean updateLineItem(Long id, int quantity, Cart cart, HttpServletRequest request) {
+        boolean result = false;
         ArrayList<LineItem> lineItems = (ArrayList) cart.getLineItems();
         for(int i = 0; i < lineItems.size(); i++) {
-
-
+            if(lineItems.get(i).getProduct().getProdId().equals(id)) {
+                lineItems.get(i).setQuantity(quantity);
+                result = true;
+            }
         }
+        request.getSession().setAttribute("CART", cart);
+
+        return result;
+
     }
 
     public void createLineItems(Long id) {

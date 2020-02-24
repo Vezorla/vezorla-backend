@@ -111,9 +111,16 @@ public class CustomerRestController {
 
 
     @PutMapping("cart/update/{id}/{quantity}")
-    public void updateLineItemSession(@PathVariable Long id, @PathVariable int quantity, HttpSession session) {
+    public boolean updateLineItemSession(@PathVariable Long id, @PathVariable int quantity, HttpServletRequest request) throws JsonProcessingException {
+        HttpSession session = request.getSession();
         Cart cart = userServices.getSessionCart(session);
-        userServices.updateLineItem(id, quantity, cart);
+        System.out.println("we grabbed cart");
+        boolean result = userServices.updateLineItem(id, quantity, cart, request);
+        if(result) {
+            viewSessionCart(session);
+        }
+
+        return result;
     }
 
     @GetMapping("cart/remove/{id}")
