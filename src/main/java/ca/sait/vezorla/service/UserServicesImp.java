@@ -35,6 +35,12 @@ public class UserServicesImp implements UserServices {
         return cart;
     }
 
+    /**
+     * Adding line item to cart
+     * @param lineItem
+     * @param request
+     * @return
+     */
     public Cart updateSessionCart(LineItem lineItem, HttpServletRequest request) {
         Cart cart = (Cart) request.getSession().getAttribute("CART");
 
@@ -112,6 +118,20 @@ public class UserServicesImp implements UserServices {
         return lineItem;
     }
 
+    /**
+     * Update line item quantity in cart
+     * @param id
+     * @param quantity
+     * @param cart
+     */
+    public void updateLineItem(Long id, int quantity, Cart cart) {
+        ArrayList<LineItem> lineItems = (ArrayList) cart.getLineItems();
+        for(int i = 0; i < lineItems.size(); i++) {
+
+
+        }
+    }
+
     public void createLineItems(Long id) {
 
     }
@@ -154,10 +174,6 @@ public class UserServicesImp implements UserServices {
 
     public boolean subscribeEmail(String email) {
         return false;
-    }
-
-    public void updateCart(Cart cart) {
-
     }
 
 }

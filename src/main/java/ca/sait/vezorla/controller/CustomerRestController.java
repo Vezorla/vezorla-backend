@@ -110,9 +110,10 @@ public class CustomerRestController {
     }
 
 
-    @GetMapping("cart/update/{id}/{quantity}")
-    public void updateCart(@PathVariable Long id, @PathVariable int quantity) {
-
+    @PutMapping("cart/update/{id}/{quantity}")
+    public void updateLineItemSession(@PathVariable Long id, @PathVariable int quantity, HttpSession session) {
+        Cart cart = userServices.getSessionCart(session);
+        userServices.updateLineItem(id, quantity, cart);
     }
 
     @GetMapping("cart/remove/{id}")

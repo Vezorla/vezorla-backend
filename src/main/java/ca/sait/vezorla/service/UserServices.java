@@ -23,7 +23,7 @@ public interface UserServices {
     public void removeFromCart(Long id);
     public boolean searchEmail(String email);
     public boolean subscribeEmail(String email);
-    public void updateCart(Cart cart);
+    public void updateLineItem(Long id, int quantity, Cart cart);
     public Cart getSessionCart(HttpSession session);
     public Cart updateSessionCart(LineItem lineItem, HttpServletRequest request);
     public String getTotalSessionCartQuantity(ArrayList<LineItem> lineItems);
