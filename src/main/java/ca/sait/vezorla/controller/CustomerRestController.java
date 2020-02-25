@@ -7,10 +7,9 @@ import com.fasterxml.jackson.core.JsonProcessingException;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import com.fasterxml.jackson.databind.node.ArrayNode;
 import com.fasterxml.jackson.databind.node.ObjectNode;
-import com.fasterxml.jackson.databind.util.JSONPObject;
-import jdk.nashorn.internal.parser.JSONParser;
-import org.json.JSONException;
-import org.json.JSONObject;
+import org.json.simple.JSONObject;
+import org.json.simple.parser.JSONParser;
+import org.json.simple.parser.ParseException;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpEntity;
 import org.springframework.http.HttpStatus;
@@ -19,10 +18,6 @@ import org.springframework.web.bind.annotation.*;
 
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpSession;
-import java.io.FileNotFoundException;
-import java.io.FileReader;
-import java.net.HttpURLConnection;
-import java.net.URL;
 import java.util.ArrayList;
 import java.util.Date;
 import java.util.List;
@@ -99,13 +94,13 @@ public class CustomerRestController {
 
     @GetMapping("cart/view")
     public String viewSessionCart(HttpSession session) throws JsonProcessingException {
-        Cart cart = (Cart)session.getAttribute("CART");
+        Cart cart = (Cart) session.getAttribute("CART");
 //        ObjectNode root = mapper.createObjectNode();
         ObjectNode root = mapper.createObjectNode();
         ArrayNode arrayNode = mapper.createArrayNode();
         System.out.println(mapper.writerWithDefaultPrettyPrinter().writeValueAsString(arrayNode));
 
-        for(int i = 0; i < cart.getLineItems().size(); i++) {
+        for (int i = 0; i < cart.getLineItems().size(); i++) {
             ObjectNode node = mapper.createObjectNode();
             node.put("prodID", cart.getLineItems().get(i).getProduct().getProdId());
             node.put("name", cart.getLineItems().get(i).getProduct().getName());
@@ -124,7 +119,7 @@ public class CustomerRestController {
         HttpSession session = request.getSession();
         Cart cart = userServices.getSessionCart(session);
         boolean result = userServices.updateLineItemSession(id, quantity, cart, request);
-        if(result) {
+        if (result) {
             viewSessionCart(session);
         }
 
@@ -136,7 +131,7 @@ public class CustomerRestController {
         HttpSession session = request.getSession();
         Cart cart = userServices.getSessionCart(session);
         boolean result = userServices.removeLineItemSession(id, cart, request);
-        if(result) {
+        if (result) {
             viewSessionCart(session);
         }
 
@@ -145,21 +140,31 @@ public class CustomerRestController {
 
     /**
      * Obtain customer's shipping information from front end
+     *
      * @param httpEntity
      */
-   @RequestMapping(value="/cart/checkout/shipping", method = RequestMethod.POST, consumes = {"application/json"}, produces = {"application/json"})
-   @ResponseBody
-    public void getShippingInfo(HttpEntity<String> httpEntity){
+    @RequestMapping(value = "/cart/checkout/shipping", method = RequestMethod.POST, consumes = {"application/json"}, produces = {"application/json"})
+    @ResponseBody
+    public void getShippingInfo(HttpEntity<String> httpEntity) {
         String json = httpEntity.getBody();
-        Object obj = new JSONParser(json, null, true).parse();
-        JSONObject jo = (JSONObject) obj;
-       try {
-           String firstname = (String) jo.get("firstname'");
-           System.out.println(firstname);
-       } catch (JSONException e) {
-           e.printStackTrace();
-       }
-   }
+        Account account = new Account();
+
+//        Object obj = new JSONParser(json, null, true).parse();
+
+
+        try {
+            Object obj = new JSONParser().parse(json);
+            JSONObject jo = (JSONObject) obj;
+            String email = (String) jo.get("email");
+            String firstName = (String) jo.get("firstName");
+            String lastName = (String) jo.get("lastName");
+            String phoneNumber = (String) jo.get("phoneNumber");
+
+            System.out.println(firstName);
+        } catch (ParseException e) {
+
+        }
+    }
 
 
     @GetMapping("subscribe/{email}")
