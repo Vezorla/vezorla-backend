@@ -1,6 +1,7 @@
 package ca.sait.vezorla.controller;
 
 import ca.sait.vezorla.model.*;
+import ca.sait.vezorla.repository.AccountRepo;
 import ca.sait.vezorla.repository.CartRepo;
 import ca.sait.vezorla.service.UserServices;
 import com.fasterxml.jackson.core.JsonProcessingException;
@@ -32,13 +33,15 @@ public class CustomerRestController {
 
     private UserServices userServices;
     private CartRepo cartRepo;
+    private AccountRepo accountRepo;
 
     @Autowired
     ObjectMapper mapper;
 
-    public CustomerRestController(UserServices userServices, CartRepo cartRepo) {
+    public CustomerRestController(UserServices userServices, CartRepo cartRepo, AccountRepo accountRepo) {
         this.userServices = userServices;
         this.cartRepo = cartRepo;
+        this.accountRepo = accountRepo;
     }
 
     /**
@@ -147,7 +150,6 @@ public class CustomerRestController {
     @ResponseBody
     public void getShippingInfo(HttpEntity<String> httpEntity) {
         String json = httpEntity.getBody();
-        Account account = new Account();
 
 //        Object obj = new JSONParser(json, null, true).parse();
 
@@ -159,11 +161,16 @@ public class CustomerRestController {
             String firstName = (String) jo.get("firstName");
             String lastName = (String) jo.get("lastName");
             String phoneNumber = (String) jo.get("phoneNumber");
+            String address = (String) jo.get("address");
+            String city = (String) jo.get("city");
+            String country = (String) jo.get("country");
+            String postalCode = (String) jo.get("postalCode");
 
-            System.out.println(firstName);
-        } catch (ParseException e) {
+            Account newAccount = new Account(email, lastName, firstName, phoneNumber, address, city, country, postalCode);
 
-        }
+            boolean created = userServices.saveAccount(newAccount);
+//            System.out.println(firstName);
+        } catch (ParseException e) {}
     }
 
 

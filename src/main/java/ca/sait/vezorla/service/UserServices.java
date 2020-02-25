@@ -50,5 +50,6 @@ public interface UserServices {
     public int validateOrderedQuantity(String orderedQuantitySent, int inStockQuantity);
 
     public LineItem createLineItemSession(Optional<Product> product, String quantity, HttpServletRequest request);
-    //    public void createSessionCart();
+
+    public boolean saveAccount(Account account);
 }

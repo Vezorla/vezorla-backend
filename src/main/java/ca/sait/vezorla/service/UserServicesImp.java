@@ -1,6 +1,7 @@
 package ca.sait.vezorla.service;
 
 import ca.sait.vezorla.model.*;
+import ca.sait.vezorla.repository.AccountRepo;
 import ca.sait.vezorla.repository.ProductRepo;
 import org.springframework.stereotype.Service;
 
@@ -16,8 +17,11 @@ public class UserServicesImp implements UserServices {
 
     private ProductRepo productRepo;
 
-    public UserServicesImp(ProductRepo productRepo) {
+    private AccountRepo accountRepo;
+
+    public UserServicesImp(ProductRepo productRepo, AccountRepo accountRepo) {
         this.productRepo = productRepo;
+        this.accountRepo = accountRepo;
     }
 
     public void applyDiscount(Discount discount) {
@@ -37,6 +41,7 @@ public class UserServicesImp implements UserServices {
 
     /**
      * Adding line item to cart
+     *
      * @param lineItem
      * @param request
      * @return
@@ -69,6 +74,7 @@ public class UserServicesImp implements UserServices {
 
     /**
      * Get the total quantity of the product from the Products database
+     *
      * @param id
      * @return
      */
@@ -97,6 +103,7 @@ public class UserServicesImp implements UserServices {
 
     /**
      * Create a line item from the product
+     *
      * @param product
      * @param sentQuantity
      * @param request
@@ -120,6 +127,7 @@ public class UserServicesImp implements UserServices {
 
     /**
      * Update line item quantity in cart
+     *
      * @param id
      * @param quantity
      * @param cart
@@ -127,8 +135,8 @@ public class UserServicesImp implements UserServices {
     public boolean updateLineItemSession(Long id, int quantity, Cart cart, HttpServletRequest request) {
         boolean result = false;
         ArrayList<LineItem> lineItems = (ArrayList) cart.getLineItems();
-        for(int i = 0; i < lineItems.size(); i++) {
-            if(lineItems.get(i).getProduct().getProdId().equals(id)) {
+        for (int i = 0; i < lineItems.size(); i++) {
+            if (lineItems.get(i).getProduct().getProdId().equals(id)) {
                 lineItems.get(i).setQuantity(quantity);
                 result = true;
             }
@@ -142,8 +150,8 @@ public class UserServicesImp implements UserServices {
     public boolean removeLineItemSession(Long id, Cart cart, HttpServletRequest request) {
         boolean result = false;
         ArrayList<LineItem> lineItems = (ArrayList) cart.getLineItems();
-        for(int i = 0; i < lineItems.size(); i++) {
-            if(lineItems.get(i).getProduct().getProdId().equals(id)) {
+        for (int i = 0; i < lineItems.size(); i++) {
+            if (lineItems.get(i).getProduct().getProdId().equals(id)) {
                 lineItems.remove(lineItems.get(i));
                 result = true;
             }
@@ -156,6 +164,15 @@ public class UserServicesImp implements UserServices {
 
     public void createLineItems(Long id) {
 
+    }
+
+    public boolean saveAccount(Account account) {
+        boolean result = false;
+        Account saved = accountRepo.save(account);
+        if (saved != null)
+            result = true;
+
+        return result;
     }
 
     public List<Product> getAllProducts() {

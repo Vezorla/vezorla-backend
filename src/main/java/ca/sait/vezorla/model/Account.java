@@ -85,5 +85,22 @@ public class Account {
     @JoinTable(name = "account_discount",
     		joinColumns = @JoinColumn(name = "email"),
     		inverseJoinColumns = @JoinColumn(name = "code"))
-    private List<Discount> discountList = new ArrayList<Discount>();
+    private List<Discount> discountList;
+
+    public Account(String email, String lastName, String firstName, String phoneNum, String address, String city, String country, String postalCode) {
+        this.email = email;
+        this.lastName = lastName;
+        this.firstName = firstName;
+        this.phoneNum = phoneNum;
+        this.address = address;
+        this.city = city;
+        this.country = country;
+        this.postalCode = postalCode;
+        this.userCreated = false;
+        this.accountAdmin = false;
+        this.accountType = 'C';
+        this.isConfirmed = false;
+        this.isSubscript = false;
+        this.discountList = new ArrayList<>();
+    }
 }
