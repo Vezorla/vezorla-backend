@@ -7,13 +7,22 @@ import com.fasterxml.jackson.core.JsonProcessingException;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import com.fasterxml.jackson.databind.node.ArrayNode;
 import com.fasterxml.jackson.databind.node.ObjectNode;
+import com.fasterxml.jackson.databind.util.JSONPObject;
+import jdk.nashorn.internal.parser.JSONParser;
+import org.json.JSONException;
+import org.json.JSONObject;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.http.HttpEntity;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpSession;
+import java.io.FileNotFoundException;
+import java.io.FileReader;
+import java.net.HttpURLConnection;
+import java.net.URL;
 import java.util.ArrayList;
 import java.util.Date;
 import java.util.List;
@@ -133,6 +142,24 @@ public class CustomerRestController {
 
         return result;
     }
+
+    /**
+     * Obtain customer's shipping information from front end
+     * @param httpEntity
+     */
+   @RequestMapping(value="/cart/checkout/shipping", method = RequestMethod.POST, consumes = {"application/json"}, produces = {"application/json"})
+   @ResponseBody
+    public void getShippingInfo(HttpEntity<String> httpEntity){
+        String json = httpEntity.getBody();
+        Object obj = new JSONParser(json, null, true).parse();
+        JSONObject jo = (JSONObject) obj;
+       try {
+           String firstname = (String) jo.get("firstname'");
+           System.out.println(firstname);
+       } catch (JSONException e) {
+           e.printStackTrace();
+       }
+   }
 
 
     @GetMapping("subscribe/{email}")
