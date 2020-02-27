@@ -80,7 +80,7 @@ public class Account {
     @Column(name = "invoice")
     @OneToMany(mappedBy ="account")
     private List<Invoice> invoices;
-    
+
     @ManyToMany
     @JoinTable(name = "account_discount",
     		joinColumns = @JoinColumn(name = "email"),

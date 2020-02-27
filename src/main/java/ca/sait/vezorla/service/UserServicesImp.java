@@ -213,8 +213,11 @@ public class UserServicesImp implements UserServices {
         //get all discounts within that time range
 //        List<Discount> discounts = discountRepo.findValidDiscounts(sqlDate, "carlos@email.ca");
 
-        ArrayList<String> discounts = (ArrayList<String>) discountRepo.findValidDiscounts(sqlDate);
+        ArrayList<String> discounts = (ArrayList<String>) discountRepo.findValidDiscounts(sqlDate, "carlos@email.ca");
         System.out.println("valid discounts " + discounts.size());
+        for(String s : discounts) {
+            System.out.println("discount FATT GARRETTT   " + s);
+        }
         return null;
     }
 

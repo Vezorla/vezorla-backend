@@ -6,6 +6,7 @@
  */
 package ca.sait.vezorla.model;
 
+import com.fasterxml.jackson.annotation.JsonIgnore;
 import lombok.AllArgsConstructor;
 import lombok.Data;
 import lombok.NoArgsConstructor;
@@ -58,7 +59,7 @@ public class Discount {
     
     @ManyToOne
     private Product product;
-    
+
     @ManyToMany(mappedBy = "discountList")
     private List<Account> accountList = new ArrayList<Account>();
 }
