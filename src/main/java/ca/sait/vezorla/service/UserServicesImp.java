@@ -7,6 +7,7 @@ import org.springframework.stereotype.Service;
 
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpSession;
+import java.time.LocalDateTime;
 import java.util.ArrayList;
 import java.util.Date;
 import java.util.List;
@@ -195,9 +196,11 @@ public class UserServicesImp implements UserServices {
 
     }
 
+    @Override
     public List<Discount> getValidDiscounts(Date date) {
         return null;
     }
+
 
     public List<Lot> obtainSufficientQtyLots() {
         return null;

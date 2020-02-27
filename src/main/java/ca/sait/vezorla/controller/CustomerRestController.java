@@ -150,10 +150,6 @@ public class CustomerRestController {
     @ResponseBody
     public void getShippingInfo(HttpEntity<String> httpEntity) {
         String json = httpEntity.getBody();
-
-//        Object obj = new JSONParser(json, null, true).parse();
-
-
         try {
             Object obj = new JSONParser().parse(json);
             JSONObject jo = (JSONObject) obj;
@@ -169,7 +165,6 @@ public class CustomerRestController {
             Account newAccount = new Account(email, lastName, firstName, phoneNumber, address, city, country, postalCode);
 
             boolean created = userServices.saveAccount(newAccount);
-//            System.out.println(firstName);
         } catch (ParseException e) {}
     }
 
