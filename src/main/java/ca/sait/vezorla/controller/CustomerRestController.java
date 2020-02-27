@@ -196,6 +196,9 @@ public class CustomerRestController {
 
     @GetMapping("discounts/apply")
     public boolean applyDiscount(Discount discount) {
+
+        userServices.getValidDiscounts();
+
         return false;
     }
 

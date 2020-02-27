@@ -2,12 +2,12 @@ package ca.sait.vezorla.service;
 
 import ca.sait.vezorla.model.*;
 import ca.sait.vezorla.repository.AccountRepo;
+import ca.sait.vezorla.repository.DiscountRepo;
 import ca.sait.vezorla.repository.ProductRepo;
 import org.springframework.stereotype.Service;
 
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpSession;
-import java.time.LocalDateTime;
 import java.util.ArrayList;
 import java.util.Date;
 import java.util.List;
@@ -20,9 +20,12 @@ public class UserServicesImp implements UserServices {
 
     private AccountRepo accountRepo;
 
-    public UserServicesImp(ProductRepo productRepo, AccountRepo accountRepo) {
+    private DiscountRepo discountRepo;
+
+    public UserServicesImp(ProductRepo productRepo, AccountRepo accountRepo, DiscountRepo discountRepo) {
         this.productRepo = productRepo;
         this.accountRepo = accountRepo;
+        this.discountRepo = discountRepo;
     }
 
     public void applyDiscount(Discount discount) {
@@ -196,8 +199,22 @@ public class UserServicesImp implements UserServices {
 
     }
 
-    @Override
-    public List<Discount> getValidDiscounts(Date date) {
+    /**
+     * Method to return valid discounts a user
+     * can apply to their order
+     *
+     * @param
+     * @return
+     */
+    public List<Discount> getValidDiscounts() {
+        //get current date for comparison
+        Date currentDate = new Date();
+        java.sql.Date sqlDate = new java.sql.Date(currentDate.getTime());
+        //get all discounts within that time range
+//        List<Discount> discounts = discountRepo.findValidDiscounts(sqlDate, "carlos@email.ca");
+
+        ArrayList<String> discounts = (ArrayList<String>) discountRepo.findValidDiscounts(sqlDate);
+        System.out.println("valid discounts " + discounts.size());
         return null;
     }
 

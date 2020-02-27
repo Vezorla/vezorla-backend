@@ -25,7 +25,7 @@ public interface UserServices {
 
     public void getStoreProducts(Long id);
 
-    public List<Discount> getValidDiscounts(Date date);
+    public List<Discount> getValidDiscounts();
 
     public List<Lot> obtainSufficientQtyLots();
 
