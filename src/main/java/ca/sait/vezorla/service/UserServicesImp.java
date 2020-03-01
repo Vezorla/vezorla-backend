@@ -254,19 +254,27 @@ public class UserServicesImp implements UserServices {
      * @param
      * @return
      */
-    public List<Discount> getValidDiscounts() {
+    public ArrayList<Discount> getValidDiscounts(String email) {
         //get current date for comparison
         Date currentDate = new Date();
         java.sql.Date sqlDate = new java.sql.Date(currentDate.getTime());
-        //get all discounts within that time range
-//        List<Discount> discounts = discountRepo.findValidDiscounts(sqlDate, "carlos@email.ca");
 
-        ArrayList<String> discounts = (ArrayList<String>) discountRepo.findValidDiscounts(sqlDate, "carlos@email.ca");
-        System.out.println("valid discounts " + discounts.size());
-        for(String s : discounts) {
+        //get all discounts within that time range
+        ArrayList<String> stringDiscounts = (ArrayList<String>) discountRepo.findValidDiscounts(sqlDate, email);
+        //list of Discounts
+        ArrayList<Discount> discounts = new ArrayList<>();
+        System.out.println("valid discounts " + stringDiscounts.size());
+
+        //parse the comma deliminted string returned from query
+        for(String s : stringDiscounts) {
             System.out.println("discount FATT GARRETTT   " + s);
+
+            String[] spl = s.split(",");
+            float decimalPercent = Float.parseFloat(spl[2]) / 100;
+            Discount discount = new Discount(spl[0], spl[1], decimalPercent);
+            discounts.add(discount);
         }
-        return null;
+        return discounts;
     }
 
 

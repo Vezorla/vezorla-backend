@@ -27,7 +27,7 @@ public interface UserServices {
 
     public void getStoreProducts(Long id);
 
-    public List<Discount> getValidDiscounts();
+    public List<Discount> getValidDiscounts(String email);
 
     public List<Lot> obtainSufficientQtyLots();
 

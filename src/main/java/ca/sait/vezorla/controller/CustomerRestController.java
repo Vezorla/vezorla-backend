@@ -11,7 +11,6 @@ import com.fasterxml.jackson.databind.node.ObjectNode;
 import org.json.simple.JSONObject;
 import org.json.simple.parser.JSONParser;
 import org.json.simple.parser.ParseException;
-import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpEntity;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
@@ -20,7 +19,6 @@ import org.springframework.web.bind.annotation.*;
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpSession;
 import java.util.ArrayList;
-import java.util.Date;
 import java.util.List;
 import java.util.Optional;
 
@@ -41,6 +39,8 @@ public class CustomerRestController {
     private AccountRepo accountRepo;
     //    @Autowired
     private ObjectMapper mapper;
+
+    private Account currentAccount;
 
 
     public CustomerRestController(UserServices userServices, CartRepo cartRepo, AccountRepo accountRepo, ObjectMapper mapper) {
@@ -212,7 +212,8 @@ public class CustomerRestController {
      */
     @RequestMapping(value = "/cart/checkout/shipping", method = RequestMethod.POST, consumes = {"application/json"}, produces = {"application/json"})
     @ResponseBody
-    public void getShippingInfo(HttpEntity<String> httpEntity) {
+    public boolean getShippingInfo(HttpEntity<String> httpEntity) {
+        boolean created = false;
         String json = httpEntity.getBody();
         try {
             Object obj = new JSONParser().parse(json);
@@ -226,10 +227,15 @@ public class CustomerRestController {
             String country = (String) jo.get("country");
             String postalCode = (String) jo.get("postalCode");
 
-            Account newAccount = new Account(email, lastName, firstName, phoneNumber, address, city, country, postalCode);
+//            Account newAccount = new Account(email, lastName, firstName, phoneNumber, address, city, country, postalCode);
+            currentAccount = new Account(email, lastName, firstName, phoneNumber, address, city, country, postalCode);
 
-            boolean created = userServices.saveAccount(newAccount);
+            created = userServices.saveAccount(currentAccount);
+//            if(created)
+//                getValidDiscounts(newAccount);
         } catch (ParseException e) {}
+
+        return created;
     }
 
 
@@ -253,14 +259,32 @@ public class CustomerRestController {
         return null;
     }
 
-    @GetMapping("discounts/valid/get")
-    public List<Discount> getValidDiscounts(Date date) {
-        return null;
+    /**
+     * Return all valid discounts associated with the customer/client
+     * This method will query the database for all valid discounts for the account
+     *
+     * @author matthewjflee, jjrr1717
+     * @return
+     */
+    @GetMapping("discounts/get")
+    public String getValidDiscounts() throws JsonProcessingException {
+        ArrayList<Discount> discounts = (ArrayList<Discount>) userServices.getValidDiscounts(currentAccount.getEmail());
+        ArrayNode arrayNode = mapper.createArrayNode();
+
+        for (int i = 0; i < discounts.size(); i++) {
+            ObjectNode node = mapper.createObjectNode();
+            node.put("code", discounts.get(i).getCode());
+            node.put("description", discounts.get(i).getDescription());
+            node.put("percent", discounts.get(i).getPercent());
+
+            arrayNode.add(node);
+        }
+
+        return mapper.writerWithDefaultPrettyPrinter().writeValueAsString(arrayNode);
     }
 
     /**
      * Apply discount to the cart
-     * This method will query the database for all valid discounts for the account
      *
      * @author matthewjflee, jjrr1717
      * @param discount
@@ -268,7 +292,7 @@ public class CustomerRestController {
      */
     @GetMapping("discounts/apply")
     public boolean applyDiscount(Discount discount) {
-        userServices.getValidDiscounts();
+//        userServices.getValidDiscounts();
         return false; //todo
     }
 

@@ -61,5 +61,13 @@ public class Discount {
     private Product product;
 
     @ManyToMany(mappedBy = "discountList")
-    private List<Account> accountList = new ArrayList<Account>();
+    private List<Account> accountList;
+
+    public Discount(String code, String description, float percent){
+        this.code = code;
+        this.description = description;
+        this.percent = percent;
+    }
+
+
 }
