@@ -25,7 +25,7 @@ public interface DiscountRepo extends JpaRepository<Discount, String>{
 //            "(start_date d < :date " +
 //            "AND)")
 
-    @Query("SELECT d.code FROM Discount d " +
+    @Query("SELECT d.code, d.description, d.percent FROM Discount d " +
             "WHERE :date BETWEEN  d.startDate AND d.endDate " +
             "AND :email NOT IN (SELECT a.email FROM Account a WHERE SIZE(a.discountList) > 0)")
     List<String> findValidDiscounts(@Param("date") Date date, @Param("email") String email);
