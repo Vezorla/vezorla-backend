@@ -13,13 +13,16 @@ import java.util.Date;
 import java.util.List;
 import java.util.Optional;
 
+/**
+ * User service
+ *
+ * @author matthewjflee, jjrr1717
+ */
 @Service
 public class UserServicesImp implements UserServices {
 
     private ProductRepo productRepo;
-
     private AccountRepo accountRepo;
-
     private DiscountRepo discountRepo;
 
     public UserServicesImp(ProductRepo productRepo, AccountRepo accountRepo, DiscountRepo discountRepo) {
@@ -32,20 +35,26 @@ public class UserServicesImp implements UserServices {
 
     }
 
+    /**
+     * Get the customer's cart from the session
+     *
+     * @author matthewjflee, jjrr1717
+     * @param session
+     * @return
+     */
     public Cart getSessionCart(HttpSession session) {
-        System.out.println("cart session " + session.getId());
         Cart cart = (Cart) session.getAttribute("CART");
         if (cart == null) {
             cart = new Cart();
-        } else {
-            System.out.println("session existing " + session.getId());
         }
+
         return cart;
     }
 
     /**
      * Adding line item to cart
      *
+     * @author matthewjflee, jjrr1717
      * @param lineItem
      * @param request
      * @return
@@ -69,31 +78,40 @@ public class UserServicesImp implements UserServices {
         return cart;
     }
 
+    /**
+     * Get the total quantity of all line items in the cart
+     *
+     * @author matthewjflee, jjrr1717
+     * @param lineItems
+     * @return
+     */
     public String getTotalSessionCartQuantity(ArrayList<LineItem> lineItems) {
         //loop through lineItems to get total quantity on order
         int counter = lineItems.stream().mapToInt(LineItem::getQuantity).sum();
-        System.out.println("num line items " + counter);
         return counter + "";
     }
 
     /**
      * Get the total quantity of the product from the Products database
      *
+     * @author matthewjflee, jjrr1717
      * @param id
      * @return
      */
     public int getProductQuantity(Long id) {
-//        Optional<Product> product = productRepo.findById(id);
-//        int counter = 0;
-//        for (int i = 0; i < product.get().getLotList().size(); i++) {
-//            counter += product.get().getLotList().get(i).getQuantity();
-//        }
         int quantity = productRepo.findTotalQuantity(id);
-        System.out.println("DB total quantity " + quantity);
 
         return quantity;
     }
 
+    /**
+     * Validate the order quantity before adding the product to the cart as a line item
+     *
+     * @author matthewjflee, jjrr1717
+     * @param orderedQuantitySent
+     * @param inStockQuantity
+     * @return
+     */
     public int validateOrderedQuantity(String orderedQuantitySent, int inStockQuantity) {
         orderedQuantitySent = orderedQuantitySent.replaceAll("\"", "");
         int orderedQuantity = Integer.parseInt(orderedQuantitySent);
@@ -106,8 +124,9 @@ public class UserServicesImp implements UserServices {
     }
 
     /**
-     * Create a line item from the product
+     * Create a line item from the product for a customer
      *
+     * @author matthewjflee, jjrr1717
      * @param product
      * @param sentQuantity
      * @param request
@@ -124,14 +143,13 @@ public class UserServicesImp implements UserServices {
         lineItem.setCart((Cart) request.getSession().getAttribute("CART"));
         lineItem.setProduct(product.get());
 
-        System.out.println("create line item session " + request.getSession().getId());
-        System.out.println("Line Item Name " + lineItem.getCurrentName());
         return lineItem;
     }
 
     /**
      * Update line item quantity in cart
      *
+     * @author matthewjflee, jjrr1717
      * @param id
      * @param quantity
      * @param cart
@@ -151,6 +169,15 @@ public class UserServicesImp implements UserServices {
 
     }
 
+    /**
+     * Remove a line item from the customer's cart
+     *
+     * @author matthewjflee, jjrr1717
+     * @param id
+     * @param cart
+     * @param request
+     * @return
+     */
     public boolean removeLineItemSession(Long id, Cart cart, HttpServletRequest request) {
         boolean result = false;
         ArrayList<LineItem> lineItems = (ArrayList) cart.getLineItems();
@@ -170,6 +197,13 @@ public class UserServicesImp implements UserServices {
 
     }
 
+    /**
+     * Create an account in the Accounts table
+     *
+     * @author matthewjflee, jjrr1717
+     * @param account
+     * @return
+     */
     public boolean saveAccount(Account account) {
         boolean result = false;
         Account saved = accountRepo.save(account);
@@ -179,6 +213,12 @@ public class UserServicesImp implements UserServices {
         return result;
     }
 
+    /**
+     * Return all products in the Products table
+     *
+     * @author kwistech
+     * @return
+     */
     public List<Product> getAllProducts() {
         return new ArrayList<>(productRepo.findAll());
     }
@@ -191,6 +231,13 @@ public class UserServicesImp implements UserServices {
         return null;
     }
 
+    /**
+     * Return a specified product
+     *
+     * @author matthewjflee, jjrr1717
+     * @param id
+     * @return
+     */
     public Optional<Product> getProduct(Long id) { //It wanted Optionals
         return productRepo.findById(id);
     }
@@ -203,6 +250,7 @@ public class UserServicesImp implements UserServices {
      * Method to return valid discounts a user
      * can apply to their order
      *
+     * @author matthewjflee, jjrr1717
      * @param
      * @return
      */

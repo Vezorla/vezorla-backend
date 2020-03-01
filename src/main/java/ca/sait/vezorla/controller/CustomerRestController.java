@@ -24,6 +24,11 @@ import java.util.Date;
 import java.util.List;
 import java.util.Optional;
 
+/**
+ * Rest controller to handle customer functionality
+ *
+ * @author matthewjflee, jjrr1717
+ */
 @CrossOrigin
 @RestController
 @RequestMapping(CustomerRestController.URL)
@@ -34,19 +39,21 @@ public class CustomerRestController {
     private UserServices userServices;
     private CartRepo cartRepo;
     private AccountRepo accountRepo;
+    //    @Autowired
+    private ObjectMapper mapper;
 
-    @Autowired
-    ObjectMapper mapper;
 
-    public CustomerRestController(UserServices userServices, CartRepo cartRepo, AccountRepo accountRepo) {
+    public CustomerRestController(UserServices userServices, CartRepo cartRepo, AccountRepo accountRepo, ObjectMapper mapper) {
         this.userServices = userServices;
         this.cartRepo = cartRepo;
         this.accountRepo = accountRepo;
+        this.mapper = mapper;
     }
 
     /**
      * Get all products
      *
+     * @author kwistech
      * @return List of all products
      */
     @GetMapping("inventory/products/all")
@@ -54,6 +61,13 @@ public class CustomerRestController {
         return userServices.getAllProducts();
     }
 
+    /**
+     * Return the product from Products repo
+     *
+     * @author matthewjflee, jjrr1717
+     * @param id
+     * @return
+     */
     @GetMapping("inventory/product/{id}")
     public ResponseEntity<Product> getProductPage(@PathVariable Long id) {
         Optional<Product> product = userServices.getProduct(id);
@@ -61,6 +75,13 @@ public class CustomerRestController {
         return product.map(response -> ResponseEntity.ok().body(response)).orElse(new ResponseEntity<>(HttpStatus.NOT_FOUND));
     }
 
+    /**
+     * Get the total number of products in the cart for a customer
+     *
+     * @author matthewjflee, jjrr1717
+     * @param session
+     * @return
+     */
     @RequestMapping(value = "cart/get", method = RequestMethod.GET,
             produces = {"application/json"})
     public String getSessionCartQuantity(HttpSession session) {
@@ -68,13 +89,29 @@ public class CustomerRestController {
         return userServices.getTotalSessionCartQuantity((ArrayList<LineItem>) cart.getLineItems());
     }
 
+    /**
+     * Return the quantity for the specified product
+     *
+     * @author jjrr1717, matthewjflee
+     * @param id
+     * @return
+     */
     @RequestMapping(value = "inventory/product/quantity/{id}", method = RequestMethod.GET, produces = {"application/json"})
     public int getProductQuantity(@PathVariable Long id) {
         return userServices.getProductQuantity(id);
     }
 
+    /**
+     * Create a line item in the cart for a customer
+     *
+     * @author matthewjflee, jjrr1717
+     * @param id
+     * @param quantity
+     * @param request
+     * @return
+     */
     @RequestMapping(value = "cart/add/{id}", method = RequestMethod.PUT, produces = {"application/json"})
-    public boolean createLineItem(@PathVariable Long id, @RequestBody String quantity, HttpServletRequest request) {
+    public boolean createLineItemSession(@PathVariable Long id, @RequestBody String quantity, HttpServletRequest request) {
 
         System.out.println("sent quantity: " + quantity);
 
@@ -95,6 +132,14 @@ public class CustomerRestController {
         return result;
     }
 
+    /**
+     * View cart for a customer
+     *
+     * @author matthewjflee, jjrr1717
+     * @param session
+     * @return
+     * @throws JsonProcessingException
+     */
     @GetMapping("cart/view")
     public String viewSessionCart(HttpSession session) throws JsonProcessingException {
         Cart cart = (Cart) session.getAttribute("CART");
@@ -116,7 +161,16 @@ public class CustomerRestController {
         return mapper.writerWithDefaultPrettyPrinter().writeValueAsString(arrayNode);
     }
 
-
+    /**
+     * Update a line item in the cart for a customer
+     *
+     * @author matthewjflee, jjrr1717
+     * @param id
+     * @param quantity
+     * @param request
+     * @return
+     * @throws JsonProcessingException
+     */
     @PutMapping("cart/update/{id}/{quantity}")
     public boolean updateLineItemSession(@PathVariable Long id, @PathVariable int quantity, HttpServletRequest request) throws JsonProcessingException {
         HttpSession session = request.getSession();
@@ -129,6 +183,15 @@ public class CustomerRestController {
         return result;
     }
 
+    /**
+     * Remove a line item for a customer
+     *
+     * @author matthewjflee, jjrr1717
+     * @param id
+     * @param request
+     * @return
+     * @throws JsonProcessingException
+     */
     @PutMapping("cart/remove/{id}")
     public boolean removeLineItemSession(@PathVariable Long id, HttpServletRequest request) throws JsonProcessingException {
         HttpSession session = request.getSession();
@@ -144,6 +207,7 @@ public class CustomerRestController {
     /**
      * Obtain customer's shipping information from front end
      *
+     * @author matthewjflee, jjrr1717
      * @param httpEntity
      */
     @RequestMapping(value = "/cart/checkout/shipping", method = RequestMethod.POST, consumes = {"application/json"}, produces = {"application/json"})
@@ -194,12 +258,18 @@ public class CustomerRestController {
         return null;
     }
 
+    /**
+     * Apply discount to the cart
+     * This method will query the database for all valid discounts for the account
+     *
+     * @author matthewjflee, jjrr1717
+     * @param discount
+     * @return
+     */
     @GetMapping("discounts/apply")
     public boolean applyDiscount(Discount discount) {
-
         userServices.getValidDiscounts();
-
-        return false;
+        return false; //todo
     }
 
     @GetMapping("account/forgotpassword/{email}")

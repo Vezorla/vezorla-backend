@@ -5,10 +5,12 @@ import ca.sait.vezorla.model.*;
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpSession;
 import java.util.ArrayList;
-import java.util.Date;
 import java.util.List;
 import java.util.Optional;
 
+/**
+ * @author jjrr1717, matthewjflee
+ */
 public interface UserServices {
 
     public void applyDiscount(Discount discount);
