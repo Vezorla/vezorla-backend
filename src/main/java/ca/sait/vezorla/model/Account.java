@@ -81,11 +81,14 @@ public class Account {
     @OneToMany(mappedBy ="account")
     private List<Invoice> invoices;
 
-    @ManyToMany
-    @JoinTable(name = "account_discount",
-    		joinColumns = @JoinColumn(name = "email"),
-    		inverseJoinColumns = @JoinColumn(name = "code"))
-    private List<Discount> discountList;
+//    @ManyToMany
+//    @JoinTable(name = "account_discount",
+//    		joinColumns = @JoinColumn(name = "email"),
+//    		inverseJoinColumns = @JoinColumn(name = "code"))
+//    private List<Discount> discountList;
+
+    @OneToMany(mappedBy = "email")
+    private List<AccountDiscount> accountDiscounts;
 
     public Account(String email, String lastName, String firstName, String phoneNum, String address, String city, String country, String postalCode) {
         this.email = email;
@@ -101,6 +104,7 @@ public class Account {
         this.accountType = 'C';
         this.isConfirmed = false;
         this.isSubscript = false;
-        this.discountList = new ArrayList<>();
+//        this.discountList = new ArrayList<>();
+        this.accountDiscounts = new ArrayList<>();
     }
 }

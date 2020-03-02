@@ -60,8 +60,11 @@ public class Discount {
     @ManyToOne
     private Product product;
 
-    @ManyToMany(mappedBy = "discountList")
-    private List<Account> accountList;
+//    @ManyToMany(mappedBy = "discountList")
+//    private List<Account> accountList;
+
+    @OneToMany(mappedBy = "code")
+    private List<AccountDiscount> accountDiscounts;
 
     public Discount(String code, String description, float percent){
         this.code = code;

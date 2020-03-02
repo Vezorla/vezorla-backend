@@ -281,6 +281,7 @@ public class CustomerRestController {
         }
 
         return mapper.writerWithDefaultPrettyPrinter().writeValueAsString(arrayNode);
+//        return null;
     }
 
     /**

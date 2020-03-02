@@ -275,6 +275,7 @@ public class UserServicesImp implements UserServices {
             discounts.add(discount);
         }
         return discounts;
+//        return null;
     }
 
 
