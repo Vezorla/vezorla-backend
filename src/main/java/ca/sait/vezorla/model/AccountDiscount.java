@@ -46,4 +46,5 @@ public class AccountDiscount implements Serializable {
     @ManyToOne
     @JoinColumn(name="discount_code")
     private Discount code;
+
 }

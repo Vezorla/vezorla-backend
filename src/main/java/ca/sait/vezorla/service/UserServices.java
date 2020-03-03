@@ -54,4 +54,6 @@ public interface UserServices {
     public LineItem createLineItemSession(Optional<Product> product, String quantity, HttpServletRequest request);
 
     public boolean saveAccount(Account account);
+
+    public void getSelectedDiscount(String code, HttpServletRequest request, HttpSession session);
 }

@@ -15,6 +15,7 @@ import org.hibernate.annotations.Type;
 import javax.persistence.*;
 import javax.validation.constraints.Min;
 
+import java.io.Serializable;
 import java.math.BigDecimal;
 import java.util.ArrayList;
 import java.util.Date;
@@ -25,7 +26,7 @@ import java.util.List;
 @Entity
 @Data
 @Table(name = "discount")
-public class Discount {
+public class Discount implements Serializable {
 
     @Id
     private String code;

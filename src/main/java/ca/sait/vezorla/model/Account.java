@@ -15,6 +15,7 @@ import org.hibernate.annotations.Type;
 import javax.persistence.*;
 import javax.validation.constraints.Pattern;
 
+import java.io.Serializable;
 import java.util.ArrayList;
 import java.util.List;
 
@@ -23,7 +24,7 @@ import java.util.List;
 @Entity
 @Data
 @Table(name = "account")
-public class Account {
+public class Account implements Serializable {
 
     @Id
     private String email;

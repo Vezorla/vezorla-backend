@@ -3,6 +3,7 @@ package ca.sait.vezorla.controller;
 import ca.sait.vezorla.model.*;
 import ca.sait.vezorla.repository.AccountRepo;
 import ca.sait.vezorla.repository.CartRepo;
+import ca.sait.vezorla.repository.DiscountRepo;
 import ca.sait.vezorla.service.UserServices;
 import com.fasterxml.jackson.core.JsonProcessingException;
 import com.fasterxml.jackson.databind.ObjectMapper;
@@ -12,12 +13,14 @@ import org.json.simple.JSONObject;
 import org.json.simple.parser.JSONParser;
 import org.json.simple.parser.ParseException;
 import org.springframework.http.HttpEntity;
+import org.springframework.http.HttpRequest;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpSession;
+import java.math.BigDecimal;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Optional;
@@ -37,24 +40,26 @@ public class CustomerRestController {
     private UserServices userServices;
     private CartRepo cartRepo;
     private AccountRepo accountRepo;
+    private DiscountRepo discountRepo;
     //    @Autowired
     private ObjectMapper mapper;
 
-    private Account currentAccount;
+//    private Account currentAccount;
 
 
-    public CustomerRestController(UserServices userServices, CartRepo cartRepo, AccountRepo accountRepo, ObjectMapper mapper) {
+    public CustomerRestController(UserServices userServices, CartRepo cartRepo, AccountRepo accountRepo, DiscountRepo discountRepo, ObjectMapper mapper) {
         this.userServices = userServices;
         this.cartRepo = cartRepo;
         this.accountRepo = accountRepo;
+        this.discountRepo = discountRepo;
         this.mapper = mapper;
     }
 
     /**
      * Get all products
      *
-     * @author kwistech
      * @return List of all products
+     * @author kwistech
      */
     @GetMapping("inventory/products/all")
     public List<Product> getAllProducts() {
@@ -64,9 +69,9 @@ public class CustomerRestController {
     /**
      * Return the product from Products repo
      *
-     * @author matthewjflee, jjrr1717
      * @param id
      * @return
+     * @author matthewjflee, jjrr1717
      */
     @GetMapping("inventory/product/{id}")
     public ResponseEntity<Product> getProductPage(@PathVariable Long id) {
@@ -78,9 +83,9 @@ public class CustomerRestController {
     /**
      * Get the total number of products in the cart for a customer
      *
-     * @author matthewjflee, jjrr1717
      * @param session
      * @return
+     * @author matthewjflee, jjrr1717
      */
     @RequestMapping(value = "cart/get", method = RequestMethod.GET,
             produces = {"application/json"})
@@ -92,9 +97,9 @@ public class CustomerRestController {
     /**
      * Return the quantity for the specified product
      *
-     * @author jjrr1717, matthewjflee
      * @param id
      * @return
+     * @author jjrr1717, matthewjflee
      */
     @RequestMapping(value = "inventory/product/quantity/{id}", method = RequestMethod.GET, produces = {"application/json"})
     public int getProductQuantity(@PathVariable Long id) {
@@ -104,11 +109,11 @@ public class CustomerRestController {
     /**
      * Create a line item in the cart for a customer
      *
-     * @author matthewjflee, jjrr1717
      * @param id
      * @param quantity
      * @param request
      * @return
+     * @author matthewjflee, jjrr1717
      */
     @RequestMapping(value = "cart/add/{id}", method = RequestMethod.PUT, produces = {"application/json"})
     public boolean createLineItemSession(@PathVariable Long id, @RequestBody String quantity, HttpServletRequest request) {
@@ -135,10 +140,10 @@ public class CustomerRestController {
     /**
      * View cart for a customer
      *
-     * @author matthewjflee, jjrr1717
      * @param session
      * @return
      * @throws JsonProcessingException
+     * @author matthewjflee, jjrr1717
      */
     @GetMapping("cart/view")
     public String viewSessionCart(HttpSession session) throws JsonProcessingException {
@@ -164,12 +169,12 @@ public class CustomerRestController {
     /**
      * Update a line item in the cart for a customer
      *
-     * @author matthewjflee, jjrr1717
      * @param id
      * @param quantity
      * @param request
      * @return
      * @throws JsonProcessingException
+     * @author matthewjflee, jjrr1717
      */
     @PutMapping("cart/update/{id}/{quantity}")
     public boolean updateLineItemSession(@PathVariable Long id, @PathVariable int quantity, HttpServletRequest request) throws JsonProcessingException {
@@ -186,11 +191,11 @@ public class CustomerRestController {
     /**
      * Remove a line item for a customer
      *
-     * @author matthewjflee, jjrr1717
      * @param id
      * @param request
      * @return
      * @throws JsonProcessingException
+     * @author matthewjflee, jjrr1717
      */
     @PutMapping("cart/remove/{id}")
     public boolean removeLineItemSession(@PathVariable Long id, HttpServletRequest request) throws JsonProcessingException {
@@ -207,12 +212,13 @@ public class CustomerRestController {
     /**
      * Obtain customer's shipping information from front end
      *
-     * @author matthewjflee, jjrr1717
      * @param httpEntity
+     * @author matthewjflee, jjrr1717
      */
     @RequestMapping(value = "/cart/checkout/shipping", method = RequestMethod.POST, consumes = {"application/json"}, produces = {"application/json"})
     @ResponseBody
-    public boolean getShippingInfo(HttpEntity<String> httpEntity) {
+    public boolean getShippingInfo(HttpEntity<String> httpEntity, HttpServletRequest request) {
+        HttpSession session = request.getSession();
         boolean created = false;
         String json = httpEntity.getBody();
         try {
@@ -227,13 +233,14 @@ public class CustomerRestController {
             String country = (String) jo.get("country");
             String postalCode = (String) jo.get("postalCode");
 
-//            Account newAccount = new Account(email, lastName, firstName, phoneNumber, address, city, country, postalCode);
-            currentAccount = new Account(email, lastName, firstName, phoneNumber, address, city, country, postalCode);
+            Account newAccount = new Account(email, lastName, firstName, phoneNumber, address, city, country, postalCode);
+//            currentAccount = new Account(email, lastName, firstName, phoneNumber, address, city, country, postalCode);
 
-            created = userServices.saveAccount(currentAccount);
-//            if(created)
-//                getValidDiscounts(newAccount);
-        } catch (ParseException e) {}
+            session.setAttribute("ACCOUNT", newAccount);
+            created = true;
+//            created = userServices.saveAccount(currentAccount);
+        } catch (ParseException e) {
+        }
 
         return created;
     }
@@ -263,11 +270,14 @@ public class CustomerRestController {
      * Return all valid discounts associated with the customer/client
      * This method will query the database for all valid discounts for the account
      *
-     * @author matthewjflee, jjrr1717
      * @return
+     * @author matthewjflee, jjrr1717
      */
     @GetMapping("discounts/get")
-    public String getValidDiscounts() throws JsonProcessingException {
+    public String getValidDiscounts(HttpServletRequest request) throws JsonProcessingException {
+        HttpSession session = request.getSession();
+        Account currentAccount = (Account) session.getAttribute("ACCOUNT");
+
         ArrayList<Discount> discounts = (ArrayList<Discount>) userServices.getValidDiscounts(currentAccount.getEmail());
         ArrayNode arrayNode = mapper.createArrayNode();
 
@@ -281,20 +291,70 @@ public class CustomerRestController {
         }
 
         return mapper.writerWithDefaultPrettyPrinter().writeValueAsString(arrayNode);
-//        return null;
+//
+    }
+
+    /**
+     * Get the discount code when a user
+     * selects the discount and save it
+     * to the session. Will be persisted
+     * into the database at time of checkout,
+     * rather than here.
+     * @param code discount code the user selected
+     * @param request for the session
+     */
+    @GetMapping("selected_discount/get")
+    public void getSelectedDiscount(@RequestBody String code, HttpServletRequest request){
+        HttpSession session = request.getSession();
+        userServices.getSelectedDiscount(code, request, session);
+    }
+
+    @GetMapping("cart/review")
+    public String reviewOrder(HttpSession session)throws JsonProcessingException{
+
+            Cart cart = (Cart) session.getAttribute("CART");
+            ObjectNode root = mapper.createObjectNode();
+            ArrayNode arrayNode = mapper.createArrayNode();
+            BigDecimal subtotal = new BigDecimal(0);
+            //System.out.println(mapper.writerWithDefaultPrettyPrinter().writeValueAsString(arrayNode));
+
+            for (int i = 0; i < cart.getLineItems().size(); i++) {
+                int quantity = cart.getLineItems().get(i).getQuantity();
+                int price = cart.getLineItems().get(i).getProduct().getPrice();
+                int extendedPrice;
+                int discount;
+                ObjectNode node = mapper.createObjectNode();
+                node.put("name", cart.getLineItems().get(i).getProduct().getName());
+                node.put("quantity", quantity);
+                node.put("price", price);
+                //get over the extended price
+                extendedPrice = quantity * price;
+                node.put("extendedPrice", extendedPrice);
+                //get subtotal
+                //todo subtotal
+
+
+                //get discount
+                AccountDiscount discountType = (AccountDiscount) session.getAttribute("ACCOUNT_DISCOUNT");
+                float discountPercent = Float.parseFloat(discountRepo.findDiscountPercent(discountType.getCode().getCode()));
+
+                arrayNode.add(node);
+            }
+
+            return mapper.writerWithDefaultPrettyPrinter().writeValueAsString(arrayNode);
+
     }
 
     /**
      * Apply discount to the cart
      *
-     * @author matthewjflee, jjrr1717
-     * @param discount
      * @return
+     * @author matthewjflee, jjrr1717
      */
     @GetMapping("discounts/apply")
-    public boolean applyDiscount(Discount discount) {
-//        userServices.getValidDiscounts();
-        return false; //todo
+    public boolean applyDiscount() {
+
+        return false;
     }
 
     @GetMapping("account/forgotpassword/{email}")

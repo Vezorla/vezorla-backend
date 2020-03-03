@@ -278,6 +278,35 @@ public class UserServicesImp implements UserServices {
 //        return null;
     }
 
+    /**
+     * Method to get the selected discount from the user.
+     * Creates an AccountDiscount with the account in
+     * the session and the discount code provided by the
+     * front-end body.
+     * @param code
+     * @param request
+     * @param session
+     */
+    public void getSelectedDiscount(String code, HttpServletRequest request, HttpSession session){
+        session = request.getSession();
+
+        //get user email from session
+        Account account = (Account) session.getAttribute("ACCOUNT");
+        String discountCode = code.replaceAll("\"", "");
+        //create discount object
+        Discount discount = new Discount();
+        discount.setCode(discountCode);
+        //create a AccountDiscount object
+        AccountDiscount holdDiscount = new AccountDiscount(account, discount);
+
+        //store account_discount into session
+        session.setAttribute("ACCOUNT_DISCOUNT", holdDiscount);
+
+        System.out.println(holdDiscount.getCode().getCode());
+        System.out.println(holdDiscount.getEmail().getEmail());
+
+    }
+
 
     public List<Lot> obtainSufficientQtyLots() {
         return null;

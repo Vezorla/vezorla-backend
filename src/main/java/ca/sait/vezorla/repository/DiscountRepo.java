@@ -19,14 +19,24 @@ public interface DiscountRepo extends JpaRepository<Discount, String> {
 
     /**
      * Find all valid discounts for the specified date
-     *
+     * <p>
      * Use HQL custom query to find the valid discounts in the accounts_discount bridging table
-     * @author jjrr1717, matthewjflee
+     *
      * @param date date to find
      * @return List of discounts
+     * @author jjrr1717, matthewjflee
      */
     @Query("SELECT d.code, d.description, d.percent FROM Discount d " +
             "WHERE :date BETWEEN  d.startDate AND d.endDate " +
             "AND :email NOT IN (SELECT ad.email FROM AccountDiscount ad)")
     List<String> findValidDiscounts(@Param("date") Date date, @Param("email") String email);
+
+    /**
+     * Find the discount value by code
+     * @param code
+     * @return
+     */
+    @Query("SELECT d.code FROM Discount d " +
+           "WHERE d.code = :code")
+    String findDiscountPercent(@Param("code") String code);
 }
