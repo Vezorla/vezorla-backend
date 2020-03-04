@@ -7,6 +7,7 @@
  */
 package ca.sait.vezorla.model;
 
+import com.fasterxml.jackson.annotation.JsonIgnore;
 import lombok.AllArgsConstructor;
 import lombok.Data;
 import lombok.NoArgsConstructor;
@@ -80,7 +81,8 @@ public class Account {
     @Column(name = "invoice")
     @OneToMany(mappedBy ="account")
     private List<Invoice> invoices;
-    
+
+    @JsonIgnore
     @ManyToMany
     @JoinTable(name = "account_discount",
     		joinColumns = @JoinColumn(name = "email"),
