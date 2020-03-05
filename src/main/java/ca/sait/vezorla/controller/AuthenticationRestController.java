@@ -12,6 +12,7 @@ import org.json.simple.parser.ParseException;
 import org.springframework.http.HttpEntity;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.GetMapping;
+import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RestController;
 
@@ -34,15 +35,14 @@ public class AuthenticationRestController {
      * @author matthewjflee
      */
     @GetMapping("auth")
-    public ResponseEntity<String> login(HttpEntity<String> httpEntity, HttpServletRequest request) throws JsonProcessingException {
-        String json = httpEntity.getBody();
+    public ResponseEntity<String> login(@RequestBody String body, HttpServletRequest request) throws JsonProcessingException {
         HttpSession session = request.getSession();
         String email = null;
         String password = null;
 
         //Grab email and password from HTTP body
         try {
-            Object obj = new JSONParser().parse(json);
+            Object obj = new JSONParser().parse(body);
             JSONObject jo = (JSONObject) obj;
             email = (String) jo.get("email");
             password = (String) jo.get("password");
