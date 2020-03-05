@@ -360,9 +360,9 @@ public class CustomerRestController {
         AccountDiscount discountType = (AccountDiscount) session.getAttribute("ACCOUNT_DISCOUNT");
         if(discountType != null) {
             float discountPercent = Float.parseFloat(discountRepo.findDiscountPercent(discountType.getCode().getCode()));
-            long discountDecimal = (long) discountPercent / 100;
-
-            discountAmount = subtotal * discountDecimal;
+            float discountDecimal = discountPercent / 100;
+            System.out.println(discountDecimal);
+            discountAmount = (long) (subtotal * discountDecimal);
         }
         else{
             discountAmount = 0;
