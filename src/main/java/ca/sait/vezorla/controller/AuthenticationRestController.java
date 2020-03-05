@@ -2,48 +2,77 @@ package ca.sait.vezorla.controller;
 
 import ca.sait.vezorla.model.Account;
 import ca.sait.vezorla.service.AuthenticationServices;
-import org.springframework.stereotype.Controller;
+import com.fasterxml.jackson.core.JsonProcessingException;
+import com.fasterxml.jackson.databind.ObjectMapper;
+import com.fasterxml.jackson.databind.node.ObjectNode;
+import lombok.AllArgsConstructor;
+import org.json.simple.JSONObject;
+import org.json.simple.parser.JSONParser;
+import org.json.simple.parser.ParseException;
+import org.springframework.http.HttpEntity;
+import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RestController;
 
+import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpSession;
 import java.util.Optional;
 
+@AllArgsConstructor
 @RestController
 @RequestMapping(AuthenticationRestController.URL)
 public class AuthenticationRestController {
 
-    protected static final String URL = "/client/";
+    protected static final String URL = "/api/login/";
     private AuthenticationServices authServices;
 
     /**
      * Find an account with that email and password
      *
-     * @author matthewjflee
-     * @param email
-     * @param password
      * @return
+     * @author matthewjflee
      */
-    public Optional<Account> login(String email, String password, HttpSession session) {
-        Optional<Account> account = accountRepo.findByEmailAndPassword(email, password);
-//        System.out.println("acc " + account.get().getEmail());
-//        if(account.isPresent()) {
-//            session.setAttribute("ACCOUNT", account);
-        if(account.getEmail() != null) {
-            session.setAttribute("ACCOUNT", account);
-        } else
+    @GetMapping("auth")
+    public ResponseEntity<String> login(HttpEntity<String> httpEntity, HttpServletRequest request) throws JsonProcessingException {
+        String json = httpEntity.getBody();
+        HttpSession session = request.getSession();
+        String email = null;
+        String password = null;
 
-//        }
-//        else
-            throw new AccountNotFoundException();
+        //Grab email and password from HTTP body
+        try {
+            Object obj = new JSONParser().parse(json);
+            JSONObject jo = (JSONObject) obj;
+            email = (String) jo.get("email");
+            password = (String) jo.get("password");
+        } catch (ParseException e) {
+        }
 
-        return account;
+        //Find account in DB
+        Optional<Account> account = authServices.login(email, password, session);
+
+        //Create custom JSON for return
+        ObjectMapper mapper = new ObjectMapper();
+        ObjectNode node = mapper.createObjectNode();
+        node.put("email", account.get().getEmail());
+        node.put("admin", account.get().isAccountAdmin());
+        String output = mapper.writerWithDefaultPrettyPrinter().writeValueAsString(node);
+
+        return ResponseEntity.ok().body(output);
     }
 
-    @GetMapping("login")
-    public String getLoginPage() {
-        return null;
+    /**
+     * Method to check if the account has been persisted in the session properly
+     * Testing purposes
+     *
+     * @author: matthewjflee
+     * @param session
+     */
+    @GetMapping("check")
+    public void getLoginPage(HttpSession session) {
+        Account account = (Account) session.getAttribute("ACCOUNT");
+        System.out.println(account.getEmail());
     }
 
     @GetMapping("logout")
