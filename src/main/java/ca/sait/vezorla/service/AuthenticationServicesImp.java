@@ -1,5 +1,6 @@
 package ca.sait.vezorla.service;
 
+import ca.sait.vezorla.exception.AccountNotFoundException;
 import ca.sait.vezorla.model.Account;
 import ca.sait.vezorla.repository.AccountRepo;
 import lombok.AllArgsConstructor;

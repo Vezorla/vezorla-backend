@@ -1,7 +1,13 @@
 package ca.sait.vezorla.controller;
 
+import ca.sait.vezorla.exception.AccountNotFoundException;
 import ca.sait.vezorla.model.Account;
+import ca.sait.vezorla.repository.AccountRepo;
 import ca.sait.vezorla.service.AuthenticationServicesImp;
+import com.fasterxml.jackson.core.JsonProcessingException;
+import com.fasterxml.jackson.databind.ObjectMapper;
+import com.fasterxml.jackson.databind.node.ArrayNode;
+import com.fasterxml.jackson.databind.node.ObjectNode;
 import lombok.AllArgsConstructor;
 import org.json.simple.JSONObject;
 import org.json.simple.parser.JSONParser;
@@ -27,7 +33,6 @@ import java.util.Optional;
 public class AuthenticationRestController {
 
     protected static final String URL = "/api/login/";
-
     private AuthenticationServicesImp authServices;
 
     /**
@@ -39,7 +44,7 @@ public class AuthenticationRestController {
      * @author matthewjflee
      */
     @GetMapping("auth")
-    public ResponseEntity<Account> login(HttpEntity<String> httpEntity) {
+    public ResponseEntity<String> login(HttpEntity<String> httpEntity) throws JsonProcessingException {
         String json = httpEntity.getBody();
         String email = null;
         String password = null;
@@ -52,10 +57,19 @@ public class AuthenticationRestController {
         } catch (ParseException e) {
         }
 
-
         Optional<Account> account = authServices.login(email, password);
-        return account.map(response -> ResponseEntity.ok().body(response)).orElse(new ResponseEntity<>(HttpStatus.UNAUTHORIZED));
+        ObjectMapper mapper = new ObjectMapper();
+        ObjectNode node = mapper.createObjectNode();
+        if(account.isPresent()) {
+            node.put("email", account.get().getEmail());
+            node.put("admin", account.get().isAccountAdmin());
+        } else
+            throw new AccountNotFoundException();
 
+        System.out.println(mapper.writerWithDefaultPrettyPrinter().writeValueAsString(node));
+        String output = mapper.writerWithDefaultPrettyPrinter().writeValueAsString(node);
+
+        return ResponseEntity.ok().body(output);
     }
 
     @GetMapping("logout")
