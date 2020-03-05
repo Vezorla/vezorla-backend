@@ -4,6 +4,10 @@ import ca.sait.vezorla.model.*;
 import ca.sait.vezorla.repository.AccountRepo;
 import ca.sait.vezorla.repository.DiscountRepo;
 import ca.sait.vezorla.repository.ProductRepo;
+import com.fasterxml.jackson.core.JsonProcessingException;
+import com.fasterxml.jackson.databind.ObjectMapper;
+import com.fasterxml.jackson.databind.node.ArrayNode;
+import com.fasterxml.jackson.databind.node.ObjectNode;
 import org.springframework.stereotype.Service;
 
 import javax.servlet.http.HttpServletRequest;
@@ -24,11 +28,13 @@ public class UserServicesImp implements UserServices {
     private ProductRepo productRepo;
     private AccountRepo accountRepo;
     private DiscountRepo discountRepo;
+    private ObjectMapper mapper;
 
-    public UserServicesImp(ProductRepo productRepo, AccountRepo accountRepo, DiscountRepo discountRepo) {
+    public UserServicesImp(ProductRepo productRepo, AccountRepo accountRepo, DiscountRepo discountRepo, ObjectMapper mapper) {
         this.productRepo = productRepo;
         this.accountRepo = accountRepo;
         this.discountRepo = discountRepo;
+        this.mapper = mapper;
     }
 
     public void applyDiscount(Discount discount) {
@@ -220,6 +226,7 @@ public class UserServicesImp implements UserServices {
      * @return
      */
     public List<Product> getAllProducts() {
+
         return new ArrayList<>(productRepo.findAll());
     }
 
@@ -239,6 +246,7 @@ public class UserServicesImp implements UserServices {
      * @return
      */
     public Optional<Product> getProduct(Long id) { //It wanted Optionals
+
         return productRepo.findById(id);
     }
 
@@ -306,6 +314,50 @@ public class UserServicesImp implements UserServices {
         System.out.println(holdDiscount.getEmail().getEmail());
 
     }
+
+    public ArrayNode viewSessionCart(HttpSession session) throws JsonProcessingException {
+        Cart cart = (Cart) session.getAttribute("CART");
+//        ObjectNode root = mapper.createObjectNode();
+        ObjectNode root = mapper.createObjectNode();
+        ArrayNode arrayNode = mapper.createArrayNode();
+        System.out.println(mapper.writerWithDefaultPrettyPrinter().writeValueAsString(arrayNode));
+
+        for (int i = 0; i < cart.getLineItems().size(); i++) {
+            ObjectNode node = mapper.createObjectNode();
+            node.put("prodID", cart.getLineItems().get(i).getProduct().getProdId());
+            node.put("name", cart.getLineItems().get(i).getProduct().getName());
+            node.put("price", cart.getLineItems().get(i).getProduct().getPrice());
+            node.put("imageMain", cart.getLineItems().get(i).getProduct().getImageMain());
+            node.put("quantity", cart.getLineItems().get(i).getQuantity());
+            arrayNode.add(node);
+        }
+
+        return arrayNode;
+    }
+
+    /**
+     * Method to format money values into
+     * Strings to display in front end.
+     * @param amount the money value in cents
+     * @return money value formatted as xx.xx.
+     */
+    public String formatAmount(long amount){
+        long cents = amount % 100;
+        long dollars = (amount - cents) / 100;
+
+        String amountAsString;
+        if(cents <= 9){
+            amountAsString = 0 + "" +  cents;
+        }
+        else{
+            amountAsString = "" + cents;
+        }
+
+        return dollars + "." + cents;
+
+    }
+
+
 
 
     public List<Lot> obtainSufficientQtyLots() {

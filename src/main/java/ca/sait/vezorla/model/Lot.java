@@ -39,7 +39,7 @@ public class Lot {
 	
 	@NotNull
 	@Column(name = "cost")
-	private Currency cost;
+	private long cost;
 	
 
 	@Column(name = "best_before")

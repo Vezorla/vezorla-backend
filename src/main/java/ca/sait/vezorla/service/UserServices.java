@@ -1,6 +1,8 @@
 package ca.sait.vezorla.service;
 
 import ca.sait.vezorla.model.*;
+import com.fasterxml.jackson.core.JsonProcessingException;
+import com.fasterxml.jackson.databind.node.ArrayNode;
 
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpSession;
@@ -56,4 +58,8 @@ public interface UserServices {
     public boolean saveAccount(Account account);
 
     public void getSelectedDiscount(String code, HttpServletRequest request, HttpSession session);
+
+    public String formatAmount(long amount);
+
+    public ArrayNode viewSessionCart(HttpSession session) throws JsonProcessingException;
 }

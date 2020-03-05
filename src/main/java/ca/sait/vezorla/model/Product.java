@@ -70,15 +70,16 @@ public class Product implements Serializable {
 	
 	@NotNull
 	@Column(name = "price")
-	private BigDecimal price;
+	private long price;
 
 	@Column(name = "old_price")
-	private BigDecimal oldPrice;
+	private long oldPrice;
 
 	@JsonIgnore
 	@OneToMany (mappedBy = "product")
 	private List<Lot> lotList;
 
+	@JsonIgnore
 	@OneToMany(mappedBy = "product")
 	private List<Discount> discounts;
 

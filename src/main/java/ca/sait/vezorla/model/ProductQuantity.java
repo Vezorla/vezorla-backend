@@ -17,13 +17,13 @@ public class ProductQuantity {
 	private Product product;
 	
 	@Min(0)
-	private int quantity;
+	private long quantity;
 	
 	@Min(0)
-	private BigDecimal cost;
+	private long cost;
 	
 	@Min(0)
-	private BigDecimal price;
+	private long price;
 	
 	private Inventory inventory;
 	

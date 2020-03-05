@@ -52,7 +52,7 @@ public class Invoice {
 
 	@NotNull
 	@Column(name = "shipping_cost")
-	private BigDecimal shippingCost;
+	private long shippingCost;
 
 	@NotNull
 	@Column(name = "state")

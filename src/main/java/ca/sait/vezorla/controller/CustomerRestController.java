@@ -21,6 +21,8 @@ import org.springframework.web.bind.annotation.*;
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpSession;
 import java.math.BigDecimal;
+import java.math.MathContext;
+import java.math.RoundingMode;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Optional;
@@ -147,22 +149,7 @@ public class CustomerRestController {
      */
     @GetMapping("cart/view")
     public String viewSessionCart(HttpSession session) throws JsonProcessingException {
-        Cart cart = (Cart) session.getAttribute("CART");
-//        ObjectNode root = mapper.createObjectNode();
-        ObjectNode root = mapper.createObjectNode();
-        ArrayNode arrayNode = mapper.createArrayNode();
-        System.out.println(mapper.writerWithDefaultPrettyPrinter().writeValueAsString(arrayNode));
-
-        for (int i = 0; i < cart.getLineItems().size(); i++) {
-            ObjectNode node = mapper.createObjectNode();
-            node.put("prodID", cart.getLineItems().get(i).getProduct().getProdId());
-            node.put("name", cart.getLineItems().get(i).getProduct().getName());
-            node.put("price", cart.getLineItems().get(i).getProduct().getPrice());
-            node.put("imageMain", cart.getLineItems().get(i).getProduct().getImageMain());
-            node.put("quantity", cart.getLineItems().get(i).getQuantity());
-            arrayNode.add(node);
-        }
-
+        ArrayNode arrayNode = userServices.viewSessionCart(session);
         return mapper.writerWithDefaultPrettyPrinter().writeValueAsString(arrayNode);
     }
 
@@ -309,39 +296,78 @@ public class CustomerRestController {
         userServices.getSelectedDiscount(code, request, session);
     }
 
+    /**
+     * Show details of order on the
+     * review page
+     * @param session
+     * @return
+     * @throws JsonProcessingException
+     */
     @GetMapping("cart/review")
     public String reviewOrder(HttpSession session)throws JsonProcessingException{
 
-            Cart cart = (Cart) session.getAttribute("CART");
-            ObjectNode root = mapper.createObjectNode();
-            ArrayNode arrayNode = mapper.createArrayNode();
-            BigDecimal subtotal = new BigDecimal(0);
-            //System.out.println(mapper.writerWithDefaultPrettyPrinter().writeValueAsString(arrayNode));
+        Cart cart = (Cart) session.getAttribute("CART");
+        ObjectNode root = mapper.createObjectNode();
+        ObjectNode nodeItem = mapper.createObjectNode();
+        ObjectNode node = mapper.createObjectNode();
+        ArrayNode itemsArrayNode = mapper.createArrayNode();
+        ArrayNode mainArrayNode = mapper.createArrayNode();
+        long subtotal = 0;
+        final float TAX_RATE = 0.05f;
+        final long SHIPPING_RATE = 1000;
 
-            for (int i = 0; i < cart.getLineItems().size(); i++) {
-                int quantity = cart.getLineItems().get(i).getQuantity();
-                int price = cart.getLineItems().get(i).getProduct().getPrice();
-                int extendedPrice;
-                int discount;
-                ObjectNode node = mapper.createObjectNode();
-                node.put("name", cart.getLineItems().get(i).getProduct().getName());
-                node.put("quantity", quantity);
-                node.put("price", price);
-                //get over the extended price
-                extendedPrice = quantity * price;
-                node.put("extendedPrice", extendedPrice);
-                //get subtotal
-                //todo subtotal
+        for (int i = 0; i < cart.getLineItems().size(); i++) {
+            int quantity = cart.getLineItems().get(i).getQuantity();
+            long price = cart.getLineItems().get(i).getProduct().getPrice();
 
+            nodeItem.put("name", cart.getLineItems().get(i).getProduct().getName());
+            nodeItem.put("quantity", quantity);
+            nodeItem.put("price", userServices.formatAmount(price));
+            //get over the extended price
+            long extendedPrice = price * quantity;
 
-                //get discount
-                AccountDiscount discountType = (AccountDiscount) session.getAttribute("ACCOUNT_DISCOUNT");
-                float discountPercent = Float.parseFloat(discountRepo.findDiscountPercent(discountType.getCode().getCode()));
+            nodeItem.put("extendedPrice", userServices.formatAmount(extendedPrice));
+            //get subtotal
+            subtotal += extendedPrice;
 
-                arrayNode.add(node);
-            }
+            itemsArrayNode.add(nodeItem);
+        }
 
-            return mapper.writerWithDefaultPrettyPrinter().writeValueAsString(arrayNode);
+        node.put("subtotal", userServices.formatAmount(subtotal));
+
+        //get discount
+        long discountAmount;
+        AccountDiscount discountType = (AccountDiscount) session.getAttribute("ACCOUNT_DISCOUNT");
+        if(discountType != null) {
+            float discountPercent = Float.parseFloat(discountRepo.findDiscountPercent(discountType.getCode().getCode()));
+            long discountDecimal = (long) discountPercent / 100;
+
+            discountAmount = subtotal * discountDecimal;
+        }
+        else{
+            discountAmount = 0;
+        }
+        node.put("discount", userServices.formatAmount(discountAmount));
+
+        //discounted subtotal
+        long discountedSubtotal = subtotal - discountAmount;
+        node.put("discounted_subtotal", userServices.formatAmount(discountedSubtotal));
+
+        //calculate Taxes
+        long taxes = (long) (discountedSubtotal * TAX_RATE);
+        node.put("taxes", userServices.formatAmount(taxes));
+
+        //flat shipping rate
+        node.put("shipping", userServices.formatAmount(SHIPPING_RATE));
+
+        //calculate total
+        long total = discountedSubtotal + taxes + SHIPPING_RATE;
+        node.put("Total", userServices.formatAmount(total));
+
+        mainArrayNode.add(itemsArrayNode);
+        mainArrayNode.add(node);
+
+        return mapper.writerWithDefaultPrettyPrinter().writeValueAsString(mainArrayNode);
 
     }
 

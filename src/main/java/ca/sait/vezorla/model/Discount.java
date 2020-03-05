@@ -52,7 +52,7 @@ public class Discount implements Serializable {
     private Date endDate;
 
     @Column(name = "minimum_order_value")
-    private BigDecimal minimumOrderValue;
+    private long minimumOrderValue;
 
     @Column(name = "active", columnDefinition = "BIT")
     @Type(type = "org.hibernate.type.NumericBooleanType")
