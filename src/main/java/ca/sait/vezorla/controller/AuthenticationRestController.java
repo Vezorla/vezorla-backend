@@ -38,6 +38,7 @@ public class AuthenticationRestController {
     /**
      * Login
      * Send a JSON of email and password
+     * Returning
      *
      * @param httpEntity
      * @return
@@ -65,8 +66,6 @@ public class AuthenticationRestController {
             node.put("admin", account.get().isAccountAdmin());
         } else
             throw new AccountNotFoundException();
-
-        System.out.println(mapper.writerWithDefaultPrettyPrinter().writeValueAsString(node));
         String output = mapper.writerWithDefaultPrettyPrinter().writeValueAsString(node);
 
         return ResponseEntity.ok().body(output);
