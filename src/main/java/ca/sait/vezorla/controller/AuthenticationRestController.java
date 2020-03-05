@@ -70,7 +70,7 @@ public class AuthenticationRestController {
      * @param session
      */
     @GetMapping("check")
-    public void getLoginPage(HttpSession session) {
+    public void check(HttpSession session) {
         Account account = (Account) session.getAttribute("ACCOUNT");
         System.out.println(account.getEmail());
     }
