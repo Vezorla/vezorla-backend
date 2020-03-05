@@ -335,31 +335,6 @@ public class UserServicesImp implements UserServices {
         return arrayNode;
     }
 
-    /**
-     * Method to format money values into
-     * Strings to display in front end.
-     * @param amount the money value in cents
-     * @return money value formatted as xx.xx.
-     */
-    public String formatAmount(long amount){
-        long cents = amount % 100;
-        long dollars = (amount - cents) / 100;
-
-        String amountAsString;
-        if(cents <= 9){
-            amountAsString = 0 + "" +  cents;
-        }
-        else{
-            amountAsString = "" + cents;
-        }
-
-        return dollars + "." + cents;
-
-    }
-
-
-
-
     public List<Lot> obtainSufficientQtyLots() {
         return null;
     }

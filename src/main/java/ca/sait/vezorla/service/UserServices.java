@@ -59,7 +59,5 @@ public interface UserServices {
 
     public void getSelectedDiscount(String code, HttpServletRequest request, HttpSession session);
 
-    public String formatAmount(long amount);
-
     public ArrayNode viewSessionCart(HttpSession session) throws JsonProcessingException;
 }

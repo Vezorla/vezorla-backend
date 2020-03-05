@@ -1,5 +1,7 @@
 package ca.sait.vezorla.controller;
 
+import ca.sait.vezorla.controller.util.CustomerClientUtil;
+import ca.sait.vezorla.exception.InvalidInputException;
 import ca.sait.vezorla.model.*;
 import ca.sait.vezorla.repository.AccountRepo;
 import ca.sait.vezorla.repository.CartRepo;
@@ -43,18 +45,21 @@ public class CustomerRestController {
     private CartRepo cartRepo;
     private AccountRepo accountRepo;
     private DiscountRepo discountRepo;
-    //    @Autowired
     private ObjectMapper mapper;
+    CustomerClientUtil customerClientUtil;
 
-//    private Account currentAccount;
 
-
-    public CustomerRestController(UserServices userServices, CartRepo cartRepo, AccountRepo accountRepo, DiscountRepo discountRepo, ObjectMapper mapper) {
+    public CustomerRestController(UserServices userServices,
+                                  CartRepo cartRepo,
+                                  AccountRepo accountRepo,
+                                  DiscountRepo discountRepo,
+                                  ObjectMapper mapper) {
         this.userServices = userServices;
         this.cartRepo = cartRepo;
         this.accountRepo = accountRepo;
         this.discountRepo = discountRepo;
         this.mapper = mapper;
+        this.customerClientUtil = new CustomerClientUtil();
     }
 
     /**
@@ -204,7 +209,7 @@ public class CustomerRestController {
      */
     @RequestMapping(value = "/cart/checkout/shipping", method = RequestMethod.POST, consumes = {"application/json"}, produces = {"application/json"})
     @ResponseBody
-    public boolean getShippingInfo(HttpEntity<String> httpEntity, HttpServletRequest request) {
+    public ResponseEntity<String> getShippingInfo(HttpEntity<String> httpEntity, HttpServletRequest request) throws JsonProcessingException, InvalidInputException {
         HttpSession session = request.getSession();
         boolean created = false;
         String json = httpEntity.getBody();
@@ -215,10 +220,24 @@ public class CustomerRestController {
             String firstName = (String) jo.get("firstName");
             String lastName = (String) jo.get("lastName");
             String phoneNumber = (String) jo.get("phoneNumber");
+            try {
+                customerClientUtil.validatePhoneNumber(phoneNumber);
+            }catch(InvalidInputException e){
+
+            }
             String address = (String) jo.get("address");
             String city = (String) jo.get("city");
             String country = (String) jo.get("country");
             String postalCode = (String) jo.get("postalCode");
+            try{
+                customerClientUtil.validatePostalCode(postalCode);
+            }catch(InvalidInputException e){
+
+            }
+
+            if(email == null || firstName == null || lastName == null){
+                throw new InvalidInputException();
+            }
 
             Account newAccount = new Account(email, lastName, firstName, phoneNumber, address, city, country, postalCode);
 //            currentAccount = new Account(email, lastName, firstName, phoneNumber, address, city, country, postalCode);
@@ -229,7 +248,8 @@ public class CustomerRestController {
         } catch (ParseException e) {
         }
 
-        return created;
+        String output = mapper.writerWithDefaultPrettyPrinter().writeValueAsString(created);
+        return ResponseEntity.ok().body(output);
     }
 
 
@@ -322,18 +342,18 @@ public class CustomerRestController {
 
             nodeItem.put("name", cart.getLineItems().get(i).getProduct().getName());
             nodeItem.put("quantity", quantity);
-            nodeItem.put("price", userServices.formatAmount(price));
+            nodeItem.put("price", customerClientUtil.formatAmount(price));
             //get over the extended price
             long extendedPrice = price * quantity;
 
-            nodeItem.put("extendedPrice", userServices.formatAmount(extendedPrice));
+            nodeItem.put("extendedPrice", customerClientUtil.formatAmount(extendedPrice));
             //get subtotal
             subtotal += extendedPrice;
 
             itemsArrayNode.add(nodeItem);
         }
 
-        node.put("subtotal", userServices.formatAmount(subtotal));
+        node.put("subtotal", customerClientUtil.formatAmount(subtotal));
 
         //get discount
         long discountAmount;
@@ -347,22 +367,22 @@ public class CustomerRestController {
         else{
             discountAmount = 0;
         }
-        node.put("discount", userServices.formatAmount(discountAmount));
+        node.put("discount", customerClientUtil.formatAmount(discountAmount));
 
         //discounted subtotal
         long discountedSubtotal = subtotal - discountAmount;
-        node.put("discounted_subtotal", userServices.formatAmount(discountedSubtotal));
+        node.put("discounted_subtotal", customerClientUtil.formatAmount(discountedSubtotal));
 
         //calculate Taxes
         long taxes = (long) (discountedSubtotal * TAX_RATE);
-        node.put("taxes", userServices.formatAmount(taxes));
+        node.put("taxes", customerClientUtil.formatAmount(taxes));
 
         //flat shipping rate
-        node.put("shipping", userServices.formatAmount(SHIPPING_RATE));
+        node.put("shipping", customerClientUtil.formatAmount(SHIPPING_RATE));
 
         //calculate total
         long total = discountedSubtotal + taxes + SHIPPING_RATE;
-        node.put("Total", userServices.formatAmount(total));
+        node.put("Total", customerClientUtil.formatAmount(total));
 
         mainArrayNode.add(itemsArrayNode);
         mainArrayNode.add(node);
