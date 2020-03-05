@@ -20,6 +20,7 @@ import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RestController;
 
 import javax.servlet.http.HttpServletRequest;
+import javax.servlet.http.HttpSession;
 import java.util.Optional;
 
 /**
@@ -45,8 +46,9 @@ public class AuthenticationRestController {
      * @author matthewjflee
      */
     @GetMapping("auth")
-    public ResponseEntity<String> login(HttpEntity<String> httpEntity) throws JsonProcessingException {
+    public ResponseEntity<String> login(HttpEntity<String> httpEntity, HttpServletRequest request) throws JsonProcessingException {
         String json = httpEntity.getBody();
+        HttpSession session = request.getSession();
         String email = null;
         String password = null;
 
@@ -58,14 +60,19 @@ public class AuthenticationRestController {
         } catch (ParseException e) {
         }
 
-        Optional<Account> account = authServices.login(email, password);
+//        Optional<Account> account = authServices.login(email, password, session);
+        Account account = authServices.login(email, password, session);
         ObjectMapper mapper = new ObjectMapper();
         ObjectNode node = mapper.createObjectNode();
-        if(account.isPresent()) {
-            node.put("email", account.get().getEmail());
-            node.put("admin", account.get().isAccountAdmin());
-        } else
-            throw new AccountNotFoundException();
+//        if(account.isPresent()) {
+//            node.put("email", account.get().getEmail());
+//            node.put("admin", account.get().isAccountAdmin());
+//        } //else
+        if(account.getEmail() != null) {
+            node.put("email", account.getEmail());
+            node.put("admin", account.isAccountAdmin());
+        } //else
+            //throw new AccountNotFoundException();
         String output = mapper.writerWithDefaultPrettyPrinter().writeValueAsString(node);
 
         return ResponseEntity.ok().body(output);

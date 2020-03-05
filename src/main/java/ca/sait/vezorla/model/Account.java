@@ -105,9 +105,4 @@ public class Account {
         this.isSubscript = false;
         this.discountList = new ArrayList<>();
     }
-
-    public Account(String email, boolean accountAdmin) {
-        this.email = email;
-        this.accountAdmin = accountAdmin;
-    }
 }

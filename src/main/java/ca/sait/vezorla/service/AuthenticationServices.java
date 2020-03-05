@@ -2,6 +2,7 @@ package ca.sait.vezorla.service;
 
 import ca.sait.vezorla.model.Account;
 
+import javax.servlet.http.HttpSession;
 import java.util.Optional;
 
 /**
@@ -10,9 +11,10 @@ import java.util.Optional;
  */
 public interface AuthenticationServices {
 
-	public void forgotPassword(String email);
+	void forgotPassword(String email);
 
-	public Optional<Account> login(String email, String password);
+//	Optional<Account> login(String email, String password, HttpSession session);
+	Account login(String email, String password, HttpSession session);
 
-	public void logout();
+	void logout();
 }

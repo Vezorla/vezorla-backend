@@ -6,6 +6,7 @@ import ca.sait.vezorla.repository.AccountRepo;
 import lombok.AllArgsConstructor;
 import org.springframework.stereotype.Service;
 
+import javax.servlet.http.HttpSession;
 import java.util.Optional;
 
 /**
@@ -30,9 +31,22 @@ public class AuthenticationServicesImp implements AuthenticationServices {
      * @param password
      * @return
      */
-    public Optional<Account> login(String email, String password) {
-        Optional<Account> checkAccount = accountRepo.findByEmailAndPassword(email, password);
-        return checkAccount;
+//    public Optional<Account> login(String email, String password, HttpSession session) {
+    public Account login(String email, String password, HttpSession session) {
+//        Optional<Account> account = accountRepo.findByEmailAndPassword(email, password);
+        Account account = accountRepo.findByEmailAndPassword(email, password);
+//        System.out.println("acc " + account.get().getEmail());
+//        if(account.isPresent()) {
+//            session.setAttribute("ACCOUNT", account);
+        if(account.getEmail() != null) {
+            session.setAttribute("ACCOUNT", account);
+        } else
+
+//        }
+//        else
+            throw new AccountNotFoundException();
+
+        return account;
     }
 
     public void logout() {
