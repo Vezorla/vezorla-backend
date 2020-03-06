@@ -25,7 +25,7 @@ import java.util.Optional;
 @RequestMapping(AuthenticationRestController.URL)
 public class AuthenticationRestController {
 
-    protected static final String URL = "/api/login/";
+    protected static final String URL = "/api/auth/";
     private AuthenticationServices authServices;
 
     /**
@@ -34,7 +34,7 @@ public class AuthenticationRestController {
      * @return
      * @author matthewjflee
      */
-    @GetMapping("auth")
+    @GetMapping("login")
     public ResponseEntity<String> login(@RequestBody String body, HttpServletRequest request) throws JsonProcessingException {
         HttpSession session = request.getSession();
         String email = null;
@@ -75,9 +75,26 @@ public class AuthenticationRestController {
         System.out.println(account.getEmail());
     }
 
+    /**
+     * Logout
+     * Grab the session by passing <code>false</code>
+     * This way, it does not create a session if one is not existing
+     *
+     * Will invalidate and check afterwards
+     * @param request Http Request
+     * @return result result if the session was invalidated
+     */
     @GetMapping("logout")
-    public void logout() {
+    public boolean logout(HttpServletRequest request) {
+        boolean result = false;
+        HttpSession session = request.getSession(false);
+        session.invalidate();
+        session = request.getSession(false);
 
+        if(session == null)
+            result = true;
+
+        return result;
     }
 
 }
