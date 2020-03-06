@@ -284,9 +284,10 @@ public class CustomerRestController {
      * @param request for the session
      */
     @GetMapping("selected_discount/get")
-    public void getSelectedDiscount(@RequestBody String code, HttpServletRequest request){
+    public void getSelectedDiscount(@RequestBody String code, HttpServletRequest request) throws UnauthorizedException {
         HttpSession session = request.getSession();
         userServices.getSelectedDiscount(code, request, session);
+        request.getSession().setAttribute("CHECKOUT_FLOW_TOKEN", "2");
     }
 
     /**
@@ -297,68 +298,77 @@ public class CustomerRestController {
      * @throws JsonProcessingException
      */
     @GetMapping("cart/review")
-    public String reviewOrder(HttpSession session)throws JsonProcessingException{
-
-        Cart cart = (Cart) session.getAttribute("CART");
-        ObjectNode root = mapper.createObjectNode();
-        ObjectNode nodeItem = mapper.createObjectNode();
-        ObjectNode node = mapper.createObjectNode();
-        ArrayNode itemsArrayNode = mapper.createArrayNode();
+    public String reviewOrder(HttpSession session) throws JsonProcessingException, UnauthorizedException {
         ArrayNode mainArrayNode = mapper.createArrayNode();
-        long subtotal = 0;
-        final float TAX_RATE = 0.05f;
-        final long SHIPPING_RATE = 1000;
-
-        for (int i = 0; i < cart.getLineItems().size(); i++) {
-            int quantity = cart.getLineItems().get(i).getQuantity();
-            long price = cart.getLineItems().get(i).getProduct().getPrice();
-
-            nodeItem.put("name", cart.getLineItems().get(i).getProduct().getName());
-            nodeItem.put("quantity", quantity);
-            nodeItem.put("price", customerClientUtil.formatAmount(price));
-            //get over the extended price
-            long extendedPrice = price * quantity;
-
-            nodeItem.put("extendedPrice", customerClientUtil.formatAmount(extendedPrice));
-            //get subtotal
-            subtotal += extendedPrice;
-
-            itemsArrayNode.add(nodeItem);
+        if(session.getAttribute("CHECKOUT_FLOW_TOKEN") == null){
+            throw new UnauthorizedException();
         }
-
-        node.put("subtotal", customerClientUtil.formatAmount(subtotal));
-
-        //get discount
-        long discountAmount;
-        AccountDiscount discountType = (AccountDiscount) session.getAttribute("ACCOUNT_DISCOUNT");
-        if(discountType != null) {
-            float discountPercent = Float.parseFloat(discountRepo.findDiscountPercent(discountType.getCode().getCode()));
-            float discountDecimal = discountPercent / 100;
-
-            discountAmount = (long)(subtotal * discountDecimal);
+        else if(!session.getAttribute("CHECKOUT_FLOW_TOKEN").equals("2")){
+            throw new UnauthorizedException();
         }
-        else{
-            discountAmount = 0;
+        else {
+
+            Cart cart = (Cart) session.getAttribute("CART");
+            ObjectNode root = mapper.createObjectNode();
+            ObjectNode nodeItem = mapper.createObjectNode();
+            ObjectNode node = mapper.createObjectNode();
+            ArrayNode itemsArrayNode = mapper.createArrayNode();
+
+
+            long subtotal = 0;
+            final float TAX_RATE = 0.05f;
+            final long SHIPPING_RATE = 1000;
+
+            for (int i = 0; i < cart.getLineItems().size(); i++) {
+                int quantity = cart.getLineItems().get(i).getQuantity();
+                long price = cart.getLineItems().get(i).getProduct().getPrice();
+
+                nodeItem.put("name", cart.getLineItems().get(i).getProduct().getName());
+                nodeItem.put("quantity", quantity);
+                nodeItem.put("price", customerClientUtil.formatAmount(price));
+                //get over the extended price
+                long extendedPrice = price * quantity;
+
+                nodeItem.put("extendedPrice", customerClientUtil.formatAmount(extendedPrice));
+                //get subtotal
+                subtotal += extendedPrice;
+
+                itemsArrayNode.add(nodeItem);
+            }
+
+            node.put("subtotal", customerClientUtil.formatAmount(subtotal));
+
+            //get discount
+            long discountAmount;
+            AccountDiscount discountType = (AccountDiscount) session.getAttribute("ACCOUNT_DISCOUNT");
+            if (discountType != null) {
+                float discountPercent = Float.parseFloat(discountRepo.findDiscountPercent(discountType.getCode().getCode()));
+                float discountDecimal = discountPercent / 100;
+
+                discountAmount = (long) (subtotal * discountDecimal);
+            } else {
+                discountAmount = 0;
+            }
+            node.put("discount", customerClientUtil.formatAmount(discountAmount));
+
+            //discounted subtotal
+            long discountedSubtotal = subtotal - discountAmount;
+            node.put("discounted_subtotal", customerClientUtil.formatAmount(discountedSubtotal));
+
+            //calculate Taxes
+            long taxes = (long) (discountedSubtotal * TAX_RATE);
+            node.put("taxes", customerClientUtil.formatAmount(taxes));
+
+            //flat shipping rate
+            node.put("shipping", customerClientUtil.formatAmount(SHIPPING_RATE));
+
+            //calculate total
+            long total = discountedSubtotal + taxes + SHIPPING_RATE;
+            node.put("Total", customerClientUtil.formatAmount(total));
+
+            mainArrayNode.add(itemsArrayNode);
+            mainArrayNode.add(node);
         }
-        node.put("discount", customerClientUtil.formatAmount(discountAmount));
-
-        //discounted subtotal
-        long discountedSubtotal = subtotal - discountAmount;
-        node.put("discounted_subtotal", customerClientUtil.formatAmount(discountedSubtotal));
-
-        //calculate Taxes
-        long taxes = (long) (discountedSubtotal * TAX_RATE);
-        node.put("taxes", customerClientUtil.formatAmount(taxes));
-
-        //flat shipping rate
-        node.put("shipping", customerClientUtil.formatAmount(SHIPPING_RATE));
-
-        //calculate total
-        long total = discountedSubtotal + taxes + SHIPPING_RATE;
-        node.put("Total", customerClientUtil.formatAmount(total));
-
-        mainArrayNode.add(itemsArrayNode);
-        mainArrayNode.add(node);
 
         return mapper.writerWithDefaultPrettyPrinter().writeValueAsString(mainArrayNode);
 

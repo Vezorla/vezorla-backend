@@ -318,9 +318,6 @@ public class UserServicesImp implements UserServices {
         //store account_discount into session
         session.setAttribute("ACCOUNT_DISCOUNT", holdDiscount);
 
-        System.out.println(holdDiscount.getCode().getCode());
-        System.out.println(holdDiscount.getEmail().getEmail());
-
     }
 
     public ArrayNode viewSessionCart(HttpSession session) throws JsonProcessingException {
