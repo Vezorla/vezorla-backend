@@ -25,7 +25,7 @@ import java.util.Optional;
 @RequestMapping(AuthenticationRestController.URL)
 public class AuthenticationRestController {
 
-    protected static final String URL = "/api/login/";
+    protected static final String URL = "/api/auth/";
     private AuthenticationServices authServices;
 
     /**
@@ -34,7 +34,7 @@ public class AuthenticationRestController {
      * @return
      * @author matthewjflee
      */
-    @GetMapping("auth")
+    @GetMapping("login")
     public ResponseEntity<String> login(@RequestBody String body, HttpServletRequest request) throws JsonProcessingException {
         HttpSession session = request.getSession();
         String email = null;
