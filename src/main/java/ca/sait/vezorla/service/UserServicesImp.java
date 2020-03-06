@@ -1,5 +1,7 @@
 package ca.sait.vezorla.service;
 
+import ca.sait.vezorla.controller.util.CustomerClientUtil;
+import ca.sait.vezorla.exception.InvalidInputException;
 import ca.sait.vezorla.model.*;
 import ca.sait.vezorla.repository.AccountRepo;
 import ca.sait.vezorla.repository.DiscountRepo;
@@ -8,6 +10,10 @@ import com.fasterxml.jackson.core.JsonProcessingException;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import com.fasterxml.jackson.databind.node.ArrayNode;
 import com.fasterxml.jackson.databind.node.ObjectNode;
+import org.json.simple.JSONObject;
+import org.json.simple.parser.JSONParser;
+import org.json.simple.parser.ParseException;
+import org.springframework.http.HttpEntity;
 import org.springframework.stereotype.Service;
 
 import javax.servlet.http.HttpServletRequest;
@@ -29,12 +35,14 @@ public class UserServicesImp implements UserServices {
     private AccountRepo accountRepo;
     private DiscountRepo discountRepo;
     private ObjectMapper mapper;
+    private CustomerClientUtil customerClientUtil;
 
     public UserServicesImp(ProductRepo productRepo, AccountRepo accountRepo, DiscountRepo discountRepo, ObjectMapper mapper) {
         this.productRepo = productRepo;
         this.accountRepo = accountRepo;
         this.discountRepo = discountRepo;
         this.mapper = mapper;
+        this.customerClientUtil = new CustomerClientUtil();
     }
 
     public void applyDiscount(Discount discount) {
@@ -326,13 +334,62 @@ public class UserServicesImp implements UserServices {
             ObjectNode node = mapper.createObjectNode();
             node.put("prodID", cart.getLineItems().get(i).getProduct().getProdId());
             node.put("name", cart.getLineItems().get(i).getProduct().getName());
-            node.put("price", cart.getLineItems().get(i).getProduct().getPrice());
+            node.put("price", customerClientUtil.formatAmount(cart.getLineItems().get(i).getProduct().getPrice()));
             node.put("imageMain", cart.getLineItems().get(i).getProduct().getImageMain());
             node.put("quantity", cart.getLineItems().get(i).getQuantity());
             arrayNode.add(node);
         }
 
         return arrayNode;
+    }
+
+    /**
+     * Method to parse the json sent from
+     * the front end for the shipping information
+     * @param httpEntity
+     * @param request
+     * @param json
+     * @return
+     * @throws InvalidInputException
+     * @throws JsonProcessingException
+     */
+    public String getShippingInfo(HttpEntity<String> httpEntity, HttpServletRequest request, String json) throws InvalidInputException, JsonProcessingException {
+        HttpSession session = request.getSession();
+        boolean created = false;
+        try {
+            Object obj = new JSONParser().parse(json);
+            JSONObject jo = (JSONObject) obj;
+            String email = (String) jo.get("email");
+            String firstName = (String) jo.get("firstName");
+            String lastName = (String) jo.get("lastName");
+            String phoneNumber = (String) jo.get("phoneNumber");
+            try {
+                customerClientUtil.validatePhoneNumber(phoneNumber);
+            }catch(InvalidInputException e){
+
+            }
+            String address = (String) jo.get("address");
+            String city = (String) jo.get("city");
+            String country = (String) jo.get("country");
+            String postalCode = (String) jo.get("postalCode");
+            try{
+                customerClientUtil.validatePostalCode(postalCode);
+            }catch(InvalidInputException e){
+
+            }
+
+            if(email == null || firstName == null || lastName == null){
+                throw new InvalidInputException();
+            }
+
+            Account newAccount = new Account(email, lastName, firstName, phoneNumber, address, city, country, postalCode);
+
+            session.setAttribute("ACCOUNT", newAccount);
+            created = true;
+        } catch (ParseException e) {
+        }
+
+        return mapper.writerWithDefaultPrettyPrinter().writeValueAsString(created);
     }
 
     public List<Lot> obtainSufficientQtyLots() {

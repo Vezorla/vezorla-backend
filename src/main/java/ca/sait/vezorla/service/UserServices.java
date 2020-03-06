@@ -1,8 +1,10 @@
 package ca.sait.vezorla.service;
 
+import ca.sait.vezorla.exception.InvalidInputException;
 import ca.sait.vezorla.model.*;
 import com.fasterxml.jackson.core.JsonProcessingException;
 import com.fasterxml.jackson.databind.node.ArrayNode;
+import org.springframework.http.HttpEntity;
 
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpSession;
@@ -60,4 +62,6 @@ public interface UserServices {
     public void getSelectedDiscount(String code, HttpServletRequest request, HttpSession session);
 
     public ArrayNode viewSessionCart(HttpSession session) throws JsonProcessingException;
+
+    public String getShippingInfo(HttpEntity<String> httpEntity, HttpServletRequest request, String json) throws InvalidInputException, JsonProcessingException;
 }

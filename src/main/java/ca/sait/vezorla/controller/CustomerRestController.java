@@ -2,6 +2,7 @@ package ca.sait.vezorla.controller;
 
 import ca.sait.vezorla.controller.util.CustomerClientUtil;
 import ca.sait.vezorla.exception.InvalidInputException;
+import ca.sait.vezorla.exception.UnauthorizedException;
 import ca.sait.vezorla.model.*;
 import ca.sait.vezorla.repository.AccountRepo;
 import ca.sait.vezorla.repository.CartRepo;
@@ -46,7 +47,7 @@ public class CustomerRestController {
     private AccountRepo accountRepo;
     private DiscountRepo discountRepo;
     private ObjectMapper mapper;
-    CustomerClientUtil customerClientUtil;
+    private CustomerClientUtil customerClientUtil;
 
 
     public CustomerRestController(UserServices userServices,
@@ -124,9 +125,6 @@ public class CustomerRestController {
      */
     @RequestMapping(value = "cart/add/{id}", method = RequestMethod.PUT, produces = {"application/json"})
     public boolean createLineItemSession(@PathVariable Long id, @RequestBody String quantity, HttpServletRequest request) {
-
-        System.out.println("sent quantity: " + quantity);
-
         LineItem lineItem = null;
         boolean result = false;
         Optional<Product> product = userServices.getProduct(id);
@@ -207,48 +205,20 @@ public class CustomerRestController {
      * @param httpEntity
      * @author matthewjflee, jjrr1717
      */
-    @RequestMapping(value = "/cart/checkout/shipping", method = RequestMethod.POST, consumes = {"application/json"}, produces = {"application/json"})
+    @RequestMapping(value = "/cart/checkout/shipping",
+            method = RequestMethod.POST,
+            consumes = {"application/json"},
+            produces = {"application/json"})
     @ResponseBody
-    public ResponseEntity<String> getShippingInfo(HttpEntity<String> httpEntity, HttpServletRequest request) throws JsonProcessingException, InvalidInputException {
-        HttpSession session = request.getSession();
-        boolean created = false;
+    public ResponseEntity<String> getShippingInfo(HttpEntity<String> httpEntity,
+                                                  HttpServletRequest request)
+            throws JsonProcessingException, InvalidInputException {
         String json = httpEntity.getBody();
-        try {
-            Object obj = new JSONParser().parse(json);
-            JSONObject jo = (JSONObject) obj;
-            String email = (String) jo.get("email");
-            String firstName = (String) jo.get("firstName");
-            String lastName = (String) jo.get("lastName");
-            String phoneNumber = (String) jo.get("phoneNumber");
-            try {
-                customerClientUtil.validatePhoneNumber(phoneNumber);
-            }catch(InvalidInputException e){
-
-            }
-            String address = (String) jo.get("address");
-            String city = (String) jo.get("city");
-            String country = (String) jo.get("country");
-            String postalCode = (String) jo.get("postalCode");
-            try{
-                customerClientUtil.validatePostalCode(postalCode);
-            }catch(InvalidInputException e){
-
-            }
-
-            if(email == null || firstName == null || lastName == null){
-                throw new InvalidInputException();
-            }
-
-            Account newAccount = new Account(email, lastName, firstName, phoneNumber, address, city, country, postalCode);
-//            currentAccount = new Account(email, lastName, firstName, phoneNumber, address, city, country, postalCode);
-
-            session.setAttribute("ACCOUNT", newAccount);
-            created = true;
-//            created = userServices.saveAccount(currentAccount);
-        } catch (ParseException e) {
+        String output = userServices.getShippingInfo(httpEntity, request, json);
+        if(output.equals("true")){
+            HttpSession session = request.getSession();
+            request.getSession().setAttribute("CHECKOUT_FLOW_TOKEN", "1");
         }
-
-        String output = mapper.writerWithDefaultPrettyPrinter().writeValueAsString(created);
         return ResponseEntity.ok().body(output);
     }
 
@@ -281,24 +251,27 @@ public class CustomerRestController {
      * @author matthewjflee, jjrr1717
      */
     @GetMapping("discounts/get")
-    public String getValidDiscounts(HttpServletRequest request) throws JsonProcessingException {
+    public String getValidDiscounts(HttpServletRequest request) throws JsonProcessingException, UnauthorizedException {
         HttpSession session = request.getSession();
-        Account currentAccount = (Account) session.getAttribute("ACCOUNT");
-
-        ArrayList<Discount> discounts = (ArrayList<Discount>) userServices.getValidDiscounts(currentAccount.getEmail());
         ArrayNode arrayNode = mapper.createArrayNode();
-
-        for (int i = 0; i < discounts.size(); i++) {
-            ObjectNode node = mapper.createObjectNode();
-            node.put("code", discounts.get(i).getCode());
-            node.put("description", discounts.get(i).getDescription());
-            node.put("percent", discounts.get(i).getPercent());
-
-            arrayNode.add(node);
+        if(session.getAttribute("CHECKOUT_FLOW_TOKEN") == null){
+            throw new UnauthorizedException();
         }
-
+        else if(!session.getAttribute("CHECKOUT_FLOW_TOKEN").equals("1")){
+            throw new UnauthorizedException();
+        }
+        else{
+            Account currentAccount = (Account) session.getAttribute("ACCOUNT");
+            ArrayList<Discount> discounts = (ArrayList<Discount>) userServices.getValidDiscounts(currentAccount.getEmail());
+            for (int i = 0; i < discounts.size(); i++) {
+                ObjectNode node = mapper.createObjectNode();
+                node.put("code", discounts.get(i).getCode());
+                node.put("description", discounts.get(i).getDescription());
+                node.put("percent", discounts.get(i).getPercent());
+                arrayNode.add(node);
+            }
+        }
         return mapper.writerWithDefaultPrettyPrinter().writeValueAsString(arrayNode);
-//
     }
 
     /**
@@ -360,9 +333,9 @@ public class CustomerRestController {
         AccountDiscount discountType = (AccountDiscount) session.getAttribute("ACCOUNT_DISCOUNT");
         if(discountType != null) {
             float discountPercent = Float.parseFloat(discountRepo.findDiscountPercent(discountType.getCode().getCode()));
-            long discountDecimal = (long) discountPercent / 100;
+            float discountDecimal = discountPercent / 100;
 
-            discountAmount = subtotal * discountDecimal;
+            discountAmount = (long)(subtotal * discountDecimal);
         }
         else{
             discountAmount = 0;
