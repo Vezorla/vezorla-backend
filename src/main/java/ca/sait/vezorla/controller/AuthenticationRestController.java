@@ -89,7 +89,7 @@ public class AuthenticationRestController {
         boolean result = false;
         HttpSession session = request.getSession(false);
         session.invalidate();
-        session = request.getSession(false);
+        session = request.getSession(false); //Need second session getting to ensure session is invalidated.
 
         if(session == null)
             result = true;
