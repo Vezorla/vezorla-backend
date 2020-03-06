@@ -62,7 +62,6 @@ public class CustomerRestController {
         this.mapper = mapper;
         this.customerClientUtil = new CustomerClientUtil();
     }
-
     /**
      * Get all products
      *
@@ -71,6 +70,7 @@ public class CustomerRestController {
      */
     @GetMapping("inventory/products/all")
     public List<Product> getAllProducts() {
+
         return userServices.getAllProducts();
     }
 
@@ -89,20 +89,6 @@ public class CustomerRestController {
     }
 
     /**
-     * Get the total number of products in the cart for a customer
-     *
-     * @param session
-     * @return
-     * @author matthewjflee, jjrr1717
-     */
-    @RequestMapping(value = "cart/get", method = RequestMethod.GET,
-            produces = {"application/json"})
-    public String getSessionCartQuantity(HttpSession session) {
-        Cart cart = userServices.getSessionCart(session);
-        return userServices.getTotalSessionCartQuantity((ArrayList<LineItem>) cart.getLineItems());
-    }
-
-    /**
      * Return the quantity for the specified product
      *
      * @param id
@@ -111,6 +97,7 @@ public class CustomerRestController {
      */
     @RequestMapping(value = "inventory/product/quantity/{id}", method = RequestMethod.GET, produces = {"application/json"})
     public int getProductQuantity(@PathVariable Long id) {
+
         return userServices.getProductQuantity(id);
     }
 
@@ -154,6 +141,20 @@ public class CustomerRestController {
     public String viewSessionCart(HttpSession session) throws JsonProcessingException {
         ArrayNode arrayNode = userServices.viewSessionCart(session);
         return mapper.writerWithDefaultPrettyPrinter().writeValueAsString(arrayNode);
+    }
+
+    /**
+     * Get the total number of products in the cart for a customer
+     *
+     * @param session
+     * @return
+     * @author matthewjflee, jjrr1717
+     */
+    @RequestMapping(value = "cart/get", method = RequestMethod.GET,
+            produces = {"application/json"})
+    public String getSessionCartQuantity(HttpSession session) {
+        Cart cart = userServices.getSessionCart(session);
+        return userServices.getTotalSessionCartQuantity((ArrayList<LineItem>) cart.getLineItems());
     }
 
     /**
@@ -221,28 +222,6 @@ public class CustomerRestController {
         }
         return ResponseEntity.ok().body(output);
     }
-
-
-    @GetMapping("subscribe/{email}")
-    public void subscribeEmail(@PathVariable String email) {
-
-    }
-
-    @GetMapping("contact")
-    public void contactBusiness(String sender, String message) {
-
-    }
-
-    @GetMapping("cart/update/{id}")
-    public void updateCart(@PathVariable Long id) {
-
-    }
-
-    @GetMapping("account/find/{id}")
-    public Account findAccountById(@PathVariable Long id) {
-        return null;
-    }
-
     /**
      * Return all valid discounts associated with the customer/client
      * This method will query the database for all valid discounts for the account
@@ -316,8 +295,8 @@ public class CustomerRestController {
 
 
             long subtotal = 0;
+            long shippingRate = 1000;
             final float TAX_RATE = 0.05f;
-            final long SHIPPING_RATE = 1000;
 
             for (int i = 0; i < cart.getLineItems().size(); i++) {
                 int quantity = cart.getLineItems().get(i).getQuantity();
@@ -359,11 +338,18 @@ public class CustomerRestController {
             long taxes = (long) (discountedSubtotal * TAX_RATE);
             node.put("taxes", customerClientUtil.formatAmount(taxes));
 
-            //flat shipping rate
-            node.put("shipping", customerClientUtil.formatAmount(SHIPPING_RATE));
+            //is order pickup or shipped
+            if(session.getAttribute("PICKUP").equals("true")){
+                shippingRate = 0;
+                node.put("shipping", shippingRate);
+            }
+            else {
+                //flat shipping rate
+                node.put("shipping", customerClientUtil.formatAmount(shippingRate));
+            }
 
             //calculate total
-            long total = discountedSubtotal + taxes + SHIPPING_RATE;
+            long total = discountedSubtotal + taxes + shippingRate;
             node.put("Total", customerClientUtil.formatAmount(total));
 
             mainArrayNode.add(itemsArrayNode);
@@ -389,5 +375,25 @@ public class CustomerRestController {
     @GetMapping("account/forgotpassword/{email}")
     public void forgotPassword(@PathVariable String email) {
 
+    }
+
+    @GetMapping("subscribe/{email}")
+    public void subscribeEmail(@PathVariable String email) {
+
+    }
+
+    @GetMapping("contact")
+    public void contactBusiness(String sender, String message) {
+
+    }
+
+    @GetMapping("cart/update/{id}")
+    public void updateCart(@PathVariable Long id) {
+
+    }
+
+    @GetMapping("account/find/{id}")
+    public Account findAccountById(@PathVariable Long id) {
+        return null;
     }
 }

@@ -360,6 +360,7 @@ public class UserServicesImp implements UserServices {
             String firstName = (String) jo.get("firstName");
             String lastName = (String) jo.get("lastName");
             String phoneNumber = (String) jo.get("phoneNumber");
+            String pickup = (String) jo.get("pickup");
             try {
                 customerClientUtil.validatePhoneNumber(phoneNumber);
             }catch(InvalidInputException e){
@@ -382,6 +383,7 @@ public class UserServicesImp implements UserServices {
             Account newAccount = new Account(email, lastName, firstName, phoneNumber, address, city, country, postalCode);
 
             session.setAttribute("ACCOUNT", newAccount);
+            session.setAttribute("PICKUP", pickup);
             created = true;
         } catch (ParseException e) {
         }
