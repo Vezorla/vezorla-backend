@@ -79,8 +79,9 @@ public class AuthenticationRestController {
      * Logout
      * Grab the session by passing <code>false</code>
      * This way, it does not create a session if one is not existing
-     *
      * Will invalidate and check afterwards
+     *
+     * @author: matthewjflee
      * @param request Http Request
      * @return result result if the session was invalidated
      */
