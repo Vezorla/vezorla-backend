@@ -48,6 +48,9 @@ public class Account implements Serializable {
     @Column(name = "city")
     private String city;
 
+    @Column(name = "province")
+    private String province;
+
     @Column(name = "country")
     private String country;
 
@@ -91,13 +94,16 @@ public class Account implements Serializable {
     @OneToMany(mappedBy = "email")
     private List<AccountDiscount> accountDiscounts;
 
-    public Account(String email, String lastName, String firstName, String phoneNum, String address, String city, String country, String postalCode) {
+    public Account(String email, String lastName, String firstName,
+                   String phoneNum, String address, String city,
+                   String country, String province, String postalCode) {
         this.email = email;
         this.lastName = lastName;
         this.firstName = firstName;
         this.phoneNum = phoneNum;
         this.address = address;
         this.city = city;
+        this.province = province;
         this.country = country;
         this.postalCode = postalCode;
         this.userCreated = false;

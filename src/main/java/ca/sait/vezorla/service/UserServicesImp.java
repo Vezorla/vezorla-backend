@@ -368,6 +368,7 @@ public class UserServicesImp implements UserServices {
             }
             String address = (String) jo.get("address");
             String city = (String) jo.get("city");
+            String province = (String) jo.get("province");
             String country = (String) jo.get("country");
             String postalCode = (String) jo.get("postalCode");
             try{
@@ -380,7 +381,8 @@ public class UserServicesImp implements UserServices {
                 throw new InvalidInputException();
             }
 
-            Account newAccount = new Account(email, lastName, firstName, phoneNumber, address, city, country, postalCode);
+            Account newAccount = new Account(email, lastName, firstName,
+                    phoneNumber, address, city, country, province, postalCode);
 
             session.setAttribute("ACCOUNT", newAccount);
             session.setAttribute("PICKUP", pickup);
