@@ -377,7 +377,8 @@ public class UserServicesImp implements UserServices {
 
             }
 
-            if(email == null || firstName == null || lastName == null){
+            if(email == null || firstName == null || lastName == null ||
+                postalCode == null || phoneNumber == null){
                 throw new InvalidInputException();
             }
 
