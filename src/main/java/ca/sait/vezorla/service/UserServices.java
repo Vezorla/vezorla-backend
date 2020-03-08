@@ -15,49 +15,49 @@ import java.util.Optional;
  */
 public interface UserServices {
 
-    public void applyDiscount(Discount discount);
+    void applyDiscount(Discount discount);
 
-    public void createLineItems(Long id);
+    void createLineItems(Long id);
 
-    public List<Product> getAllProducts();
+    List<Product> getAllProducts();
 
-    public Cart getCart();
+    Cart getCart();
 
-    public List<Lot> getLots(Long id);
+    List<Lot> getLots(Long id);
 
-    public Optional<Product> getProduct(Long id);
+    Optional<Product> getProduct(Long id);
 
-    public void getStoreProducts(Long id);
+    void getStoreProducts(Long id);
 
-    public List<Discount> getValidDiscounts(String email);
+    List<Discount> getValidDiscounts(String email);
 
-    public List<Lot> obtainSufficientQtyLots();
+    List<Lot> obtainSufficientQtyLots();
 
-    public boolean removeLineItemSession(Long id, Cart cart, HttpServletRequest request);
+    boolean removeLineItemSession(Long id, Cart cart, HttpServletRequest request);
 
-    public boolean searchEmail(String email);
+    boolean searchEmail(String email);
 
-    public boolean subscribeEmail(String email);
+    boolean subscribeEmail(String email);
 
-    public boolean updateLineItemSession(Long id, int quantity, Cart cart, HttpServletRequest request);
+    boolean updateLineItemSession(Long id, int quantity, Cart cart, HttpServletRequest request);
 
-    public Cart getSessionCart(HttpSession session);
+    Cart getSessionCart(HttpSession session);
 
-    public Cart updateSessionCart(LineItem lineItem, HttpServletRequest request);
+    Cart updateSessionCart(LineItem lineItem, HttpServletRequest request);
 
-    public String getTotalSessionCartQuantity(ArrayList<LineItem> lineItems);
+    String getTotalSessionCartQuantity(ArrayList<LineItem> lineItems);
 
-    public int getProductQuantity(Long id);
+    int getProductQuantity(Long id);
 
-    public void createLineItems(Product product);
+    void createLineItems(Product product);
 
-    public int validateOrderedQuantity(String orderedQuantitySent, int inStockQuantity);
+    int validateOrderedQuantity(String orderedQuantitySent, int inStockQuantity);
 
-    public LineItem createLineItemSession(Optional<Product> product, String quantity, HttpServletRequest request);
+    LineItem createLineItemSession(Optional<Product> product, String quantity, HttpServletRequest request);
 
-    public boolean saveAccount(Account account);
+    boolean createAccount(Account account);
 
-    public void getSelectedDiscount(String code, HttpServletRequest request, HttpSession session);
+    void getSelectedDiscount(String code, HttpServletRequest request, HttpSession session);
 
-    public ArrayNode viewSessionCart(HttpSession session) throws JsonProcessingException;
+    ArrayNode viewSessionCart(HttpSession session) throws JsonProcessingException;
 }

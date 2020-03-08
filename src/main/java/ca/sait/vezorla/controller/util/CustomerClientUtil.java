@@ -1,9 +1,11 @@
 package ca.sait.vezorla.controller.util;
 
 import ca.sait.vezorla.exception.InvalidInputException;
+import lombok.NoArgsConstructor;
 
 import java.util.regex.Pattern;
 
+@NoArgsConstructor
 public class CustomerClientUtil {
 
     /**

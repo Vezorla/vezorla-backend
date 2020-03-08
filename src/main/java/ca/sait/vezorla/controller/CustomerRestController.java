@@ -2,6 +2,7 @@ package ca.sait.vezorla.controller;
 
 import ca.sait.vezorla.controller.util.CustomerClientUtil;
 import ca.sait.vezorla.exception.InvalidInputException;
+import ca.sait.vezorla.exception.UnableToSaveException;
 import ca.sait.vezorla.model.*;
 import ca.sait.vezorla.repository.AccountRepo;
 import ca.sait.vezorla.repository.CartRepo;
@@ -11,6 +12,7 @@ import com.fasterxml.jackson.core.JsonProcessingException;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import com.fasterxml.jackson.databind.node.ArrayNode;
 import com.fasterxml.jackson.databind.node.ObjectNode;
+import lombok.AllArgsConstructor;
 import org.json.simple.JSONObject;
 import org.json.simple.parser.JSONParser;
 import org.json.simple.parser.ParseException;
@@ -36,31 +38,15 @@ import java.util.Optional;
  */
 @CrossOrigin
 @RestController
+@AllArgsConstructor
 @RequestMapping(CustomerRestController.URL)
 public class CustomerRestController {
 
     protected static final String URL = "/api/customer/";
 
     private UserServices userServices;
-    private CartRepo cartRepo;
-    private AccountRepo accountRepo;
     private DiscountRepo discountRepo;
-    private ObjectMapper mapper;
-    CustomerClientUtil customerClientUtil;
-
-
-    public CustomerRestController(UserServices userServices,
-                                  CartRepo cartRepo,
-                                  AccountRepo accountRepo,
-                                  DiscountRepo discountRepo,
-                                  ObjectMapper mapper) {
-        this.userServices = userServices;
-        this.cartRepo = cartRepo;
-        this.accountRepo = accountRepo;
-        this.discountRepo = discountRepo;
-        this.mapper = mapper;
-        this.customerClientUtil = new CustomerClientUtil();
-    }
+//    private CustomerClientUtil customerClientUtil = new CustomerClientUtil();
 
     /**
      * Get all products
@@ -154,6 +140,7 @@ public class CustomerRestController {
      */
     @GetMapping("cart/view")
     public String viewSessionCart(HttpSession session) throws JsonProcessingException {
+        ObjectMapper mapper = new ObjectMapper();
         ArrayNode arrayNode = userServices.viewSessionCart(session);
         return mapper.writerWithDefaultPrettyPrinter().writeValueAsString(arrayNode);
     }
@@ -210,6 +197,8 @@ public class CustomerRestController {
     @RequestMapping(value = "/cart/checkout/shipping", method = RequestMethod.POST, consumes = {"application/json"}, produces = {"application/json"})
     @ResponseBody
     public ResponseEntity<String> getShippingInfo(HttpEntity<String> httpEntity, HttpServletRequest request) throws JsonProcessingException, InvalidInputException {
+        CustomerClientUtil customerClientUtil = new CustomerClientUtil();
+        ObjectMapper mapper = new ObjectMapper();
         HttpSession session = request.getSession();
         boolean created = false;
         String json = httpEntity.getBody();
@@ -240,16 +229,43 @@ public class CustomerRestController {
             }
 
             Account newAccount = new Account(email, lastName, firstName, phoneNumber, address, city, country, postalCode);
-//            currentAccount = new Account(email, lastName, firstName, phoneNumber, address, city, country, postalCode);
 
             session.setAttribute("ACCOUNT", newAccount);
             created = true;
-//            created = userServices.saveAccount(currentAccount);
         } catch (ParseException e) {
         }
 
         String output = mapper.writerWithDefaultPrettyPrinter().writeValueAsString(created);
         return ResponseEntity.ok().body(output);
+    }
+
+    /**
+     * Create a new account
+     * @author: matthewjflee
+     * @param body: JSON sending email and password
+     */
+    @GetMapping("create-account")
+    public boolean createAccount(@RequestBody String body, HttpServletRequest request) {
+        String email = null;
+        String password = null;
+        HttpSession session = request.getSession();
+
+        try {
+            Object obj = new JSONParser().parse(body);
+            JSONObject jo = (JSONObject) obj;
+            email = (String) jo.get("email");
+            password = (String) jo.get("password");
+        } catch (ParseException e) {
+        }
+
+        Account newAccount = new Account(email, password);
+        boolean created = userServices.createAccount(newAccount);
+        if(!created)
+            throw new UnableToSaveException();
+        else
+            session.setAttribute("ACCOUNT", newAccount);
+
+        return created;
     }
 
 
@@ -282,6 +298,7 @@ public class CustomerRestController {
      */
     @GetMapping("discounts/get")
     public String getValidDiscounts(HttpServletRequest request) throws JsonProcessingException {
+        ObjectMapper mapper = new ObjectMapper();
         HttpSession session = request.getSession();
         Account currentAccount = (Account) session.getAttribute("ACCOUNT");
 
@@ -325,9 +342,9 @@ public class CustomerRestController {
      */
     @GetMapping("cart/review")
     public String reviewOrder(HttpSession session)throws JsonProcessingException{
-
+        CustomerClientUtil customerClientUtil = new CustomerClientUtil();
         Cart cart = (Cart) session.getAttribute("CART");
-        ObjectNode root = mapper.createObjectNode();
+        ObjectMapper mapper = new ObjectMapper();
         ObjectNode nodeItem = mapper.createObjectNode();
         ObjectNode node = mapper.createObjectNode();
         ArrayNode itemsArrayNode = mapper.createArrayNode();
