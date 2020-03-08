@@ -99,7 +99,7 @@ public class UserServicesImp implements UserServices {
      * @param lineItems
      * @return
      */
-    public String getTotalSessionCartQuantity(ArrayList<LineItem> lineItems) {
+    public String getTotalCartQuantity(ArrayList<LineItem> lineItems) {
         //loop through lineItems to get total quantity on order
         int counter = lineItems.stream().mapToInt(LineItem::getQuantity).sum();
         return counter + "";
@@ -114,7 +114,6 @@ public class UserServicesImp implements UserServices {
      */
     public int getProductQuantity(Long id) {
         int quantity = productRepo.findTotalQuantity(id);
-
         return quantity;
     }
 
@@ -295,6 +294,27 @@ public class UserServicesImp implements UserServices {
     }
 
     /**
+     * Method to create the discount code and percent json to
+     * send to front end.
+     * @param session
+     * @param arrayNode
+     * @return
+     */
+    public ArrayNode buildValidDiscounts(HttpSession session, ArrayNode arrayNode){
+        Account currentAccount = (Account) session.getAttribute("ACCOUNT");
+        ArrayList<Discount> discounts = (ArrayList<Discount>) getValidDiscounts(currentAccount.getEmail());
+        for (int i = 0; i < discounts.size(); i++) {
+            ObjectNode node = mapper.createObjectNode();
+            node.put("code", discounts.get(i).getCode());
+            node.put("description", discounts.get(i).getDescription());
+            node.put("percent", discounts.get(i).getPercent());
+            arrayNode.add(node);
+        }
+
+        return arrayNode;
+    }
+
+    /**
      * Method to get the selected discount from the user.
      * Creates an AccountDiscount with the account in
      * the session and the discount code provided by the
@@ -392,6 +412,78 @@ public class UserServicesImp implements UserServices {
         }
 
         return mapper.writerWithDefaultPrettyPrinter().writeValueAsString(created);
+    }
+
+    public ArrayNode reviewOrder(HttpSession session, ArrayNode mainArrayNode, Cart cart){
+
+        ObjectNode root = mapper.createObjectNode();
+        ObjectNode nodeItem = mapper.createObjectNode();
+        ObjectNode node = mapper.createObjectNode();
+        ArrayNode itemsArrayNode = mapper.createArrayNode();
+
+
+        long subtotal = 0;
+        long shippingRate = 1000;
+        final float TAX_RATE = 0.05f;
+
+        for (int i = 0; i < cart.getLineItems().size(); i++) {
+            int quantity = cart.getLineItems().get(i).getQuantity();
+            long price = cart.getLineItems().get(i).getProduct().getPrice();
+
+            nodeItem.put("name", cart.getLineItems().get(i).getProduct().getName());
+            nodeItem.put("quantity", quantity);
+            nodeItem.put("price", customerClientUtil.formatAmount(price));
+            //get over the extended price
+            long extendedPrice = price * quantity;
+
+            nodeItem.put("extendedPrice", customerClientUtil.formatAmount(extendedPrice));
+            //get subtotal
+            subtotal += extendedPrice;
+
+            itemsArrayNode.add(nodeItem);
+        }
+
+        node.put("subtotal", customerClientUtil.formatAmount(subtotal));
+
+        //get discount
+        long discountAmount;
+        AccountDiscount discountType = (AccountDiscount) session.getAttribute("ACCOUNT_DISCOUNT");
+        if (discountType != null) {
+            float discountPercent = Float.parseFloat(discountRepo.findDiscountPercent(discountType.getCode().getCode()));
+            float discountDecimal = discountPercent / 100;
+
+            discountAmount = (long) (subtotal * discountDecimal);
+        } else {
+            discountAmount = 0;
+        }
+        node.put("discount", customerClientUtil.formatAmount(discountAmount));
+
+        //discounted subtotal
+        long discountedSubtotal = subtotal - discountAmount;
+        node.put("discounted_subtotal", customerClientUtil.formatAmount(discountedSubtotal));
+
+        //calculate Taxes
+        long taxes = (long) (discountedSubtotal * TAX_RATE);
+        node.put("taxes", customerClientUtil.formatAmount(taxes));
+
+        //is order pickup or shipped
+        if(session.getAttribute("PICKUP").equals("true")){
+            shippingRate = 0;
+            node.put("shipping", shippingRate);
+        }
+        else {
+            //flat shipping rate
+            node.put("shipping", customerClientUtil.formatAmount(shippingRate));
+        }
+
+        //calculate total
+        long total = discountedSubtotal + taxes + shippingRate;
+        node.put("Total", customerClientUtil.formatAmount(total));
+
+        mainArrayNode.add(itemsArrayNode);
+        mainArrayNode.add(node);
+
+        return mainArrayNode;
     }
 
     public List<Lot> obtainSufficientQtyLots() {

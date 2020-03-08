@@ -1,17 +1,12 @@
 package ca.sait.vezorla.controller;
 
-import ca.sait.vezorla.controller.util.CustomerClientUtil;
 import ca.sait.vezorla.exception.InvalidInputException;
 import ca.sait.vezorla.exception.UnauthorizedException;
 import ca.sait.vezorla.model.*;
-import ca.sait.vezorla.repository.AccountRepo;
-import ca.sait.vezorla.repository.CartRepo;
-import ca.sait.vezorla.repository.DiscountRepo;
 import ca.sait.vezorla.service.UserServices;
 import com.fasterxml.jackson.core.JsonProcessingException;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import com.fasterxml.jackson.databind.node.ArrayNode;
-import com.fasterxml.jackson.databind.node.ObjectNode;
 import org.springframework.http.HttpEntity;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
@@ -36,24 +31,10 @@ public class CustomerRestController {
     protected static final String URL = "/api/customer/";
 
     private UserServices userServices;
-    private CartRepo cartRepo;
-    private AccountRepo accountRepo;
-    private DiscountRepo discountRepo;
-    private ObjectMapper mapper;
-    private CustomerClientUtil customerClientUtil;
 
 
-    public CustomerRestController(UserServices userServices,
-                                  CartRepo cartRepo,
-                                  AccountRepo accountRepo,
-                                  DiscountRepo discountRepo,
-                                  ObjectMapper mapper) {
+    public CustomerRestController(UserServices userServices) {
         this.userServices = userServices;
-        this.cartRepo = cartRepo;
-        this.accountRepo = accountRepo;
-        this.discountRepo = discountRepo;
-        this.mapper = mapper;
-        this.customerClientUtil = new CustomerClientUtil();
     }
     /**
      * Get all products
@@ -63,7 +44,6 @@ public class CustomerRestController {
      */
     @GetMapping("inventory/products/all")
     public List<Product> getAllProducts() {
-
         return userServices.getAllProducts();
     }
 
@@ -77,7 +57,6 @@ public class CustomerRestController {
     @GetMapping("inventory/product/{id}")
     public ResponseEntity<Product> getProductPage(@PathVariable Long id) {
         Optional<Product> product = userServices.getProduct(id);
-
         return product.map(response -> ResponseEntity.ok().body(response)).orElse(new ResponseEntity<>(HttpStatus.NOT_FOUND));
     }
 
@@ -90,7 +69,6 @@ public class CustomerRestController {
      */
     @RequestMapping(value = "inventory/product/quantity/{id}", method = RequestMethod.GET, produces = {"application/json"})
     public int getProductQuantity(@PathVariable Long id) {
-
         return userServices.getProductQuantity(id);
     }
 
@@ -132,6 +110,7 @@ public class CustomerRestController {
      */
     @GetMapping("cart/view")
     public String viewSessionCart(HttpSession session) throws JsonProcessingException {
+        ObjectMapper mapper = new ObjectMapper();
         ArrayNode arrayNode = userServices.viewSessionCart(session);
         return mapper.writerWithDefaultPrettyPrinter().writeValueAsString(arrayNode);
     }
@@ -147,7 +126,7 @@ public class CustomerRestController {
             produces = {"application/json"})
     public String getSessionCartQuantity(HttpSession session) {
         Cart cart = userServices.getSessionCart(session);
-        return userServices.getTotalSessionCartQuantity((ArrayList<LineItem>) cart.getLineItems());
+        return userServices.getTotalCartQuantity((ArrayList<LineItem>) cart.getLineItems());
     }
 
     /**
@@ -224,6 +203,7 @@ public class CustomerRestController {
      */
     @GetMapping("discounts/get")
     public String getValidDiscounts(HttpServletRequest request) throws JsonProcessingException, UnauthorizedException {
+        ObjectMapper mapper = new ObjectMapper();
         HttpSession session = request.getSession();
         ArrayNode arrayNode = mapper.createArrayNode();
         if(session.getAttribute("CHECKOUT_FLOW_TOKEN") == null){
@@ -233,15 +213,8 @@ public class CustomerRestController {
             throw new UnauthorizedException();
         }
         else{
-            Account currentAccount = (Account) session.getAttribute("ACCOUNT");
-            ArrayList<Discount> discounts = (ArrayList<Discount>) userServices.getValidDiscounts(currentAccount.getEmail());
-            for (int i = 0; i < discounts.size(); i++) {
-                ObjectNode node = mapper.createObjectNode();
-                node.put("code", discounts.get(i).getCode());
-                node.put("description", discounts.get(i).getDescription());
-                node.put("percent", discounts.get(i).getPercent());
-                arrayNode.add(node);
-            }
+            arrayNode = userServices.buildValidDiscounts(session, arrayNode);
+
         }
         return mapper.writerWithDefaultPrettyPrinter().writeValueAsString(arrayNode);
     }
@@ -265,13 +238,16 @@ public class CustomerRestController {
     /**
      * Show details of order on the
      * review page
-     * @param session
+     * @param request
      * @return
      * @throws JsonProcessingException
      */
     @GetMapping("cart/review")
-    public String reviewOrder(HttpSession session) throws JsonProcessingException, UnauthorizedException {
+    public String reviewOrder(HttpServletRequest request) throws JsonProcessingException, UnauthorizedException {
+        ObjectMapper mapper = new ObjectMapper();
+        HttpSession session = request.getSession();
         ArrayNode mainArrayNode = mapper.createArrayNode();
+        Cart cart = (Cart) session.getAttribute("CART");
         if(session.getAttribute("CHECKOUT_FLOW_TOKEN") == null){
             throw new UnauthorizedException();
         }
@@ -279,74 +255,7 @@ public class CustomerRestController {
             throw new UnauthorizedException();
         }
         else {
-
-            Cart cart = (Cart) session.getAttribute("CART");
-            ObjectNode root = mapper.createObjectNode();
-            ObjectNode nodeItem = mapper.createObjectNode();
-            ObjectNode node = mapper.createObjectNode();
-            ArrayNode itemsArrayNode = mapper.createArrayNode();
-
-
-            long subtotal = 0;
-            long shippingRate = 1000;
-            final float TAX_RATE = 0.05f;
-
-            for (int i = 0; i < cart.getLineItems().size(); i++) {
-                int quantity = cart.getLineItems().get(i).getQuantity();
-                long price = cart.getLineItems().get(i).getProduct().getPrice();
-
-                nodeItem.put("name", cart.getLineItems().get(i).getProduct().getName());
-                nodeItem.put("quantity", quantity);
-                nodeItem.put("price", customerClientUtil.formatAmount(price));
-                //get over the extended price
-                long extendedPrice = price * quantity;
-
-                nodeItem.put("extendedPrice", customerClientUtil.formatAmount(extendedPrice));
-                //get subtotal
-                subtotal += extendedPrice;
-
-                itemsArrayNode.add(nodeItem);
-            }
-
-            node.put("subtotal", customerClientUtil.formatAmount(subtotal));
-
-            //get discount
-            long discountAmount;
-            AccountDiscount discountType = (AccountDiscount) session.getAttribute("ACCOUNT_DISCOUNT");
-            if (discountType != null) {
-                float discountPercent = Float.parseFloat(discountRepo.findDiscountPercent(discountType.getCode().getCode()));
-                float discountDecimal = discountPercent / 100;
-
-                discountAmount = (long) (subtotal * discountDecimal);
-            } else {
-                discountAmount = 0;
-            }
-            node.put("discount", customerClientUtil.formatAmount(discountAmount));
-
-            //discounted subtotal
-            long discountedSubtotal = subtotal - discountAmount;
-            node.put("discounted_subtotal", customerClientUtil.formatAmount(discountedSubtotal));
-
-            //calculate Taxes
-            long taxes = (long) (discountedSubtotal * TAX_RATE);
-            node.put("taxes", customerClientUtil.formatAmount(taxes));
-
-            //is order pickup or shipped
-            if(session.getAttribute("PICKUP").equals("true")){
-                shippingRate = 0;
-                node.put("shipping", shippingRate);
-            }
-            else {
-                //flat shipping rate
-                node.put("shipping", customerClientUtil.formatAmount(shippingRate));
-            }
-
-            //calculate total
-            long total = discountedSubtotal + taxes + shippingRate;
-            node.put("Total", customerClientUtil.formatAmount(total));
-
-            mainArrayNode.add(itemsArrayNode);
-            mainArrayNode.add(node);
+            mainArrayNode = userServices.reviewOrder(session, mainArrayNode, cart);
         }
 
         return mapper.writerWithDefaultPrettyPrinter().writeValueAsString(mainArrayNode);

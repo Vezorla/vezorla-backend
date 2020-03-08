@@ -47,7 +47,7 @@ public interface UserServices {
 
     public Cart updateSessionCart(LineItem lineItem, HttpServletRequest request);
 
-    public String getTotalSessionCartQuantity(ArrayList<LineItem> lineItems);
+    public String getTotalCartQuantity(ArrayList<LineItem> lineItems);
 
     public int getProductQuantity(Long id);
 
@@ -64,4 +64,8 @@ public interface UserServices {
     public ArrayNode viewSessionCart(HttpSession session) throws JsonProcessingException;
 
     public String getShippingInfo(HttpEntity<String> httpEntity, HttpServletRequest request, String json) throws InvalidInputException, JsonProcessingException;
+
+    public ArrayNode buildValidDiscounts(HttpSession session, ArrayNode arrayNode);
+
+    public ArrayNode reviewOrder(HttpSession session, ArrayNode mainArrayNode, Cart cart);
 }
