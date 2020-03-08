@@ -61,11 +61,13 @@ public interface UserServices {
 
     public void getSelectedDiscount(String code, HttpServletRequest request, HttpSession session);
 
-    public ArrayNode viewSessionCart(HttpSession session) throws JsonProcessingException;
+    public ArrayNode viewSessionCart(HttpServletRequest request, Cart cart) throws JsonProcessingException;
 
     public String getShippingInfo(HttpEntity<String> httpEntity, HttpServletRequest request, String json) throws InvalidInputException, JsonProcessingException;
 
     public ArrayNode buildValidDiscounts(HttpSession session, ArrayNode arrayNode);
 
     public ArrayNode reviewOrder(HttpSession session, ArrayNode mainArrayNode, Cart cart);
+
+    public ArrayNode checkItemsOrderedOutOfStock(Cart cart, HttpServletRequest request);
 }

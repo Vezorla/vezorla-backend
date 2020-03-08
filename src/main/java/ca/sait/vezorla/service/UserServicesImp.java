@@ -52,9 +52,9 @@ public class UserServicesImp implements UserServices {
     /**
      * Get the customer's cart from the session
      *
-     * @author matthewjflee, jjrr1717
      * @param session
      * @return
+     * @author matthewjflee, jjrr1717
      */
     public Cart getSessionCart(HttpSession session) {
         Cart cart = (Cart) session.getAttribute("CART");
@@ -68,24 +68,21 @@ public class UserServicesImp implements UserServices {
     /**
      * Adding line item to cart
      *
-     * @author matthewjflee, jjrr1717
      * @param lineItem
      * @param request
      * @return
+     * @author matthewjflee, jjrr1717
      */
     public Cart updateSessionCart(LineItem lineItem, HttpServletRequest request) {
         Cart cart = (Cart) request.getSession().getAttribute("CART");
 
         if (cart == null) {
-            System.out.println("cart is null");
             cart = new Cart();
             request.getSession().setAttribute("CART", cart);
         }
 
         ArrayList<LineItem> lineItems = (ArrayList<LineItem>) cart.getLineItems();
-        System.out.println("list size old: " + lineItems.size());
         lineItems.add(lineItem);
-        System.out.println("new size " + lineItems.size());
         cart.setLineItems(lineItems);
         request.getSession().setAttribute("CART", cart);
 
@@ -95,9 +92,9 @@ public class UserServicesImp implements UserServices {
     /**
      * Get the total quantity of all line items in the cart
      *
-     * @author matthewjflee, jjrr1717
      * @param lineItems
      * @return
+     * @author matthewjflee, jjrr1717
      */
     public String getTotalCartQuantity(ArrayList<LineItem> lineItems) {
         //loop through lineItems to get total quantity on order
@@ -108,9 +105,9 @@ public class UserServicesImp implements UserServices {
     /**
      * Get the total quantity of the product from the Products database
      *
-     * @author matthewjflee, jjrr1717
      * @param id
      * @return
+     * @author matthewjflee, jjrr1717
      */
     public int getProductQuantity(Long id) {
         int quantity = productRepo.findTotalQuantity(id);
@@ -120,15 +117,42 @@ public class UserServicesImp implements UserServices {
     /**
      * Validate the order quantity before adding the product to the cart as a line item
      *
-     * @author matthewjflee, jjrr1717
      * @param orderedQuantitySent
      * @param inStockQuantity
      * @return
+     * @author matthewjflee, jjrr1717
      */
     public int validateOrderedQuantity(String orderedQuantitySent, int inStockQuantity) {
         orderedQuantitySent = orderedQuantitySent.replaceAll("\"", "");
         int orderedQuantity = Integer.parseInt(orderedQuantitySent);
         return inStockQuantity - orderedQuantity;
+    }
+
+    public ArrayNode checkItemsOrderedOutOfStock(Cart cart, HttpServletRequest request) {
+        ArrayNode outOfStockItems = mapper.createArrayNode();
+        //check quantity in stock for each item
+        for (int i = 0; i < cart.getLineItems().size(); i++) {
+            ObjectNode outOfStockNode = mapper.createObjectNode();
+            int quantityInStock = getProductQuantity(cart.getLineItems().get(i).getProduct().getProdId());
+            int checkQuantity = validateOrderedQuantity(cart.getLineItems().get(i).getQuantity() + "", quantityInStock);
+
+            if (checkQuantity < 0) {
+                checkQuantity = Math.abs(checkQuantity);
+
+                //update cart to only include amount that can be ordered
+                updateLineItemSession(cart.getLineItems().get(i).getProduct().getProdId(),
+                        quantityInStock, cart, request);
+
+                outOfStockNode.put("name", cart.getLineItems().get(i).getProduct().getName());
+                outOfStockNode.put("by", checkQuantity);
+                outOfStockItems.add(outOfStockNode);
+            }
+
+        }
+
+        System.out.println("Check" + outOfStockItems);
+
+        return outOfStockItems;
     }
 
     @Override
@@ -139,11 +163,11 @@ public class UserServicesImp implements UserServices {
     /**
      * Create a line item from the product for a customer
      *
-     * @author matthewjflee, jjrr1717
      * @param product
      * @param sentQuantity
      * @param request
      * @return
+     * @author matthewjflee, jjrr1717
      */
     public LineItem createLineItemSession(Optional<Product> product, String sentQuantity, HttpServletRequest request) {
         LineItem lineItem = new LineItem();
@@ -162,10 +186,10 @@ public class UserServicesImp implements UserServices {
     /**
      * Update line item quantity in cart
      *
-     * @author matthewjflee, jjrr1717
      * @param id
      * @param quantity
      * @param cart
+     * @author matthewjflee, jjrr1717
      */
     public boolean updateLineItemSession(Long id, int quantity, Cart cart, HttpServletRequest request) {
         boolean result = false;
@@ -185,11 +209,11 @@ public class UserServicesImp implements UserServices {
     /**
      * Remove a line item from the customer's cart
      *
-     * @author matthewjflee, jjrr1717
      * @param id
      * @param cart
      * @param request
      * @return
+     * @author matthewjflee, jjrr1717
      */
     public boolean removeLineItemSession(Long id, Cart cart, HttpServletRequest request) {
         boolean result = false;
@@ -213,9 +237,9 @@ public class UserServicesImp implements UserServices {
     /**
      * Create an account in the Accounts table
      *
-     * @author matthewjflee, jjrr1717
      * @param account
      * @return
+     * @author matthewjflee, jjrr1717
      */
     public boolean saveAccount(Account account) {
         boolean result = false;
@@ -229,8 +253,8 @@ public class UserServicesImp implements UserServices {
     /**
      * Return all products in the Products table
      *
-     * @author kwistech
      * @return
+     * @author kwistech
      */
     public List<Product> getAllProducts() {
 
@@ -248,9 +272,9 @@ public class UserServicesImp implements UserServices {
     /**
      * Return a specified product
      *
-     * @author matthewjflee, jjrr1717
      * @param id
      * @return
+     * @author matthewjflee, jjrr1717
      */
     public Optional<Product> getProduct(Long id) { //It wanted Optionals
 
@@ -265,9 +289,9 @@ public class UserServicesImp implements UserServices {
      * Method to return valid discounts a user
      * can apply to their order
      *
-     * @author matthewjflee, jjrr1717
      * @param
      * @return
+     * @author matthewjflee, jjrr1717
      */
     public ArrayList<Discount> getValidDiscounts(String email) {
         //get current date for comparison
@@ -281,7 +305,7 @@ public class UserServicesImp implements UserServices {
         System.out.println("valid discounts " + stringDiscounts.size());
 
         //parse the comma deliminted string returned from query
-        for(String s : stringDiscounts) {
+        for (String s : stringDiscounts) {
             System.out.println("discount FATT GARRETTT   " + s);
 
             String[] spl = s.split(",");
@@ -296,11 +320,12 @@ public class UserServicesImp implements UserServices {
     /**
      * Method to create the discount code and percent json to
      * send to front end.
+     *
      * @param session
      * @param arrayNode
      * @return
      */
-    public ArrayNode buildValidDiscounts(HttpSession session, ArrayNode arrayNode){
+    public ArrayNode buildValidDiscounts(HttpSession session, ArrayNode arrayNode) {
         Account currentAccount = (Account) session.getAttribute("ACCOUNT");
         ArrayList<Discount> discounts = (ArrayList<Discount>) getValidDiscounts(currentAccount.getEmail());
         for (int i = 0; i < discounts.size(); i++) {
@@ -319,11 +344,12 @@ public class UserServicesImp implements UserServices {
      * Creates an AccountDiscount with the account in
      * the session and the discount code provided by the
      * front-end body.
+     *
      * @param code
      * @param request
      * @param session
      */
-    public void getSelectedDiscount(String code, HttpServletRequest request, HttpSession session){
+    public void getSelectedDiscount(String code, HttpServletRequest request, HttpSession session) {
         session = request.getSession();
 
         //get user email from session
@@ -340,13 +366,10 @@ public class UserServicesImp implements UserServices {
 
     }
 
-    public ArrayNode viewSessionCart(HttpSession session) throws JsonProcessingException {
-        Cart cart = (Cart) session.getAttribute("CART");
-//        ObjectNode root = mapper.createObjectNode();
-        ObjectNode root = mapper.createObjectNode();
+    public ArrayNode viewSessionCart(HttpServletRequest request, Cart cart) throws JsonProcessingException {
+        HttpSession session = request.getSession();
         ArrayNode arrayNode = mapper.createArrayNode();
-        System.out.println(mapper.writerWithDefaultPrettyPrinter().writeValueAsString(arrayNode));
-
+//        ArrayNode outOfStockItems = checkItemsOrderedOutOfStock(cart, request);
         for (int i = 0; i < cart.getLineItems().size(); i++) {
             ObjectNode node = mapper.createObjectNode();
             node.put("prodID", cart.getLineItems().get(i).getProduct().getProdId());
@@ -357,12 +380,19 @@ public class UserServicesImp implements UserServices {
             arrayNode.add(node);
         }
 
+//        if(outOfStockItems != null) {
+//            System.out.println("out " + outOfStockItems);
+//            arrayNode.add(outOfStockItems);
+//        }
+
+
         return arrayNode;
     }
 
     /**
      * Method to parse the json sent from
      * the front end for the shipping information
+     *
      * @param httpEntity
      * @param request
      * @param json
@@ -383,7 +413,7 @@ public class UserServicesImp implements UserServices {
             String pickup = (String) jo.get("pickup");
             try {
                 customerClientUtil.validatePhoneNumber(phoneNumber);
-            }catch(InvalidInputException e){
+            } catch (InvalidInputException e) {
 
             }
             String address = (String) jo.get("address");
@@ -391,14 +421,14 @@ public class UserServicesImp implements UserServices {
             String province = (String) jo.get("province");
             String country = (String) jo.get("country");
             String postalCode = (String) jo.get("postalCode");
-            try{
+            try {
                 customerClientUtil.validatePostalCode(postalCode);
-            }catch(InvalidInputException e){
+            } catch (InvalidInputException e) {
 
             }
 
-            if(email == null || firstName == null || lastName == null ||
-                postalCode == null || phoneNumber == null){
+            if (email == null || firstName == null || lastName == null ||
+                    postalCode == null || phoneNumber == null) {
                 throw new InvalidInputException();
             }
 
@@ -414,10 +444,9 @@ public class UserServicesImp implements UserServices {
         return mapper.writerWithDefaultPrettyPrinter().writeValueAsString(created);
     }
 
-    public ArrayNode reviewOrder(HttpSession session, ArrayNode mainArrayNode, Cart cart){
+    public ArrayNode reviewOrder(HttpSession session, ArrayNode mainArrayNode, Cart cart) {
 
         ObjectNode root = mapper.createObjectNode();
-        ObjectNode nodeItem = mapper.createObjectNode();
         ObjectNode node = mapper.createObjectNode();
         ArrayNode itemsArrayNode = mapper.createArrayNode();
 
@@ -427,6 +456,7 @@ public class UserServicesImp implements UserServices {
         final float TAX_RATE = 0.05f;
 
         for (int i = 0; i < cart.getLineItems().size(); i++) {
+            ObjectNode nodeItem = mapper.createObjectNode();
             int quantity = cart.getLineItems().get(i).getQuantity();
             long price = cart.getLineItems().get(i).getProduct().getPrice();
 
@@ -467,11 +497,10 @@ public class UserServicesImp implements UserServices {
         node.put("taxes", customerClientUtil.formatAmount(taxes));
 
         //is order pickup or shipped
-        if(session.getAttribute("PICKUP").equals("true")){
+        if (session.getAttribute("PICKUP").equals("true")) {
             shippingRate = 0;
             node.put("shipping", shippingRate);
-        }
-        else {
+        } else {
             //flat shipping rate
             node.put("shipping", customerClientUtil.formatAmount(shippingRate));
         }

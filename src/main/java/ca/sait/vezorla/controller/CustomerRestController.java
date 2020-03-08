@@ -7,6 +7,7 @@ import ca.sait.vezorla.service.UserServices;
 import com.fasterxml.jackson.core.JsonProcessingException;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import com.fasterxml.jackson.databind.node.ArrayNode;
+import com.fasterxml.jackson.databind.node.ObjectNode;
 import org.springframework.http.HttpEntity;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
@@ -103,15 +104,20 @@ public class CustomerRestController {
     /**
      * View cart for a customer
      *
-     * @param session
+     * @param request
      * @return
      * @throws JsonProcessingException
      * @author matthewjflee, jjrr1717
      */
     @GetMapping("cart/view")
-    public String viewSessionCart(HttpSession session) throws JsonProcessingException {
+    public String viewSessionCart(HttpServletRequest request) throws JsonProcessingException {
+        HttpSession session = request.getSession();
         ObjectMapper mapper = new ObjectMapper();
-        ArrayNode arrayNode = userServices.viewSessionCart(session);
+        Cart cart = (Cart) session.getAttribute("CART");
+        ArrayNode outOfStockItems = userServices.checkItemsOrderedOutOfStock(cart, request);
+        System.out.println(outOfStockItems);
+        ArrayNode arrayNode = userServices.viewSessionCart(request, cart);
+        arrayNode.add(outOfStockItems);
         return mapper.writerWithDefaultPrettyPrinter().writeValueAsString(arrayNode);
     }
 
@@ -144,9 +150,6 @@ public class CustomerRestController {
         HttpSession session = request.getSession();
         Cart cart = userServices.getSessionCart(session);
         boolean result = userServices.updateLineItemSession(id, quantity, cart, request);
-        if (result) {
-            viewSessionCart(session);
-        }
 
         return result;
     }
@@ -165,9 +168,6 @@ public class CustomerRestController {
         HttpSession session = request.getSession();
         Cart cart = userServices.getSessionCart(session);
         boolean result = userServices.removeLineItemSession(id, cart, request);
-        if (result) {
-            viewSessionCart(session);
-        }
 
         return result;
     }
@@ -244,10 +244,11 @@ public class CustomerRestController {
      */
     @GetMapping("cart/review")
     public String reviewOrder(HttpServletRequest request) throws JsonProcessingException, UnauthorizedException {
-        ObjectMapper mapper = new ObjectMapper();
         HttpSession session = request.getSession();
-        ArrayNode mainArrayNode = mapper.createArrayNode();
+        ObjectMapper mapper = new ObjectMapper();
         Cart cart = (Cart) session.getAttribute("CART");
+        ArrayNode mainArrayNode = mapper.createArrayNode();
+        ArrayNode outOfStockItems = mapper.createArrayNode();
         if(session.getAttribute("CHECKOUT_FLOW_TOKEN") == null){
             throw new UnauthorizedException();
         }
@@ -255,9 +256,11 @@ public class CustomerRestController {
             throw new UnauthorizedException();
         }
         else {
+            outOfStockItems = userServices.checkItemsOrderedOutOfStock(cart, request);
             mainArrayNode = userServices.reviewOrder(session, mainArrayNode, cart);
         }
 
+        mainArrayNode.add(outOfStockItems);
         return mapper.writerWithDefaultPrettyPrinter().writeValueAsString(mainArrayNode);
 
     }
