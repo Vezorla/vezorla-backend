@@ -15,16 +15,12 @@ import org.json.simple.JSONObject;
 import org.json.simple.parser.JSONParser;
 import org.json.simple.parser.ParseException;
 import org.springframework.http.HttpEntity;
-import org.springframework.http.HttpRequest;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpSession;
-import java.math.BigDecimal;
-import java.math.MathContext;
-import java.math.RoundingMode;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Optional;
@@ -222,20 +218,20 @@ public class CustomerRestController {
             String phoneNumber = (String) jo.get("phoneNumber");
             try {
                 customerClientUtil.validatePhoneNumber(phoneNumber);
-            }catch(InvalidInputException e){
+            } catch (InvalidInputException e) {
 
             }
             String address = (String) jo.get("address");
             String city = (String) jo.get("city");
             String country = (String) jo.get("country");
             String postalCode = (String) jo.get("postalCode");
-            try{
+            try {
                 customerClientUtil.validatePostalCode(postalCode);
-            }catch(InvalidInputException e){
+            } catch (InvalidInputException e) {
 
             }
 
-            if(email == null || firstName == null || lastName == null){
+            if (email == null || firstName == null || lastName == null) {
                 throw new InvalidInputException();
             }
 
@@ -307,11 +303,12 @@ public class CustomerRestController {
      * to the session. Will be persisted
      * into the database at time of checkout,
      * rather than here.
-     * @param code discount code the user selected
+     *
+     * @param code    discount code the user selected
      * @param request for the session
      */
     @GetMapping("selected_discount/get")
-    public void getSelectedDiscount(@RequestBody String code, HttpServletRequest request){
+    public void getSelectedDiscount(@RequestBody String code, HttpServletRequest request) {
         HttpSession session = request.getSession();
         userServices.getSelectedDiscount(code, request, session);
     }
@@ -319,12 +316,13 @@ public class CustomerRestController {
     /**
      * Show details of order on the
      * review page
+     *
      * @param session
      * @return
      * @throws JsonProcessingException
      */
     @GetMapping("cart/review")
-    public String reviewOrder(HttpSession session)throws JsonProcessingException{
+    public String reviewOrder(HttpSession session) throws JsonProcessingException {
 
         Cart cart = (Cart) session.getAttribute("CART");
         ObjectNode root = mapper.createObjectNode();
@@ -358,13 +356,12 @@ public class CustomerRestController {
         //get discount
         long discountAmount;
         AccountDiscount discountType = (AccountDiscount) session.getAttribute("ACCOUNT_DISCOUNT");
-        if(discountType != null) {
+        if (discountType != null) {
             float discountPercent = Float.parseFloat(discountRepo.findDiscountPercent(discountType.getCode().getCode()));
             float discountDecimal = discountPercent / 100;
             System.out.println(discountDecimal);
             discountAmount = (long) (subtotal * discountDecimal);
-        }
-        else{
+        } else {
             discountAmount = 0;
         }
         node.put("discount", customerClientUtil.formatAmount(discountAmount));
