@@ -3,6 +3,7 @@ package ca.sait.vezorla.controller;
 import ca.sait.vezorla.model.*;
 import ca.sait.vezorla.repository.AccountRepo;
 import ca.sait.vezorla.repository.CartRepo;
+import ca.sait.vezorla.service.AccountServices;
 import ca.sait.vezorla.service.UserServices;
 import com.fasterxml.jackson.core.JsonProcessingException;
 import com.fasterxml.jackson.databind.ObjectMapper;
@@ -34,6 +35,9 @@ public class CustomerRestController {
     private UserServices userServices;
     private CartRepo cartRepo;
     private AccountRepo accountRepo;
+
+    @Autowired
+    private AccountServices accountServices;
 
     @Autowired
     ObjectMapper mapper;
@@ -168,9 +172,32 @@ public class CustomerRestController {
         } catch (ParseException e) {}
     }
 
+    /**
+     * This method is the Controller method that handles the
+     * mailing list subscriptions.
+     *
+     * If an account exists in the database, the method simply
+     * toggles the isSubscribed variable in the account to true.
+     *
+     * If an account does not exist, the method creates an account
+     * on behalf of the Customer and sets the isSubscribed variable
+     * to true.
+     *
+     * @param email The email to search for the account.
+     * @return True if email has been subscribed, False otherwise.
+     */
+    @PostMapping("subscribe/{email}")
+    public boolean subscribeEmail(@PathVariable String email) {
 
-    @GetMapping("subscribe/{email}")
-    public void subscribeEmail(@PathVariable String email) {
+        Account account = accountServices.get(email);
+
+        if (account == null) {
+            account = new Account(email);
+        }
+
+        account.setSubscript(true);
+
+        return account.isSubscript();
 
     }
 

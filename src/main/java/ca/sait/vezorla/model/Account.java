@@ -103,4 +103,21 @@ public class Account {
         this.isSubscript = false;
         this.discountList = new ArrayList<>();
     }
+
+    /**
+     * Account constructor with primary key.
+     *
+     * This Constructor is used for the "UC20: Join Mailing List" to add
+     * a Customer, who does not have an account, to the mailing list via
+     * the boolean variable isSubscribed.
+     *
+     * @param email Email to be used for the Account.
+     */
+    public Account(String email) {
+        
+        this.email = email;
+        this.isSubscript = true;
+        
+    }
+
 }
