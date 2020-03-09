@@ -1,18 +1,25 @@
 package ca.sait.vezorla.controller;
 
+import ca.sait.vezorla.controller.util.CustomerClientUtil;
 import ca.sait.vezorla.exception.InvalidInputException;
 import ca.sait.vezorla.exception.UnauthorizedException;
 import ca.sait.vezorla.model.*;
+import ca.sait.vezorla.service.PaypalServices;
 import ca.sait.vezorla.service.UserServices;
 import com.fasterxml.jackson.core.JsonProcessingException;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import com.fasterxml.jackson.databind.node.ArrayNode;
 import com.fasterxml.jackson.databind.node.ObjectNode;
+import com.paypal.api.payments.Links;
+import com.paypal.api.payments.Payment;
+import com.paypal.base.rest.PayPalRESTException;
 import org.springframework.http.HttpEntity;
+import org.springframework.http.HttpRequest;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 
+import javax.servlet.http.HttpServlet;
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpSession;
 import java.util.ArrayList;
@@ -30,12 +37,13 @@ import java.util.Optional;
 public class CustomerRestController {
 
     protected static final String URL = "/api/customer/";
-
     private UserServices userServices;
+    private PaypalServices paypalServices;
 
 
-    public CustomerRestController(UserServices userServices) {
+    public CustomerRestController(UserServices userServices, PaypalServices paypalServices) {
         this.userServices = userServices;
+        this.paypalServices = paypalServices;
     }
     /**
      * Get all products
@@ -261,9 +269,15 @@ public class CustomerRestController {
         }
 
         mainArrayNode.add(outOfStockItems);
+
+        //create token for next checkout step - which will be payment & invoicing
+        request.getSession().setAttribute("CHECKOUT_FLOW_TOKEN", "3");
+
         return mapper.writerWithDefaultPrettyPrinter().writeValueAsString(mainArrayNode);
 
     }
+
+
 
     /**
      * Apply discount to the cart

@@ -5,6 +5,7 @@ import javax.persistence.*;
 
 import com.sun.istack.NotNull;
 
+import java.io.Serializable;
 import java.math.BigDecimal;
 import java.sql.Date;
 import java.util.ArrayList;
@@ -25,7 +26,7 @@ import lombok.NoArgsConstructor;
 @Data
 @Entity
 @Table(name = "invoice")
-public class Invoice {
+public class Invoice implements Serializable {
 	@Id
 	@GeneratedValue(strategy = GenerationType.IDENTITY)
 	@Column(name = "invoice_num")
@@ -54,10 +55,30 @@ public class Invoice {
 	@Column(name = "shipping_cost")
 	private long shippingCost;
 
+	@Column(name = "subtotal")
+	private long subtotal;
+
+	@Column(name = "discount")
+	private long discount;
+
+	@Column(name = "taxes")
+	private long taxes;
+
+	@Column(name = "total")
+	private long total;
+
 	@NotNull
 	@Column(name = "state")
 	private boolean state;
 
 	@Column(name = "message")
 	private String message;
+
+	//constructor for temp invoice
+	public Invoice(long subtotal, long discount, long taxes, long total){
+		this.subtotal = subtotal;
+		this.discount = discount;
+		this.taxes = taxes;
+		this.total = total;
+	}
 }

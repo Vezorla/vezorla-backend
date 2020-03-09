@@ -512,6 +512,10 @@ public class UserServicesImp implements UserServices {
         mainArrayNode.add(itemsArrayNode);
         mainArrayNode.add(node);
 
+        //create temporary invoice
+        Invoice invoice = new Invoice(discountedSubtotal, discountAmount, taxes, total);
+        session.setAttribute("INVOICE", invoice);
+
         return mainArrayNode;
     }
 
