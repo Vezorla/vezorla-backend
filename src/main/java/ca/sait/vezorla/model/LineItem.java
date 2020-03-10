@@ -38,11 +38,11 @@ public class LineItem implements Serializable {
     private String currentName;
 
     @Column(name = "current_price")
-    private BigDecimal currentPrice;
+    private long currentPrice;
 
     @Column(name = "extended_price")
     @Formula(value = "current_price * quantity")
-    private BigDecimal extendedPrice;
+    private long extendedPrice;
 
     @ManyToOne
     @JoinColumn(name = "order_num", nullable = false)

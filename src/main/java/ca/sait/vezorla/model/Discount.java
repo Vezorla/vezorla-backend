@@ -15,6 +15,7 @@ import org.hibernate.annotations.Type;
 import javax.persistence.*;
 import javax.validation.constraints.Min;
 
+import java.io.Serializable;
 import java.math.BigDecimal;
 import java.util.ArrayList;
 import java.util.Date;
@@ -25,7 +26,7 @@ import java.util.List;
 @Entity
 @Data
 @Table(name = "discount")
-public class Discount {
+public class Discount implements Serializable {
 
     @Id
     private String code;
@@ -51,7 +52,7 @@ public class Discount {
     private Date endDate;
 
     @Column(name = "minimum_order_value")
-    private BigDecimal minimumOrderValue;
+    private long minimumOrderValue;
 
     @Column(name = "active", columnDefinition = "BIT")
     @Type(type = "org.hibernate.type.NumericBooleanType")
@@ -60,7 +61,18 @@ public class Discount {
     @JsonIgnore
     @ManyToOne
     private Product product;
-    
-    @ManyToMany(mappedBy = "discountList")
-    private List<Account> accountList = new ArrayList<Account>();
+
+//    @ManyToMany(mappedBy = "discountList")
+//    private List<Account> accountList;
+
+    @OneToMany(mappedBy = "code")
+    private List<AccountDiscount> accountDiscounts;
+
+    public Discount(String code, String description, float percent){
+        this.code = code;
+        this.description = description;
+        this.percent = percent;
+    }
+
+
 }

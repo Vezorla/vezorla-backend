@@ -10,12 +10,12 @@ import lombok.Data;
 public class InvoiceReport {
 	List<ProductQuantity> productQuanList;
 	
-	public final BigDecimal calcTotalCost() {
-		return null;
+	public final long calcTotalCost() {
+		return 0;
 	}
 	
-	public final BigDecimal calcTotalPrice() {
-		return null;
+	public final long calcTotalPrice() {
+		return 0;
 	}
 	
 	public final float calcTotalPercentMargin() {

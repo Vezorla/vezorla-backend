@@ -1,14 +1,18 @@
 package ca.sait.vezorla.service;
 
 import ca.sait.vezorla.model.*;
+import com.fasterxml.jackson.core.JsonProcessingException;
+import com.fasterxml.jackson.databind.node.ArrayNode;
 
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpSession;
 import java.util.ArrayList;
-import java.util.Date;
 import java.util.List;
 import java.util.Optional;
 
+/**
+ * @author jjrr1717, matthewjflee
+ */
 public interface UserServices {
 
     public void applyDiscount(Discount discount);
@@ -25,7 +29,7 @@ public interface UserServices {
 
     public void getStoreProducts(Long id);
 
-    public List<Discount> getValidDiscounts(Date date);
+    public List<Discount> getValidDiscounts(String email);
 
     public List<Lot> obtainSufficientQtyLots();
 
@@ -52,4 +56,8 @@ public interface UserServices {
     public LineItem createLineItemSession(Optional<Product> product, String quantity, HttpServletRequest request);
 
     public boolean saveAccount(Account account);
+
+    public void getSelectedDiscount(String code, HttpServletRequest request, HttpSession session);
+
+    public ArrayNode viewSessionCart(HttpSession session) throws JsonProcessingException;
 }
