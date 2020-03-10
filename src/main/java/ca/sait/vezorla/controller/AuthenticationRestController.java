@@ -59,19 +59,6 @@ public class AuthenticationRestController {
     }
 
     /**
-     * Method to check if the account has been persisted in the session properly
-     * Testing purposes
-     *
-     * @param session
-     * @author: matthewjflee
-     */
-    @GetMapping("check")
-    public void check(HttpSession session) {
-        Account account = (Account) session.getAttribute("ACCOUNT");
-        System.out.println(account.getEmail());
-    }
-
-    /**
      * Check the current role of the authenticated user
      * @author: matthewjflee
      * @param session
