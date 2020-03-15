@@ -1,25 +1,20 @@
 package ca.sait.vezorla.controller;
 
-import ca.sait.vezorla.controller.util.CustomerClientUtil;
 import ca.sait.vezorla.exception.InvalidInputException;
 import ca.sait.vezorla.exception.UnauthorizedException;
-import ca.sait.vezorla.model.*;
+import ca.sait.vezorla.model.Account;
+import ca.sait.vezorla.model.Cart;
+import ca.sait.vezorla.model.LineItem;
+import ca.sait.vezorla.model.Product;
 import ca.sait.vezorla.service.PaypalServices;
 import ca.sait.vezorla.service.UserServices;
 import com.fasterxml.jackson.core.JsonProcessingException;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import com.fasterxml.jackson.databind.node.ArrayNode;
-import com.fasterxml.jackson.databind.node.ObjectNode;
-import com.paypal.api.payments.Links;
-import com.paypal.api.payments.Payment;
-import com.paypal.base.rest.PayPalRESTException;
-import org.springframework.http.HttpEntity;
-import org.springframework.http.HttpRequest;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 
-import javax.servlet.http.HttpServlet;
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpSession;
 import java.util.ArrayList;
@@ -45,6 +40,7 @@ public class CustomerRestController {
         this.userServices = userServices;
         this.paypalServices = paypalServices;
     }
+
     /**
      * Get all products
      *
@@ -183,7 +179,6 @@ public class CustomerRestController {
     /**
      * Obtain customer's shipping information from front end
      *
-     * @param httpEntity
      * @author matthewjflee, jjrr1717
      */
     @RequestMapping(value = "/cart/checkout/shipping",
@@ -191,17 +186,22 @@ public class CustomerRestController {
             consumes = {"application/json"},
             produces = {"application/json"})
     @ResponseBody
-    public ResponseEntity<String> getShippingInfo(HttpEntity<String> httpEntity,
+    public ResponseEntity<String> getShippingInfo(@RequestBody Account account,
                                                   HttpServletRequest request)
-            throws JsonProcessingException, InvalidInputException {
-        String json = httpEntity.getBody();
-        String output = userServices.getShippingInfo(httpEntity, request, json);
-        if(output.equals("true")){
-            HttpSession session = request.getSession();
-            request.getSession().setAttribute("CHECKOUT_FLOW_TOKEN", "1");
+            throws JsonProcessingException, InvalidInputException, UnauthorizedException {
+
+        String output = null;
+
+        HttpSession session = request.getSession();
+        if (request.getSession().getAttribute("CART") != null) {
+            output = userServices.getShippingInfo(request, account);
+
+        } else {
+            throw new UnauthorizedException();
         }
         return ResponseEntity.ok().body(output);
     }
+
     /**
      * Return all valid discounts associated with the customer/client
      * This method will query the database for all valid discounts for the account
@@ -214,15 +214,10 @@ public class CustomerRestController {
         ObjectMapper mapper = new ObjectMapper();
         HttpSession session = request.getSession();
         ArrayNode arrayNode = mapper.createArrayNode();
-        if(session.getAttribute("CHECKOUT_FLOW_TOKEN") == null){
-            throw new UnauthorizedException();
-        }
-        else if(!session.getAttribute("CHECKOUT_FLOW_TOKEN").equals("1")){
-            throw new UnauthorizedException();
-        }
-        else{
+        if (session.getAttribute("ACCOUNT") != null) {
             arrayNode = userServices.buildValidDiscounts(session, arrayNode);
-
+        } else {
+            throw new UnauthorizedException();
         }
         return mapper.writerWithDefaultPrettyPrinter().writeValueAsString(arrayNode);
     }
@@ -233,19 +228,20 @@ public class CustomerRestController {
      * to the session. Will be persisted
      * into the database at time of checkout,
      * rather than here.
-     * @param code discount code the user selected
+     *
+     * @param code    discount code the user selected
      * @param request for the session
      */
     @GetMapping("selected_discount/get")
     public void getSelectedDiscount(@RequestBody String code, HttpServletRequest request) throws UnauthorizedException {
         HttpSession session = request.getSession();
         userServices.getSelectedDiscount(code, request, session);
-        request.getSession().setAttribute("CHECKOUT_FLOW_TOKEN", "2");
     }
 
     /**
      * Show details of order on the
      * review page
+     *
      * @param request
      * @return
      * @throws JsonProcessingException
@@ -257,26 +253,17 @@ public class CustomerRestController {
         Cart cart = (Cart) session.getAttribute("CART");
         ArrayNode mainArrayNode = mapper.createArrayNode();
         ArrayNode outOfStockItems = mapper.createArrayNode();
-        if(session.getAttribute("CHECKOUT_FLOW_TOKEN") == null){
-            throw new UnauthorizedException();
-        }
-        else if(!session.getAttribute("CHECKOUT_FLOW_TOKEN").equals("2")){
-            throw new UnauthorizedException();
-        }
-        else {
+        if (session.getAttribute("ACCOUNT_DISCOUNT") != null) {
             outOfStockItems = userServices.checkItemsOrderedOutOfStock(cart, request);
             mainArrayNode = userServices.reviewOrder(session, mainArrayNode, cart);
+            mainArrayNode.add(outOfStockItems);
+        }
+        else {
+            throw new UnauthorizedException();
         }
 
-        mainArrayNode.add(outOfStockItems);
-
-        //create token for next checkout step - which will be payment & invoicing
-        request.getSession().setAttribute("CHECKOUT_FLOW_TOKEN", "3");
-
         return mapper.writerWithDefaultPrettyPrinter().writeValueAsString(mainArrayNode);
-
     }
-
 
 
     /**

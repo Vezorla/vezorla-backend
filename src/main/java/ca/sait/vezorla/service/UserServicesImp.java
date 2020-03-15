@@ -10,6 +10,7 @@ import com.fasterxml.jackson.core.JsonProcessingException;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import com.fasterxml.jackson.databind.node.ArrayNode;
 import com.fasterxml.jackson.databind.node.ObjectNode;
+import net.bytebuddy.implementation.bind.MethodDelegationBinder;
 import org.json.simple.JSONObject;
 import org.json.simple.parser.JSONParser;
 import org.json.simple.parser.ParseException;
@@ -170,17 +171,50 @@ public class UserServicesImp implements UserServices {
      * @author matthewjflee, jjrr1717
      */
     public LineItem createLineItemSession(Optional<Product> product, String sentQuantity, HttpServletRequest request) {
-        LineItem lineItem = new LineItem();
-        sentQuantity = sentQuantity.replaceAll("\"", ""); //Sending a string so replace \
-        int quantity = Integer.parseInt(sentQuantity);
+        //check if product already exists
+        boolean exists = checkProductLineItem(product.get().getProdId(), request);
+        LineItem lineItem = null;
+        if(!exists) {
+            lineItem = new LineItem();
+            sentQuantity = sentQuantity.replaceAll("\"", ""); //Sending a string so replace \
+            int quantity = Integer.parseInt(sentQuantity);
 
-        lineItem.setQuantity(quantity);
-        lineItem.setCurrentName(product.get().getName());
-        lineItem.setCurrentPrice(product.get().getPrice());
-        lineItem.setCart((Cart) request.getSession().getAttribute("CART"));
-        lineItem.setProduct(product.get());
+            lineItem.setQuantity(quantity);
+            lineItem.setCurrentName(product.get().getName());
+            lineItem.setCurrentPrice(product.get().getPrice());
+            lineItem.setCart((Cart) request.getSession().getAttribute("CART"));
+            lineItem.setProduct(product.get());
+        }
+        else{
+            updateLineItemAdd();
+        }
 
         return lineItem;
+    }
+
+    /**
+     * Method to search for the existence of the
+     * line item.
+     * @param id of the product
+     * @param request
+     * @return boolean true if it exits in cart already.
+     */
+    private boolean checkProductLineItem(Long id, HttpServletRequest request){
+        boolean result = false;
+        HttpSession session = request.getSession();
+        Cart cart = getSessionCart(session);
+
+        for(int i = 0; i < cart.getLineItems().size() && result == false; i++){
+            if(cart.getLineItems().get(i).getProduct().getProdId().equals(id)){
+                result = true;
+            }
+        }
+        return result;
+    }
+
+
+    private LineItem updateLineItemAdd(){
+        return null;
     }
 
     /**
@@ -205,6 +239,7 @@ public class UserServicesImp implements UserServices {
         return result;
 
     }
+
 
     /**
      * Remove a line item from the customer's cart
@@ -393,53 +428,30 @@ public class UserServicesImp implements UserServices {
      * Method to parse the json sent from
      * the front end for the shipping information
      *
-     * @param httpEntity
+
      * @param request
-     * @param json
      * @return
      * @throws InvalidInputException
      * @throws JsonProcessingException
      */
-    public String getShippingInfo(HttpEntity<String> httpEntity, HttpServletRequest request, String json) throws InvalidInputException, JsonProcessingException {
+    public String getShippingInfo(HttpServletRequest request, Account account) throws InvalidInputException, JsonProcessingException {
         HttpSession session = request.getSession();
         boolean created = false;
-        try {
-            Object obj = new JSONParser().parse(json);
-            JSONObject jo = (JSONObject) obj;
-            String email = (String) jo.get("email");
-            String firstName = (String) jo.get("firstName");
-            String lastName = (String) jo.get("lastName");
-            String phoneNumber = (String) jo.get("phoneNumber");
-            String pickup = (String) jo.get("pickup");
-            try {
-                customerClientUtil.validatePhoneNumber(phoneNumber);
-            } catch (InvalidInputException e) {
-
-            }
-            String address = (String) jo.get("address");
-            String city = (String) jo.get("city");
-            String province = (String) jo.get("province");
-            String country = (String) jo.get("country");
-            String postalCode = (String) jo.get("postalCode");
-            try {
-                customerClientUtil.validatePostalCode(postalCode);
-            } catch (InvalidInputException e) {
-
-            }
-
-            if (email == null || firstName == null || lastName == null ||
-                    postalCode == null || phoneNumber == null) {
-                throw new InvalidInputException();
-            }
-
-            Account newAccount = new Account(email, lastName, firstName,
-                    phoneNumber, address, city, country, province, postalCode);
-
-            session.setAttribute("ACCOUNT", newAccount);
-            session.setAttribute("PICKUP", pickup);
-            created = true;
-        } catch (ParseException e) {
+        System.out.println("Account email: " + account.getFirstName());
+        System.out.println("Account email: " + account.getLastName());
+        System.out.println("Account email: " + account.getPostalCode());
+        System.out.println("Account email: " + account.getPhoneNum());
+        if (account.getEmail() == null || account.getFirstName() == null || account.getLastName() == null ||
+                account.getPostalCode() == null || account.getPhoneNum() == null) {
+            throw new InvalidInputException();
         }
+
+        customerClientUtil.validatePhoneNumber(account.getPhoneNum());
+        customerClientUtil.validatePostalCode(account.getPostalCode());
+
+        session.setAttribute("ACCOUNT", account);
+        session.setAttribute("PICKUP", account.isPickup());
+            created = true;
 
         return mapper.writerWithDefaultPrettyPrinter().writeValueAsString(created);
     }

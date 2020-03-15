@@ -1,6 +1,7 @@
 package ca.sait.vezorla.controller;
 
 import ca.sait.vezorla.controller.util.CustomerClientUtil;
+import ca.sait.vezorla.exception.UnauthorizedException;
 import ca.sait.vezorla.model.Invoice;
 import ca.sait.vezorla.service.PaypalServices;
 import com.paypal.api.payments.Links;
@@ -30,8 +31,14 @@ public class PaypalController {
     }
 
     @PostMapping("/customer/cart/payment")
-    public String makePayment(HttpServletRequest request){
+    public String makePayment(HttpServletRequest request) throws UnauthorizedException {
         HttpSession session = request.getSession();
+
+        //check to ensure all previous steps have been performed
+        if(session.getAttribute("INVOICE") == null){
+            throw new UnauthorizedException();
+        }
+
         CustomerClientUtil ccu = new CustomerClientUtil();
         Invoice invoice = (Invoice) session.getAttribute("INVOICE");
 
@@ -39,7 +46,7 @@ public class PaypalController {
         double totalAsDouble = Double.parseDouble(formattedTotal);
 
         try {
-            Payment payment = paypalServices.createPayment(10.0, "USD", "paypal",
+            Payment payment = paypalServices.createPayment(10.0, "CAD", "paypal",
                     "sale", "Place Order", "http://localhost:8080/" + CANCEL_URL,
                     "http://localhost:8080/" + SUCCESS_URL);
             for(Links link:payment.getLinks()) {
@@ -49,7 +56,6 @@ public class PaypalController {
             }
 
         } catch (PayPalRESTException e) {
-
             e.printStackTrace();
         }
         System.out.println("Made payment");
@@ -63,7 +69,8 @@ public class PaypalController {
     }
 
     @GetMapping(value = "/customer/cart/payment/success")
-    public String successPay(@RequestParam("paymentId") String paymentId, @RequestParam("PayerID") String payerId) {
+    public String successPay(@RequestParam("paymentId") String paymentId, @RequestParam("PayerID") String payerId, HttpServletRequest request) {
+        HttpSession session = request.getSession();
         try {
             Payment payment = paypalServices.executePayment(paymentId, payerId);
             System.out.println(payment.toJSON());
@@ -74,6 +81,7 @@ public class PaypalController {
             System.out.println(e.getMessage());
         }
         System.out.println("Success: " + paymentId);
+
         return "redirect:/";
     }
 }
