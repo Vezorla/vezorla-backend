@@ -5,6 +5,7 @@ import ca.sait.vezorla.exception.InvalidInputException;
 import ca.sait.vezorla.model.*;
 import ca.sait.vezorla.repository.AccountRepo;
 import ca.sait.vezorla.repository.DiscountRepo;
+import ca.sait.vezorla.repository.LotRepo;
 import ca.sait.vezorla.repository.ProductRepo;
 import com.fasterxml.jackson.core.JsonProcessingException;
 import com.fasterxml.jackson.databind.ObjectMapper;
@@ -35,13 +36,15 @@ public class UserServicesImp implements UserServices {
     private ProductRepo productRepo;
     private AccountRepo accountRepo;
     private DiscountRepo discountRepo;
+    private LotRepo lotRepo;
     private ObjectMapper mapper;
     private CustomerClientUtil customerClientUtil;
 
-    public UserServicesImp(ProductRepo productRepo, AccountRepo accountRepo, DiscountRepo discountRepo, ObjectMapper mapper) {
+    public UserServicesImp(ProductRepo productRepo, AccountRepo accountRepo, DiscountRepo discountRepo, LotRepo lotRepo, ObjectMapper mapper) {
         this.productRepo = productRepo;
         this.accountRepo = accountRepo;
         this.discountRepo = discountRepo;
+        this.lotRepo = lotRepo;
         this.mapper = mapper;
         this.customerClientUtil = new CustomerClientUtil();
     }
@@ -531,8 +534,70 @@ public class UserServicesImp implements UserServices {
         return mainArrayNode;
     }
 
-    public List<Lot> obtainSufficientQtyLots() {
-        return null;
+    /**
+     * Method to decrease inventory from lot
+     * in database.
+     *
+     */
+    public void decreaseInventory(HttpServletRequest request){
+        //get line items to determine what was sold
+        HttpSession session = request.getSession();
+        Cart cart = (Cart) session.getAttribute("CART");
+        ArrayList<LineItem> lineItems = (ArrayList<LineItem>) cart.getLineItems();
+
+        //loop through the items in the order
+        for(int i = 0; i < lineItems.size(); i++) {
+            ArrayList<Lot> lotsToUse = (ArrayList<Lot>) obtainSufficientQtyLots(lineItems.get(i).getQuantity(), lineItems.get(i).getProduct());
+
+            int orderedQty = lineItems.get(i).getQuantity();
+            for(int j = 0; j < lotsToUse.size() && orderedQty > 0; j++){
+                int lotQuantity = lotsToUse.get(j).getQuantity();
+
+                if(lotQuantity >= orderedQty){
+                    System.out.println("Greater: " + (lotQuantity - orderedQty));
+                    lotsToUse.get(j).setQuantity(lotQuantity - orderedQty);
+                    lotRepo.save(lotsToUse.get(j));
+                    orderedQty = 0;
+                }
+                else if(lotQuantity < orderedQty){
+                    lotsToUse.get(j).setQuantity(0);
+                    lotRepo.save(lotsToUse.get(j));
+                    orderedQty -= lotQuantity;
+                    System.out.println("Lesser: " + orderedQty);
+
+                }
+
+            }
+        }
+    }
+
+
+    /**
+     * Method to obtain lots that contain
+     * enough quantity to fulfill order.
+     *
+     * @return list of lots
+     */
+    public List<Lot> obtainSufficientQtyLots(int qty, Product product) {
+        //grab lots from database
+        ArrayList<Lot> lots = (ArrayList<Lot>) lotRepo.findAllLotsWithQuantity(product);
+        ArrayList<Lot> lotsToUse = new ArrayList<>();
+
+        //get the lots to be used for the order
+        for(int i = 0; i < lots.size() && qty > 0; i++) {
+            int qtyInLot = lots.get(i).getQuantity();
+            int result = qtyInLot - qty;
+
+            if (result >= 0) {
+                lotsToUse.add(lots.get(i));
+                qty = 0;
+            } else {
+                lotsToUse.add(lots.get(i));
+                qty -= lots.get(i).getQuantity();
+            }
+        }
+
+        return lotsToUse;
     }
 
     public boolean searchEmail(String email) {

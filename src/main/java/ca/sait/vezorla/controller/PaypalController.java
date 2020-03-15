@@ -4,6 +4,8 @@ import ca.sait.vezorla.controller.util.CustomerClientUtil;
 import ca.sait.vezorla.exception.UnauthorizedException;
 import ca.sait.vezorla.model.Invoice;
 import ca.sait.vezorla.service.PaypalServices;
+import ca.sait.vezorla.service.UserServices;
+import ca.sait.vezorla.service.UserServicesImp;
 import com.paypal.api.payments.Links;
 import com.paypal.api.payments.Payment;
 import com.paypal.base.rest.PayPalRESTException;
@@ -26,14 +28,17 @@ public class PaypalController {
     public static final String CANCEL_URL = "cart/payment";
     PaypalServices paypalServices;
 
-    public PaypalController(PaypalServices paypalServices){
+    private UserServices userServices;
+
+    public PaypalController(PaypalServices paypalServices, UserServices userServices){
         this.paypalServices = paypalServices;
+        this.userServices = userServices;
     }
 
     @PostMapping("/customer/cart/payment")
     public String makePayment(HttpServletRequest request) throws UnauthorizedException {
         HttpSession session = request.getSession();
-
+        userServices.decreaseInventory(request);
         //check to ensure all previous steps have been performed
         if(session.getAttribute("INVOICE") == null){
             throw new UnauthorizedException();
@@ -59,6 +64,7 @@ public class PaypalController {
             e.printStackTrace();
         }
         System.out.println("Made payment");
+
         return "redirect:/";
     }
 
@@ -70,7 +76,6 @@ public class PaypalController {
 
     @GetMapping(value = "/customer/cart/payment/success")
     public String successPay(@RequestParam("paymentId") String paymentId, @RequestParam("PayerID") String payerId, HttpServletRequest request) {
-        HttpSession session = request.getSession();
         try {
             Payment payment = paypalServices.executePayment(paymentId, payerId);
             System.out.println(payment.toJSON());
@@ -82,6 +87,8 @@ public class PaypalController {
         }
         System.out.println("Success: " + paymentId);
 
+        //UserServices.applyDiscount();
+        //UserServices.saveInvoice();
         return "redirect:/";
     }
 }

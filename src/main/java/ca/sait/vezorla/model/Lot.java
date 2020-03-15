@@ -32,7 +32,7 @@ import lombok.NoArgsConstructor;
 public class Lot {
 
 	@Id
-	private String lotNum;
+	private Long lotNum;
 	
 	@Column(name = "quantity")
 	private int quantity;

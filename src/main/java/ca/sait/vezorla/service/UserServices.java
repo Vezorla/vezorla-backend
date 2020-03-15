@@ -33,7 +33,7 @@ public interface UserServices {
 
     public List<Discount> getValidDiscounts(String email);
 
-    public List<Lot> obtainSufficientQtyLots();
+    public List<Lot> obtainSufficientQtyLots(int qty, Product product);
 
     public boolean removeLineItemSession(Long id, Cart cart, HttpServletRequest request);
 
@@ -70,4 +70,6 @@ public interface UserServices {
     public ArrayNode reviewOrder(HttpSession session, ArrayNode mainArrayNode, Cart cart);
 
     public ArrayNode checkItemsOrderedOutOfStock(Cart cart, HttpServletRequest request);
+
+    public void decreaseInventory(HttpServletRequest request);
 }
