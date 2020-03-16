@@ -18,6 +18,7 @@ import javax.validation.constraints.Min;
 import java.io.Serializable;
 import java.math.BigDecimal;
 import java.util.ArrayList;
+import java.util.Arrays;
 import java.util.Date;
 import java.util.List;
 
@@ -74,4 +75,8 @@ public class Discount implements Serializable {
     }
 
 
+    public Discount(String code, AccountDiscount... accountDiscounts) {
+        this.code = code;
+        this.accountDiscounts = Arrays.asList(accountDiscounts);
+    }
 }

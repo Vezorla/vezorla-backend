@@ -12,6 +12,7 @@ import javax.persistence.ManyToOne;
 import javax.persistence.OneToMany;
 import javax.persistence.Table;
 
+import com.fasterxml.jackson.annotation.JsonIgnore;
 import com.sun.istack.NotNull;
 
 import lombok.AllArgsConstructor;
@@ -44,16 +45,20 @@ public class Lot {
 
 	@Column(name = "best_before")
 	private Date bestBefore;
-	
+
+	@JsonIgnore
 	@ManyToOne
 	private Product product;
-	
+
+	@JsonIgnore
 	@ManyToOne
 	private PurchaseOrder purchaseOrder;
-	
+
+	@JsonIgnore
 	@OneToMany(mappedBy = "lot")
 	private List<LineItem> lineItemList = new ArrayList<LineItem>();
-	
+
+	@JsonIgnore
 	@ManyToOne
 	private Warehouse warehouse;
 }

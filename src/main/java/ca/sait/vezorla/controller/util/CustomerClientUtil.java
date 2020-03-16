@@ -1,7 +1,10 @@
 package ca.sait.vezorla.controller.util;
 
 import ca.sait.vezorla.exception.InvalidInputException;
+import ca.sait.vezorla.model.AccountDiscount;
 
+import javax.persistence.EntityManager;
+import javax.transaction.Transactional;
 import java.util.regex.Pattern;
 
 public class CustomerClientUtil {
@@ -46,4 +49,6 @@ public class CustomerClientUtil {
             throw new InvalidInputException();
         }
     }
+
+
 }

@@ -39,7 +39,7 @@ public class Account implements Serializable {
     private String firstName;
 
     @Column(name = "phone_num")
-    @Pattern(regexp = "((\\(\\d{3}\\) ?)|(\\d{3}-))?\\d{3}-\\d{4}")
+    //@Pattern(regexp = "((\\(\\d{3}\\) ?)|(\\d{3}-))?\\d{3}-\\d{4}")
     private String phoneNum;
 
     @Column(name = "address")
@@ -55,7 +55,7 @@ public class Account implements Serializable {
     private String country;
 
     @Column(name = "postalCode")
-    @Pattern(regexp = "^([A-Za-z]\\d[A-Za-z][-]?\\d[A-Za-z]\\d)")
+    //@Pattern(regexp = "^([A-Za-z]\\d[A-Za-z][-]?\\d[A-Za-z]\\d)")
     private String postalCode;
 
     @Column(name = "password")

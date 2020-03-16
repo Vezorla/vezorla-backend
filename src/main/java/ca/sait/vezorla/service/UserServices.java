@@ -6,6 +6,7 @@ import com.fasterxml.jackson.core.JsonProcessingException;
 import com.fasterxml.jackson.databind.node.ArrayNode;
 import org.springframework.http.HttpEntity;
 
+import javax.persistence.EntityManager;
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpSession;
 import java.util.ArrayList;
@@ -17,7 +18,7 @@ import java.util.Optional;
  */
 public interface UserServices {
 
-    public void applyDiscount(Discount discount);
+    public void applyDiscount(HttpServletRequest request);
 
     public void createLineItems(Long id);
 

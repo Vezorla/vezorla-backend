@@ -12,11 +12,13 @@ import com.paypal.base.rest.PayPalRESTException;
 import org.springframework.stereotype.Controller;
 import org.springframework.web.bind.annotation.*;
 
+import javax.persistence.EntityManager;
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpSession;
 
 /**
  * Controller for paypal payments
+ * JR is the number one
  *
  * Taken from: https://github.com/Java-Techie-jt/spring-boot-paypal-example/blob/master/src/main/java/com/javatechie/spring/paypal/api/PaypalController.java
  */
@@ -38,7 +40,10 @@ public class PaypalController {
     @PostMapping("/customer/cart/payment")
     public String makePayment(HttpServletRequest request) throws UnauthorizedException {
         HttpSession session = request.getSession();
+
         userServices.decreaseInventory(request);
+        userServices.applyDiscount(request);
+
         //check to ensure all previous steps have been performed
         if(session.getAttribute("INVOICE") == null){
             throw new UnauthorizedException();
@@ -87,7 +92,6 @@ public class PaypalController {
         }
         System.out.println("Success: " + paymentId);
 
-        //UserServices.applyDiscount();
         //UserServices.saveInvoice();
         return "redirect:/";
     }

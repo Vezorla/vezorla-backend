@@ -3,21 +3,14 @@ package ca.sait.vezorla.service;
 import ca.sait.vezorla.controller.util.CustomerClientUtil;
 import ca.sait.vezorla.exception.InvalidInputException;
 import ca.sait.vezorla.model.*;
-import ca.sait.vezorla.repository.AccountRepo;
-import ca.sait.vezorla.repository.DiscountRepo;
-import ca.sait.vezorla.repository.LotRepo;
-import ca.sait.vezorla.repository.ProductRepo;
+import ca.sait.vezorla.repository.*;
 import com.fasterxml.jackson.core.JsonProcessingException;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import com.fasterxml.jackson.databind.node.ArrayNode;
 import com.fasterxml.jackson.databind.node.ObjectNode;
-import net.bytebuddy.implementation.bind.MethodDelegationBinder;
-import org.json.simple.JSONObject;
-import org.json.simple.parser.JSONParser;
-import org.json.simple.parser.ParseException;
-import org.springframework.http.HttpEntity;
 import org.springframework.stereotype.Service;
 
+import javax.persistence.EntityManager;
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpSession;
 import java.util.ArrayList;
@@ -37,19 +30,33 @@ public class UserServicesImp implements UserServices {
     private AccountRepo accountRepo;
     private DiscountRepo discountRepo;
     private LotRepo lotRepo;
+    private AccountDiscountRepo accountDiscountRepo;
     private ObjectMapper mapper;
     private CustomerClientUtil customerClientUtil;
 
-    public UserServicesImp(ProductRepo productRepo, AccountRepo accountRepo, DiscountRepo discountRepo, LotRepo lotRepo, ObjectMapper mapper) {
+    public UserServicesImp(ProductRepo productRepo, AccountRepo accountRepo, DiscountRepo discountRepo, LotRepo lotRepo, AccountDiscountRepo accountDiscountRepo, ObjectMapper mapper) {
         this.productRepo = productRepo;
         this.accountRepo = accountRepo;
         this.discountRepo = discountRepo;
         this.lotRepo = lotRepo;
+        this.accountDiscountRepo = accountDiscountRepo;
         this.mapper = mapper;
         this.customerClientUtil = new CustomerClientUtil();
     }
 
-    public void applyDiscount(Discount discount) {
+    /**
+     * Method to save the discount used on
+     * a order to the Account_Discount table
+     */
+    public void applyDiscount(HttpServletRequest request) {
+
+        //get discount from the session
+        HttpSession session = request.getSession();
+        AccountDiscount accountDiscount = (AccountDiscount) session.getAttribute("ACCOUNT_DISCOUNT");
+
+        Discount discount = new Discount(accountDiscount.getCode().getCode(), accountDiscount);
+
+        accountDiscountRepo.insertWithQuery(accountDiscount);
 
     }
 
@@ -554,7 +561,6 @@ public class UserServicesImp implements UserServices {
                 int lotQuantity = lotsToUse.get(j).getQuantity();
 
                 if(lotQuantity >= orderedQty){
-                    System.out.println("Greater: " + (lotQuantity - orderedQty));
                     lotsToUse.get(j).setQuantity(lotQuantity - orderedQty);
                     lotRepo.save(lotsToUse.get(j));
                     orderedQty = 0;
@@ -563,7 +569,7 @@ public class UserServicesImp implements UserServices {
                     lotsToUse.get(j).setQuantity(0);
                     lotRepo.save(lotsToUse.get(j));
                     orderedQty -= lotQuantity;
-                    System.out.println("Lesser: " + orderedQty);
+
 
                 }
 
