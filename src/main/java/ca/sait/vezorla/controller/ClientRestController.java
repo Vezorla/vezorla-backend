@@ -4,26 +4,25 @@ import ca.sait.vezorla.model.Account;
 import ca.sait.vezorla.model.Invoice;
 import ca.sait.vezorla.model.Product;
 import ca.sait.vezorla.service.UserServices;
+import lombok.AllArgsConstructor;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.ui.Model;
 import org.springframework.validation.BindingResult;
-import org.springframework.web.bind.annotation.GetMapping;
-import org.springframework.web.bind.annotation.PathVariable;
-import org.springframework.web.bind.annotation.RequestMapping;
-import org.springframework.web.bind.annotation.RestController;
+import org.springframework.web.bind.annotation.*;
 
+import javax.servlet.http.HttpServletRequest;
 import java.util.List;
 import java.util.Optional;
 
+@AllArgsConstructor
 @RestController
 @RequestMapping(ClientRestController.URL)
 public class ClientRestController {
 
     protected static final String URL = "/api/client/";
 
-    @Autowired
     private UserServices userServices;
 
     @GetMapping("find/{id}")
@@ -36,8 +35,10 @@ public class ClientRestController {
         return null;
     }
 
-    @GetMapping("account/update")
-    public String updateAccount(Account account, Model model, BindingResult bindingResult) {
+    @PutMapping("account/update")
+    public String updateAccount(@RequestBody Account account, HttpServletRequest request) {
+
+
         return null;
     }
 

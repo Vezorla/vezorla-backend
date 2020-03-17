@@ -76,9 +76,27 @@ public class AuthenticationRestController {
         return ResponseEntity.ok().body(output);
     }
 
+    /**
+     * Logout
+     * Grab the session by passing <code>false</code>
+     * This way, it does not create a session if one is not existing
+     * Will invalidate and check afterwards
+     *
+     * @author: matthewjflee
+     * @param request Http Request
+     * @return result result if the session was invalidated
+     */
     @GetMapping("logout")
-    public void logout() {
+    public boolean logout(HttpServletRequest request) {
+        boolean result = false;
+        HttpSession session = request.getSession(false);
+        session.invalidate();
+        session = request.getSession(false); //Need second session getting to ensure session is invalidated.
 
+        if(session == null)
+            result = true;
+
+        return result;
     }
 
 }
