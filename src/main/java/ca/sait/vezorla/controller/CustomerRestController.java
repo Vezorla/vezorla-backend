@@ -239,7 +239,7 @@ public class CustomerRestController {
      * @param body: JSON sending email and password
      * @author: matthewjflee
      */
-    @GetMapping("create-account")
+    @PostMapping("create-account")
     public boolean createAccount(@RequestBody String body, HttpServletRequest request) {
         boolean created = false;
         String email = null;
