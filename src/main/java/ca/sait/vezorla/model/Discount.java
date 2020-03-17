@@ -57,7 +57,8 @@ public class Discount implements Serializable {
     @Column(name = "active", columnDefinition = "BIT")
     @Type(type = "org.hibernate.type.NumericBooleanType")
     private boolean active;
-    
+
+    @JsonIgnore
     @ManyToOne
     private Product product;
 

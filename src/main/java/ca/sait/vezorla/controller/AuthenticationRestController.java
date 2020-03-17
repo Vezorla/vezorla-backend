@@ -9,12 +9,8 @@ import lombok.AllArgsConstructor;
 import org.json.simple.JSONObject;
 import org.json.simple.parser.JSONParser;
 import org.json.simple.parser.ParseException;
-import org.springframework.http.HttpEntity;
 import org.springframework.http.ResponseEntity;
-import org.springframework.web.bind.annotation.GetMapping;
-import org.springframework.web.bind.annotation.RequestBody;
-import org.springframework.web.bind.annotation.RequestMapping;
-import org.springframework.web.bind.annotation.RestController;
+import org.springframework.web.bind.annotation.*;
 
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpSession;
@@ -34,7 +30,7 @@ public class AuthenticationRestController {
      * @return
      * @author matthewjflee
      */
-    @GetMapping("login")
+    @PostMapping("login")
     public ResponseEntity<String> login(@RequestBody String body, HttpServletRequest request) throws JsonProcessingException {
         HttpSession session = request.getSession();
         String email = null;
@@ -63,16 +59,21 @@ public class AuthenticationRestController {
     }
 
     /**
-     * Method to check if the account has been persisted in the session properly
-     * Testing purposes
-     *
+     * Check the current role of the authenticated user
      * @author: matthewjflee
      * @param session
+     * @return
+     * @throws JsonProcessingException
      */
-    @GetMapping("check")
-    public void check(HttpSession session) {
+    @GetMapping("checkRole")
+    public ResponseEntity<String> checkRole(HttpSession session) throws JsonProcessingException {
         Account account = (Account) session.getAttribute("ACCOUNT");
-        System.out.println(account.getEmail());
+        ObjectMapper mapper = new ObjectMapper();
+        ObjectNode node = mapper.createObjectNode();
+        node.put("admin", account.isAccountAdmin());
+        String output = mapper.writerWithDefaultPrettyPrinter().writeValueAsString(node);
+
+        return ResponseEntity.ok().body(output);
     }
 
     /**
