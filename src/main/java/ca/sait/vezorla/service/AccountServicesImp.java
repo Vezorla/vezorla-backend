@@ -3,15 +3,15 @@ package ca.sait.vezorla.service;
 import ca.sait.vezorla.model.Account;
 import ca.sait.vezorla.model.Invoice;
 import ca.sait.vezorla.repository.AccountRepo;
-import org.springframework.beans.factory.annotation.Autowired;
+import lombok.AllArgsConstructor;
 import org.springframework.stereotype.Service;
 
 import java.util.List;
 
+@AllArgsConstructor
 @Service
 public class AccountServicesImp implements AccountServices{
 
-    @Autowired
     private AccountRepo accountRepo;
 
     public boolean confirmAccount(Long id) {
@@ -30,11 +30,11 @@ public class AccountServicesImp implements AccountServices{
      * @return Account object that matches the email, null if not found.
      */
     @Override
-    public Account get(String email) {
+    public Account findByEmail(String email) {
 
         Account account = null;
 
-        Iterable<Account> accounts = accountRepo.findAll();
+        List<Account> accounts = accountRepo.findAll();
 
         for(Account a: accounts) {
             if(a.getEmail().equalsIgnoreCase(email)) {

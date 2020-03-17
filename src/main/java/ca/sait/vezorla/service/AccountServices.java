@@ -9,7 +9,7 @@ public interface AccountServices {
 
 	   public boolean confirmAccount(Long id);
 	    public Account findById(Long id);
-	    public Account get(String email);
+	    public Account findByEmail(String email);
 	    public List<Invoice> getOrder(Long id);
 	    public boolean saveAccount(Account account);
 	    public boolean validatePaymentInfo();

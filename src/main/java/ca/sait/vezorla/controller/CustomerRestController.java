@@ -9,10 +9,10 @@ import com.fasterxml.jackson.core.JsonProcessingException;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import com.fasterxml.jackson.databind.node.ArrayNode;
 import com.fasterxml.jackson.databind.node.ObjectNode;
+import lombok.AllArgsConstructor;
 import org.json.simple.JSONObject;
 import org.json.simple.parser.JSONParser;
 import org.json.simple.parser.ParseException;
-import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpEntity;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
@@ -25,6 +25,7 @@ import java.util.Date;
 import java.util.List;
 import java.util.Optional;
 
+@AllArgsConstructor
 @CrossOrigin
 @RestController
 @RequestMapping(CustomerRestController.URL)
@@ -36,17 +37,9 @@ public class CustomerRestController {
     private CartRepo cartRepo;
     private AccountRepo accountRepo;
 
-    @Autowired
     private AccountServices accountServices;
 
-    @Autowired
     ObjectMapper mapper;
-
-    public CustomerRestController(UserServices userServices, CartRepo cartRepo, AccountRepo accountRepo) {
-        this.userServices = userServices;
-        this.cartRepo = cartRepo;
-        this.accountRepo = accountRepo;
-    }
 
     /**
      * Get all products
@@ -189,13 +182,14 @@ public class CustomerRestController {
     @PostMapping("subscribe/{email}")
     public boolean subscribeEmail(@PathVariable String email) {
 
-        Account account = accountServices.get(email);
+        Account account = accountServices.findByEmail(email);
 
         if (account == null) {
             account = new Account(email);
         }
 
         account.setSubscript(true);
+        accountServices.saveAccount(account);
 
         return account.isSubscript();
 
