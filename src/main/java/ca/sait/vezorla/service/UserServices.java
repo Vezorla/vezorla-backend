@@ -57,6 +57,8 @@ public interface UserServices {
 
     boolean createAccount(Account account);
 
+    Optional<Account> findAccount(String email);
+
     void getSelectedDiscount(String code, HttpServletRequest request, HttpSession session);
 
     ArrayNode viewSessionCart(HttpSession session) throws JsonProcessingException;

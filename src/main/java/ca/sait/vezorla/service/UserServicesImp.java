@@ -219,6 +219,10 @@ public class UserServicesImp implements UserServices {
         return result;
     }
 
+    public Optional<Account> findAccount(String email) {
+        return accountRepo.findById(email);
+    }
+
     /**
      * Return all products in the Products table
      *
