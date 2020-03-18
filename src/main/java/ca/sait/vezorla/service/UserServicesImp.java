@@ -13,6 +13,7 @@ import org.springframework.stereotype.Service;
 import javax.persistence.EntityManager;
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpSession;
+import javax.xml.transform.sax.SAXSource;
 import java.util.ArrayList;
 import java.util.Date;
 import java.util.List;
@@ -30,16 +31,18 @@ public class UserServicesImp implements UserServices {
     private AccountRepo accountRepo;
     private DiscountRepo discountRepo;
     private LotRepo lotRepo;
+    private InvoiceRepo invoiceRepo;
     private AccountDiscountRepo accountDiscountRepo;
     private ObjectMapper mapper;
     private CustomerClientUtil customerClientUtil;
 
-    public UserServicesImp(ProductRepo productRepo, AccountRepo accountRepo, DiscountRepo discountRepo, LotRepo lotRepo, AccountDiscountRepo accountDiscountRepo, ObjectMapper mapper) {
+    public UserServicesImp(ProductRepo productRepo, AccountRepo accountRepo, DiscountRepo discountRepo, LotRepo lotRepo, AccountDiscountRepo accountDiscountRepo,InvoiceRepo invoiceRepo, ObjectMapper mapper) {
         this.productRepo = productRepo;
         this.accountRepo = accountRepo;
         this.discountRepo = discountRepo;
         this.lotRepo = lotRepo;
         this.accountDiscountRepo = accountDiscountRepo;
+        this.invoiceRepo = invoiceRepo;
         this.mapper = mapper;
         this.customerClientUtil = new CustomerClientUtil();
     }
@@ -54,9 +57,11 @@ public class UserServicesImp implements UserServices {
         HttpSession session = request.getSession();
         AccountDiscount accountDiscount = (AccountDiscount) session.getAttribute("ACCOUNT_DISCOUNT");
 
-        Discount discount = new Discount(accountDiscount.getCode().getCode(), accountDiscount);
+        //Discount discount = new Discount(accountDiscount.getCode().getCode(), accountDiscount);
 
-        accountDiscountRepo.insertWithQuery(accountDiscount);
+        if(!accountDiscount.getCode().getCode().equals("NotSelected")) {
+            accountDiscountRepo.insertWithQuery(accountDiscount);
+        }
 
     }
 
@@ -160,8 +165,6 @@ public class UserServicesImp implements UserServices {
             }
 
         }
-
-        System.out.println("Check" + outOfStockItems);
 
         return outOfStockItems;
     }
@@ -347,11 +350,9 @@ public class UserServicesImp implements UserServices {
         ArrayList<String> stringDiscounts = (ArrayList<String>) discountRepo.findValidDiscounts(sqlDate, email);
         //list of Discounts
         ArrayList<Discount> discounts = new ArrayList<>();
-        System.out.println("valid discounts " + stringDiscounts.size());
 
         //parse the comma deliminted string returned from query
         for (String s : stringDiscounts) {
-            System.out.println("discount FATT GARRETTT   " + s);
 
             String[] spl = s.split(",");
             float decimalPercent = Float.parseFloat(spl[2]) / 100;
@@ -424,13 +425,6 @@ public class UserServicesImp implements UserServices {
             node.put("quantity", cart.getLineItems().get(i).getQuantity());
             arrayNode.add(node);
         }
-
-//        if(outOfStockItems != null) {
-//            System.out.println("out " + outOfStockItems);
-//            arrayNode.add(outOfStockItems);
-//        }
-
-
         return arrayNode;
     }
 
@@ -447,10 +441,6 @@ public class UserServicesImp implements UserServices {
     public String getShippingInfo(HttpServletRequest request, Account account) throws InvalidInputException, JsonProcessingException {
         HttpSession session = request.getSession();
         boolean created = false;
-        System.out.println("Account email: " + account.getFirstName());
-        System.out.println("Account email: " + account.getLastName());
-        System.out.println("Account email: " + account.getPostalCode());
-        System.out.println("Account email: " + account.getPhoneNum());
         if (account.getEmail() == null || account.getFirstName() == null || account.getLastName() == null ||
                 account.getPostalCode() == null || account.getPhoneNum() == null) {
             throw new InvalidInputException();
@@ -460,7 +450,7 @@ public class UserServicesImp implements UserServices {
         customerClientUtil.validatePostalCode(account.getPostalCode());
 
         session.setAttribute("ACCOUNT", account);
-        session.setAttribute("PICKUP", account.isPickup());
+        session.setAttribute("PICKUP", account.getPickup());
             created = true;
 
         return mapper.writerWithDefaultPrettyPrinter().writeValueAsString(created);
@@ -500,13 +490,17 @@ public class UserServicesImp implements UserServices {
         //get discount
         long discountAmount;
         AccountDiscount discountType = (AccountDiscount) session.getAttribute("ACCOUNT_DISCOUNT");
-        if (discountType != null) {
+        if(discountType.getCode().getCode().equals("NotSelected")) {
+            discountAmount = 0;
+        }
+        else if (discountType != null) {
             float discountPercent = Float.parseFloat(discountRepo.findDiscountPercent(discountType.getCode().getCode()));
             float discountDecimal = discountPercent / 100;
 
             discountAmount = (long) (subtotal * discountDecimal);
-        } else {
-            discountAmount = 0;
+        }
+        else{
+            discountAmount =0;
         }
         node.put("discount", customerClientUtil.formatAmount(discountAmount));
 
@@ -533,9 +527,13 @@ public class UserServicesImp implements UserServices {
 
         mainArrayNode.add(itemsArrayNode);
         mainArrayNode.add(node);
-
+        System.out.println("Shipping in review: " + shippingRate);
         //create temporary invoice
-        Invoice invoice = new Invoice(discountedSubtotal, discountAmount, taxes, total);
+        Invoice invoice = new Invoice(shippingRate,
+                discountedSubtotal,
+                discountAmount,
+                taxes,
+                total);
         session.setAttribute("INVOICE", invoice);
 
         return mainArrayNode;
@@ -604,6 +602,44 @@ public class UserServicesImp implements UserServices {
         }
 
         return lotsToUse;
+    }
+
+    /**
+     * Method to get all the invoice information
+     * and save it to the database.
+     *
+     * @param request for the session
+     * @return the Invoice saved to the database
+     */
+    public Invoice saveInvoice(HttpServletRequest request){
+        //grab the invoice already generated
+        HttpSession session = request.getSession();
+        Invoice newInvoice = (Invoice) session.getAttribute("INVOICE");
+
+        System.out.println("Shipping cost at Save Invoice: " + newInvoice.getShippingCost());
+
+        //get current date
+        Date currentDate = new Date();
+        java.sql.Date sqlDate = new java.sql.Date(currentDate.getTime());
+
+        //grab the account created
+        Account account = (Account) session.getAttribute("ACCOUNT");
+
+        //grab the cart to get the line items
+        Cart cart = (Cart) session.getAttribute("CART");
+        ArrayList<LineItem> lineItems = (ArrayList<LineItem>) cart.getLineItems();
+
+        //get pickup status
+        String pickup = (String) session.getAttribute("PICKUP");
+
+        //add the above to the newInvoice
+        newInvoice.setDate(sqlDate);
+        newInvoice.setAccount(account);
+        newInvoice.setLineItemList(lineItems);
+        newInvoice.setPickup(pickup);
+
+        //save to database
+        return invoiceRepo.save(newInvoice);
     }
 
     public boolean searchEmail(String email) {

@@ -43,6 +43,7 @@ public class PaypalController {
 
         userServices.decreaseInventory(request);
         userServices.applyDiscount(request);
+        userServices.saveInvoice(request);
 
         //check to ensure all previous steps have been performed
         if(session.getAttribute("INVOICE") == null){
@@ -92,7 +93,7 @@ public class PaypalController {
         }
         System.out.println("Success: " + paymentId);
 
-        //UserServices.saveInvoice();
+
         return "redirect:/";
     }
 }

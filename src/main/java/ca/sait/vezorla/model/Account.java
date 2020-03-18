@@ -77,8 +77,7 @@ public class Account implements Serializable {
     @Type(type = "org.hibernate.type.NumericBooleanType")
     private boolean isSubscript;
 
-    @Type(type = "org.hibernate.type.NumericBooleanType")
-    private boolean pickup;
+    private String pickup;
 
     @Column(name = "cart")
     @OneToMany(mappedBy = "account")

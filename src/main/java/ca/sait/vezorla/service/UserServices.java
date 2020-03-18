@@ -73,4 +73,6 @@ public interface UserServices {
     public ArrayNode checkItemsOrderedOutOfStock(Cart cart, HttpServletRequest request);
 
     public void decreaseInventory(HttpServletRequest request);
+
+    public Invoice saveInvoice(HttpServletRequest request);
 }
