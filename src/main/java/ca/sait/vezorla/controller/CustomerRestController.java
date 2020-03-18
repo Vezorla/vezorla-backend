@@ -11,6 +11,7 @@ import ca.sait.vezorla.service.UserServices;
 import com.fasterxml.jackson.core.JsonProcessingException;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import com.fasterxml.jackson.databind.node.ArrayNode;
+import lombok.AllArgsConstructor;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
@@ -27,6 +28,7 @@ import java.util.Optional;
  * @author matthewjflee, jjrr1717
  */
 @CrossOrigin
+@AllArgsConstructor
 @RestController
 @RequestMapping(CustomerRestController.URL)
 public class CustomerRestController {
@@ -35,11 +37,6 @@ public class CustomerRestController {
     private UserServices userServices;
     private PaypalServices paypalServices;
 
-
-    public CustomerRestController(UserServices userServices, PaypalServices paypalServices) {
-        this.userServices = userServices;
-        this.paypalServices = paypalServices;
-    }
 
     /**
      * Get all products
