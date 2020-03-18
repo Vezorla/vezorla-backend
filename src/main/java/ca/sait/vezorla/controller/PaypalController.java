@@ -43,7 +43,9 @@ public class PaypalController {
 
         userServices.decreaseInventory(request);
         userServices.applyDiscount(request);
-        userServices.saveInvoice(request);
+        Invoice newInvoice = userServices.saveInvoice(request);
+
+        userServices.saveLineItems(request, newInvoice);
 
         //check to ensure all previous steps have been performed
         if(session.getAttribute("INVOICE") == null){

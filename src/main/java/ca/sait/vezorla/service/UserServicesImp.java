@@ -8,11 +8,13 @@ import com.fasterxml.jackson.core.JsonProcessingException;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import com.fasterxml.jackson.databind.node.ArrayNode;
 import com.fasterxml.jackson.databind.node.ObjectNode;
+import org.hibernate.Hibernate;
 import org.springframework.stereotype.Service;
 
 import javax.persistence.EntityManager;
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpSession;
+import javax.transaction.Transactional;
 import javax.xml.transform.sax.SAXSource;
 import java.util.ArrayList;
 import java.util.Date;
@@ -25,6 +27,7 @@ import java.util.Optional;
  * @author matthewjflee, jjrr1717
  */
 @Service
+@Transactional
 public class UserServicesImp implements UserServices {
 
     private ProductRepo productRepo;
@@ -32,17 +35,21 @@ public class UserServicesImp implements UserServices {
     private DiscountRepo discountRepo;
     private LotRepo lotRepo;
     private InvoiceRepo invoiceRepo;
+    private LineItemRepo lineItemRepo;
+    private CartRepo cartRepo;
     private AccountDiscountRepo accountDiscountRepo;
     private ObjectMapper mapper;
     private CustomerClientUtil customerClientUtil;
 
-    public UserServicesImp(ProductRepo productRepo, AccountRepo accountRepo, DiscountRepo discountRepo, LotRepo lotRepo, AccountDiscountRepo accountDiscountRepo,InvoiceRepo invoiceRepo, ObjectMapper mapper) {
+    public UserServicesImp(ProductRepo productRepo, AccountRepo accountRepo, DiscountRepo discountRepo, LotRepo lotRepo, AccountDiscountRepo accountDiscountRepo,InvoiceRepo invoiceRepo, LineItemRepo lineItemRepo, CartRepo cartRepo, ObjectMapper mapper) {
         this.productRepo = productRepo;
         this.accountRepo = accountRepo;
         this.discountRepo = discountRepo;
         this.lotRepo = lotRepo;
         this.accountDiscountRepo = accountDiscountRepo;
         this.invoiceRepo = invoiceRepo;
+        this.lineItemRepo = lineItemRepo;
+        this.cartRepo = cartRepo;
         this.mapper = mapper;
         this.customerClientUtil = new CustomerClientUtil();
     }
@@ -625,22 +632,43 @@ public class UserServicesImp implements UserServices {
         //grab the account created
         Account account = (Account) session.getAttribute("ACCOUNT");
 
-        //grab the cart to get the line items
-        Cart cart = (Cart) session.getAttribute("CART");
-        ArrayList<LineItem> lineItems = (ArrayList<LineItem>) cart.getLineItems();
-
         //get pickup status
         String pickup = (String) session.getAttribute("PICKUP");
 
         //add the above to the newInvoice
         newInvoice.setDate(sqlDate);
         newInvoice.setAccount(account);
-        newInvoice.setLineItemList(lineItems);
+        //newInvoice.setLineItemList(lineItems);
         newInvoice.setPickup(pickup);
 
         //save to database
         return invoiceRepo.save(newInvoice);
+
     }
+
+    /**
+     * Method to save cart and line items to database
+     * @param request for the session
+     * @param invoice the line items belong to
+     */
+    public void saveLineItems(HttpServletRequest request, Invoice invoice){
+        HttpSession session = request.getSession();
+
+        //grab the cart to get the line items
+        Cart cart = (Cart) session.getAttribute("CART");
+        ArrayList<LineItem> lineItems = (ArrayList<LineItem>) cart.getLineItems();
+
+        //persist cart because it is a parent
+        cartRepo.save(cart);
+
+        //loop through lineitems. Assign cart number & invoice number and persist line item
+        for(int i = 0; i < lineItems.size(); i++){
+            lineItems.get(i).setInvoice(invoice);
+            lineItems.get(i).setCart(cart);
+            lineItemRepo.save(lineItems.get(i));
+        }
+    }
+
 
     public boolean searchEmail(String email) {
         return false;

@@ -75,4 +75,6 @@ public interface UserServices {
     public void decreaseInventory(HttpServletRequest request);
 
     public Invoice saveInvoice(HttpServletRequest request);
+
+    public void saveLineItems(HttpServletRequest request, Invoice invoice);
 }

@@ -45,7 +45,7 @@ public class LineItem implements Serializable {
     private long extendedPrice;
 
     @ManyToOne
-    @JoinColumn(name = "order_num", nullable = false)
+    @JoinColumn(name = "order_num")
     private Cart cart;
 
     @ManyToOne

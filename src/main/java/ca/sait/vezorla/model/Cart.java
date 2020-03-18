@@ -6,8 +6,10 @@
  */
 package ca.sait.vezorla.model;
 
+import com.fasterxml.jackson.annotation.JsonIgnore;
 import lombok.AllArgsConstructor;
 import lombok.Data;
+import lombok.NoArgsConstructor;
 
 import javax.persistence.*;
 import java.io.Serializable;
@@ -32,6 +34,7 @@ public class Cart implements Serializable {
     @Column(name = "from_account")
     private boolean fromAccount;
 
+    @JsonIgnore
     @OneToMany(mappedBy = "cart")
     @Column
     private List<LineItem> lineItems;
