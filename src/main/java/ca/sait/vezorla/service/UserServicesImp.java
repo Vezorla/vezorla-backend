@@ -220,7 +220,7 @@ public class UserServicesImp implements UserServices {
         return result;
     }
 
-    public Optional<Account> findAccount(String email) {
+    public Optional<Account> findAccountByEmail(String email) {
         return accountRepo.findById(email);
     }
 
@@ -343,13 +343,4 @@ public class UserServicesImp implements UserServices {
     public List<Lot> obtainSufficientQtyLots() {
         return null;
     }
-
-    public boolean searchEmail(String email) {
-        return false;
-    }
-
-    public boolean subscribeEmail(String email) {
-        return false;
-    }
-
 }
