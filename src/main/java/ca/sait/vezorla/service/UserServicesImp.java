@@ -2,6 +2,7 @@ package ca.sait.vezorla.service;
 
 import ca.sait.vezorla.controller.util.CustomerClientUtil;
 import ca.sait.vezorla.exception.InvalidInputException;
+import ca.sait.vezorla.exception.UnableToSaveException;
 import ca.sait.vezorla.model.*;
 import ca.sait.vezorla.repository.*;
 import com.fasterxml.jackson.core.JsonProcessingException;
@@ -26,8 +27,8 @@ import java.util.Optional;
  *
  * @author matthewjflee, jjrr1717
  */
+@AllArgsConstructor
 @Service
-@Transactional
 public class UserServicesImp implements UserServices {
 
     private ProductRepo productRepo;
@@ -40,19 +41,6 @@ public class UserServicesImp implements UserServices {
     private AccountDiscountRepo accountDiscountRepo;
     private ObjectMapper mapper;
     private CustomerClientUtil customerClientUtil;
-
-    public UserServicesImp(ProductRepo productRepo, AccountRepo accountRepo, DiscountRepo discountRepo, LotRepo lotRepo, AccountDiscountRepo accountDiscountRepo,InvoiceRepo invoiceRepo, LineItemRepo lineItemRepo, CartRepo cartRepo, ObjectMapper mapper) {
-        this.productRepo = productRepo;
-        this.accountRepo = accountRepo;
-        this.discountRepo = discountRepo;
-        this.lotRepo = lotRepo;
-        this.accountDiscountRepo = accountDiscountRepo;
-        this.invoiceRepo = invoiceRepo;
-        this.lineItemRepo = lineItemRepo;
-        this.cartRepo = cartRepo;
-        this.mapper = mapper;
-        this.customerClientUtil = new CustomerClientUtil();
-    }
 
     /**
      * Method to save the discount used on
@@ -290,7 +278,7 @@ public class UserServicesImp implements UserServices {
     }
 
     /**
-     * Create an account in the Accounts table
+     * Create and persist an account in the Accounts table
      *
      * @param account
      * @return
@@ -303,6 +291,10 @@ public class UserServicesImp implements UserServices {
             result = true;
 
         return result;
+    }
+
+    public Optional<Account> findAccountByEmail(String email) {
+        return accountRepo.findById(email);
     }
 
     /**
@@ -677,5 +669,4 @@ public class UserServicesImp implements UserServices {
     public boolean subscribeEmail(String email) {
         return false;
     }
-
 }

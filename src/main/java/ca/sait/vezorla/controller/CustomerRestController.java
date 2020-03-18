@@ -7,15 +7,26 @@ import ca.sait.vezorla.model.Cart;
 import ca.sait.vezorla.model.LineItem;
 import ca.sait.vezorla.model.Product;
 import ca.sait.vezorla.service.PaypalServices;
+import ca.sait.vezorla.exception.PasswordMismatchException;
+import ca.sait.vezorla.exception.UnableToSaveException;
+import ca.sait.vezorla.model.*;
+import ca.sait.vezorla.repository.DiscountRepo;
 import ca.sait.vezorla.service.UserServices;
 import com.fasterxml.jackson.core.JsonProcessingException;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import com.fasterxml.jackson.databind.node.ArrayNode;
+import com.fasterxml.jackson.databind.node.ObjectNode;
+import lombok.AllArgsConstructor;
+import org.json.simple.JSONObject;
+import org.json.simple.parser.JSONParser;
+import org.json.simple.parser.ParseException;
+import org.springframework.http.HttpEntity;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 
 import javax.servlet.http.HttpServletRequest;
+import javax.servlet.http.HttpServletResponse;
 import javax.servlet.http.HttpSession;
 import java.util.ArrayList;
 import java.util.List;
@@ -28,18 +39,14 @@ import java.util.Optional;
  */
 @CrossOrigin
 @RestController
+@AllArgsConstructor
 @RequestMapping(CustomerRestController.URL)
 public class CustomerRestController {
 
     protected static final String URL = "/api/customer/";
     private UserServices userServices;
     private PaypalServices paypalServices;
-
-
-    public CustomerRestController(UserServices userServices, PaypalServices paypalServices) {
-        this.userServices = userServices;
-        this.paypalServices = paypalServices;
-    }
+    private DiscountRepo discountRepo;
 
     /**
      * Get all products
@@ -119,7 +126,6 @@ public class CustomerRestController {
         ObjectMapper mapper = new ObjectMapper();
         Cart cart = (Cart) session.getAttribute("CART");
         ArrayNode outOfStockItems = userServices.checkItemsOrderedOutOfStock(cart, request);
-        System.out.println(outOfStockItems);
         ArrayNode arrayNode = userServices.viewSessionCart(request, cart);
         arrayNode.add(outOfStockItems);
         return mapper.writerWithDefaultPrettyPrinter().writeValueAsString(arrayNode);
@@ -200,6 +206,69 @@ public class CustomerRestController {
             throw new UnauthorizedException();
         }
         return ResponseEntity.ok().body(output);
+    }
+
+    /**
+     * Create a new account
+     *
+     * @param body: JSON sending email and password
+     * @author: matthewjflee
+     */
+    @PostMapping("create-account")
+    public boolean createAccount(@RequestBody String body, HttpServletRequest request) {
+        boolean created = false;
+        String email = null;
+        String password = null;
+        String rePassword = null;
+        HttpSession session = request.getSession();
+
+        try {
+            Object obj = new JSONParser().parse(body);
+            JSONObject jo = (JSONObject) obj;
+            email = (String) jo.get("email");
+            password = (String) jo.get("password");
+            rePassword = (String) jo.get("rePassword");
+        } catch (ParseException e) {
+        }
+
+        //Check if password and rePassword are the same
+        assert password != null;
+        if (!password.equals(rePassword))
+            throw new PasswordMismatchException();
+
+        //Check if account exists
+        Optional<Account> newAccount = userServices.findAccountByEmail(email);
+        if (newAccount.isPresent()) //Account exists.
+            return created;
+        else {
+            newAccount = Optional.of(new Account(email, password));
+            created = userServices.saveAccount(newAccount.get());
+            if (!created)
+                throw new UnableToSaveException();
+            else
+                session.setAttribute("ACCOUNT", newAccount.get());
+        }
+
+        return created;
+    }
+
+    /**
+     * Subscribe user to the mailing list
+     * If the user's account does not exist, create a new account and save to the Accounts table
+     * @author: matthewjflee
+     *
+     * @param email
+     */
+    @PostMapping("subscribe")
+    public boolean subscribeEmail(@RequestBody String email) {
+        String replaceEmail = email.replaceAll("\"", "");
+        Account account = userServices.findAccountByEmail(replaceEmail).orElse(new Account(replaceEmail));
+        account.setSubscript(true);
+        boolean save = userServices.saveAccount(account);
+        if (!save)
+            throw new UnableToSaveException();
+
+        return true;
     }
 
     /**

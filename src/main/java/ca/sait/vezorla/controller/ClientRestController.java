@@ -1,29 +1,24 @@
 package ca.sait.vezorla.controller;
 
+import ca.sait.vezorla.exception.UnableToSaveException;
 import ca.sait.vezorla.model.Account;
 import ca.sait.vezorla.model.Invoice;
-import ca.sait.vezorla.model.Product;
 import ca.sait.vezorla.service.UserServices;
-import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.http.HttpStatus;
-import org.springframework.http.ResponseEntity;
-import org.springframework.ui.Model;
-import org.springframework.validation.BindingResult;
-import org.springframework.web.bind.annotation.GetMapping;
-import org.springframework.web.bind.annotation.PathVariable;
-import org.springframework.web.bind.annotation.RequestMapping;
-import org.springframework.web.bind.annotation.RestController;
+import lombok.AllArgsConstructor;
+import org.springframework.web.bind.annotation.*;
 
+import javax.servlet.http.HttpServletRequest;
+import javax.servlet.http.HttpSession;
 import java.util.List;
 import java.util.Optional;
 
+@AllArgsConstructor
 @RestController
 @RequestMapping(ClientRestController.URL)
 public class ClientRestController {
 
     protected static final String URL = "/api/client/";
 
-    @Autowired
     private UserServices userServices;
 
     @GetMapping("find/{id}")
@@ -36,9 +31,16 @@ public class ClientRestController {
         return null;
     }
 
-    @GetMapping("account/update")
-    public String updateAccount(Account account, Model model, BindingResult bindingResult) {
-        return null;
+    @PutMapping("account/update")
+    public boolean updateAccount(@RequestBody Account account, HttpServletRequest request) {
+        HttpSession session = request.getSession();
+        boolean created = userServices.saveAccount(account);
+        if (!created)
+            throw new UnableToSaveException();
+        else
+            session.setAttribute("ACCOUNT", account);
+
+        return created;
     }
 
     @GetMapping("order/{id}")

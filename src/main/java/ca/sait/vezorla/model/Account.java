@@ -7,6 +7,7 @@
  */
 package ca.sait.vezorla.model;
 
+import com.fasterxml.jackson.annotation.JsonIgnore;
 import lombok.AllArgsConstructor;
 import lombok.Data;
 import lombok.NoArgsConstructor;
@@ -93,9 +94,23 @@ public class Account implements Serializable {
 //    		inverseJoinColumns = @JoinColumn(name = "code"))
 //    private List<Discount> discountList;
 
+    @JsonIgnore
     @OneToMany(mappedBy = "email")
     private List<AccountDiscount> accountDiscounts;
 
+     /**
+     * Constructor for gettings shipping information from a customer
+     *
+     * @author: matthewjflee, jjrr1717
+     * @param email
+     * @param lastName
+     * @param firstName
+     * @param phoneNum
+     * @param address
+     * @param city
+     * @param country
+     * @param postalCode
+     */
     public Account(String email, String lastName, String firstName,
                    String phoneNum, String address, String city,
                    String country, String province, String postalCode) {
@@ -108,12 +123,53 @@ public class Account implements Serializable {
         this.province = province;
         this.country = country;
         this.postalCode = postalCode;
+        this.password = null;
         this.userCreated = false;
         this.accountAdmin = false;
         this.accountType = 'C';
         this.isConfirmed = false;
         this.isSubscript = false;
-//        this.discountList = new ArrayList<>();
+        this.carts = new ArrayList<>();
+        this.invoices = new ArrayList<>();
         this.accountDiscounts = new ArrayList<>();
+    }
+
+    /**
+     * Constructor for creating account
+     *
+     * @author: matthewjflee
+     * @param email
+     * @param password
+     */
+    public Account(String email, String password) {
+        this.email = email;
+        this.lastName = null;
+        this.firstName = null;
+        this.phoneNum = null;
+        this.address = null;
+        this.city = null;
+        this.country = null;
+        this.postalCode = null;
+        this.password = password;
+        this.userCreated = true;
+        this.accountAdmin = false;
+        this.accountType = 'C';
+        this.isConfirmed = false;
+        this.isSubscript = false;
+        this.carts = new ArrayList<>();
+        this.invoices = new ArrayList<>();
+        this.accountDiscounts = new ArrayList<>();
+    }
+
+    /**
+     * Constructor for subscribing email
+     * Ensures the account created is a customer
+     *
+     * @author: matthewjflee
+     * @param email
+     */
+    public Account(String email) {
+        this.email = email;
+        this.accountType = 'C';
     }
 }

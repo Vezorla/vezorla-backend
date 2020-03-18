@@ -1,6 +1,7 @@
 package ca.sait.vezorla.repository;
 
 import java.util.List;
+import java.util.Optional;
 
 import org.springframework.data.jpa.repository.JpaRepository;
 import org.springframework.data.jpa.repository.Modifying;
@@ -27,6 +28,5 @@ public interface AccountRepo extends JpaRepository<Account, String>{
      * @param password user password
      * @return <code>true</code> if account exists, <code>false</code> if account does not
      */
-
-//	List<Account> findByEmailAndPassword(String email, String password);
+	Optional<Account> findByEmailAndPassword(String email, String password);
 }
