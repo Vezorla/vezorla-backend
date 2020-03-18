@@ -2,6 +2,7 @@ package ca.sait.vezorla.controller;
 
 import ca.sait.vezorla.controller.util.CustomerClientUtil;
 import ca.sait.vezorla.exception.InvalidInputException;
+import ca.sait.vezorla.exception.PasswordMismatchException;
 import ca.sait.vezorla.exception.UnableToSaveException;
 import ca.sait.vezorla.model.*;
 import ca.sait.vezorla.repository.DiscountRepo;
@@ -260,7 +261,7 @@ public class CustomerRestController {
         //Check if password and rePassword are the same
         assert password != null;
         if (!password.equals(rePassword))
-            return created;
+            throw new PasswordMismatchException();
 
         //Check if account exists
         Optional<Account> newAccount = userServices.findAccountByEmail(email);
