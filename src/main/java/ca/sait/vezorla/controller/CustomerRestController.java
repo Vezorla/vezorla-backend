@@ -352,11 +352,6 @@ public class CustomerRestController {
 
     }
 
-    @GetMapping("subscribe/{email}")
-    public void subscribeEmail(@PathVariable String email) {
-
-    }
-
     @GetMapping("contact")
     public void contactBusiness(String sender, String message) {
 

@@ -44,8 +44,6 @@ public interface UserServices {
 
     Cart updateSessionCart(LineItem lineItem, HttpServletRequest request);
 
-    String getTotalSessionCartQuantity(ArrayList<LineItem> lineItems);
-
     int getProductQuantity(Long id);
 
     String getTotalCartQuantity(ArrayList<LineItem> lineItems);
@@ -57,8 +55,6 @@ public interface UserServices {
     boolean saveAccount(Account account);
 
     Optional<Account> findAccountByEmail(String email);
-
-    void getSelectedDiscount(String code, HttpServletRequest request, HttpSession session);
 
     void getSelectedDiscount(String code, HttpServletRequest request, HttpSession session);
 

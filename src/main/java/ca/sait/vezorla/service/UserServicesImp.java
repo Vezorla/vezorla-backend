@@ -9,6 +9,7 @@ import com.fasterxml.jackson.core.JsonProcessingException;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import com.fasterxml.jackson.databind.node.ArrayNode;
 import com.fasterxml.jackson.databind.node.ObjectNode;
+import lombok.AllArgsConstructor;
 import org.hibernate.Hibernate;
 import org.springframework.stereotype.Service;
 
@@ -162,11 +163,6 @@ public class UserServicesImp implements UserServices {
         }
 
         return outOfStockItems;
-    }
-
-    @Override
-    public void createLineItems(Product product) {
-
     }
 
     /**
