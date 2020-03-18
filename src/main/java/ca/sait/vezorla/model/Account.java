@@ -155,11 +155,13 @@ public class Account implements Serializable {
 
     /**
      * Constructor for subscribing email
+     * Ensures the account created is a customer
      *
      * @author: matthewjflee
      * @param email
      */
     public Account(String email) {
         this.email = email;
+        this.accountType = 'C';
     }
 }
