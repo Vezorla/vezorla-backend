@@ -286,7 +286,7 @@ public class CustomerRestController {
      * @param email
      */
     @PostMapping("subscribe")
-    public boolean subscribeEmail(@RequestBody String email, HttpServletResponse response) {
+    public boolean subscribeEmail(@RequestBody String email) {
         String replaceEmail = email.replaceAll("\"", "");
         Account account = userServices.findAccountByEmail(replaceEmail).orElse(new Account(replaceEmail));
         account.setSubscript(true);
