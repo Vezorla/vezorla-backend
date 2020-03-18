@@ -17,7 +17,7 @@ import javax.servlet.http.HttpSession;
 
 /**
  * Controller for paypal payments
- * JR is the number one
+ *
  *
  * Taken from: https://github.com/Java-Techie-jt/spring-boot-paypal-example/blob/master/src/main/java/com/javatechie/spring/paypal/api/PaypalController.java
  */
