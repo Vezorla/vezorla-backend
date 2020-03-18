@@ -4,9 +4,7 @@ import ca.sait.vezorla.exception.InvalidInputException;
 import ca.sait.vezorla.model.*;
 import com.fasterxml.jackson.core.JsonProcessingException;
 import com.fasterxml.jackson.databind.node.ArrayNode;
-import org.springframework.http.HttpEntity;
 
-import javax.persistence.EntityManager;
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpSession;
 import java.util.ArrayList;

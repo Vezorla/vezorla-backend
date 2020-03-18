@@ -1,32 +1,26 @@
 package ca.sait.vezorla.controller;
 
 import ca.sait.vezorla.exception.InvalidInputException;
+import ca.sait.vezorla.exception.PasswordMismatchException;
+import ca.sait.vezorla.exception.UnableToSaveException;
 import ca.sait.vezorla.exception.UnauthorizedException;
 import ca.sait.vezorla.model.Account;
 import ca.sait.vezorla.model.Cart;
 import ca.sait.vezorla.model.LineItem;
 import ca.sait.vezorla.model.Product;
-import ca.sait.vezorla.service.PaypalServices;
-import ca.sait.vezorla.exception.PasswordMismatchException;
-import ca.sait.vezorla.exception.UnableToSaveException;
-import ca.sait.vezorla.model.*;
-import ca.sait.vezorla.repository.DiscountRepo;
 import ca.sait.vezorla.service.UserServices;
 import com.fasterxml.jackson.core.JsonProcessingException;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import com.fasterxml.jackson.databind.node.ArrayNode;
-import com.fasterxml.jackson.databind.node.ObjectNode;
 import lombok.AllArgsConstructor;
 import org.json.simple.JSONObject;
 import org.json.simple.parser.JSONParser;
 import org.json.simple.parser.ParseException;
-import org.springframework.http.HttpEntity;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 
 import javax.servlet.http.HttpServletRequest;
-import javax.servlet.http.HttpServletResponse;
 import javax.servlet.http.HttpSession;
 import java.util.ArrayList;
 import java.util.List;
@@ -45,8 +39,6 @@ public class CustomerRestController {
 
     protected static final String URL = "/api/customer/";
     private UserServices userServices;
-    private PaypalServices paypalServices;
-    private DiscountRepo discountRepo;
 
     /**
      * Get all products
@@ -255,9 +247,9 @@ public class CustomerRestController {
     /**
      * Subscribe user to the mailing list
      * If the user's account does not exist, create a new account and save to the Accounts table
-     * @author: matthewjflee
      *
      * @param email
+     * @author: matthewjflee
      */
     @PostMapping("subscribe")
     public boolean subscribeEmail(@RequestBody String email) {
@@ -326,8 +318,7 @@ public class CustomerRestController {
             outOfStockItems = userServices.checkItemsOrderedOutOfStock(cart, request);
             mainArrayNode = userServices.reviewOrder(session, mainArrayNode, cart);
             mainArrayNode.add(outOfStockItems);
-        }
-        else {
+        } else {
             throw new UnauthorizedException();
         }
 

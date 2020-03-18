@@ -2,7 +2,6 @@ package ca.sait.vezorla.service;
 
 import ca.sait.vezorla.controller.util.CustomerClientUtil;
 import ca.sait.vezorla.exception.InvalidInputException;
-import ca.sait.vezorla.exception.UnableToSaveException;
 import ca.sait.vezorla.model.*;
 import ca.sait.vezorla.repository.*;
 import com.fasterxml.jackson.core.JsonProcessingException;
@@ -10,14 +9,10 @@ import com.fasterxml.jackson.databind.ObjectMapper;
 import com.fasterxml.jackson.databind.node.ArrayNode;
 import com.fasterxml.jackson.databind.node.ObjectNode;
 import lombok.AllArgsConstructor;
-import org.hibernate.Hibernate;
 import org.springframework.stereotype.Service;
 
-import javax.persistence.EntityManager;
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpSession;
-import javax.transaction.Transactional;
-import javax.xml.transform.sax.SAXSource;
 import java.util.ArrayList;
 import java.util.Date;
 import java.util.List;
@@ -41,7 +36,6 @@ public class UserServicesImp implements UserServices {
     private CartRepo cartRepo;
     private AccountDiscountRepo accountDiscountRepo;
     private ObjectMapper mapper;
-    private CustomerClientUtil customerClientUtil;
 
     /**
      * Method to save the discount used on
@@ -55,7 +49,7 @@ public class UserServicesImp implements UserServices {
 
         //Discount discount = new Discount(accountDiscount.getCode().getCode(), accountDiscount);
 
-        if(!accountDiscount.getCode().getCode().equals("NotSelected")) {
+        if (!accountDiscount.getCode().getCode().equals("NotSelected")) {
             accountDiscountRepo.insertWithQuery(accountDiscount);
         }
 
@@ -178,7 +172,7 @@ public class UserServicesImp implements UserServices {
         //check if product already exists
         boolean exists = checkProductLineItem(product.get().getProdId(), request);
         LineItem lineItem = null;
-        if(!exists) {
+        if (!exists) {
             lineItem = new LineItem();
             sentQuantity = sentQuantity.replaceAll("\"", ""); //Sending a string so replace \
             int quantity = Integer.parseInt(sentQuantity);
@@ -188,8 +182,7 @@ public class UserServicesImp implements UserServices {
             lineItem.setCurrentPrice(product.get().getPrice());
             lineItem.setCart((Cart) request.getSession().getAttribute("CART"));
             lineItem.setProduct(product.get());
-        }
-        else{
+        } else {
             updateLineItemAdd();
         }
 
@@ -199,17 +192,18 @@ public class UserServicesImp implements UserServices {
     /**
      * Method to search for the existence of the
      * line item.
-     * @param id of the product
+     *
+     * @param id      of the product
      * @param request
      * @return boolean true if it exits in cart already.
      */
-    private boolean checkProductLineItem(Long id, HttpServletRequest request){
+    private boolean checkProductLineItem(Long id, HttpServletRequest request) {
         boolean result = false;
         HttpSession session = request.getSession();
         Cart cart = getSessionCart(session);
 
-        for(int i = 0; i < cart.getLineItems().size() && result == false; i++){
-            if(cart.getLineItems().get(i).getProduct().getProdId().equals(id)){
+        for (int i = 0; i < cart.getLineItems().size() && result == false; i++) {
+            if (cart.getLineItems().get(i).getProduct().getProdId().equals(id)) {
                 result = true;
             }
         }
@@ -217,7 +211,7 @@ public class UserServicesImp implements UserServices {
     }
 
 
-    private LineItem updateLineItemAdd(){
+    private LineItem updateLineItemAdd() {
         return null;
     }
 
@@ -408,6 +402,7 @@ public class UserServicesImp implements UserServices {
     }
 
     public ArrayNode viewSessionCart(HttpServletRequest request, Cart cart) throws JsonProcessingException {
+        CustomerClientUtil customerClientUtil = new CustomerClientUtil();
         HttpSession session = request.getSession();
         ArrayNode arrayNode = mapper.createArrayNode();
 //        ArrayNode outOfStockItems = checkItemsOrderedOutOfStock(cart, request);
@@ -427,13 +422,13 @@ public class UserServicesImp implements UserServices {
      * Method to parse the json sent from
      * the front end for the shipping information
      *
-
      * @param request
      * @return
      * @throws InvalidInputException
      * @throws JsonProcessingException
      */
     public String getShippingInfo(HttpServletRequest request, Account account) throws InvalidInputException, JsonProcessingException {
+        CustomerClientUtil customerClientUtil = new CustomerClientUtil();
         HttpSession session = request.getSession();
         boolean created = false;
         if (account.getEmail() == null || account.getFirstName() == null || account.getLastName() == null ||
@@ -446,12 +441,13 @@ public class UserServicesImp implements UserServices {
 
         session.setAttribute("ACCOUNT", account);
         session.setAttribute("PICKUP", account.getPickup());
-            created = true;
+        created = true;
 
         return mapper.writerWithDefaultPrettyPrinter().writeValueAsString(created);
     }
 
     public ArrayNode reviewOrder(HttpSession session, ArrayNode mainArrayNode, Cart cart) {
+        CustomerClientUtil customerClientUtil = new CustomerClientUtil();
 
         ObjectNode root = mapper.createObjectNode();
         ObjectNode node = mapper.createObjectNode();
@@ -485,17 +481,15 @@ public class UserServicesImp implements UserServices {
         //get discount
         long discountAmount;
         AccountDiscount discountType = (AccountDiscount) session.getAttribute("ACCOUNT_DISCOUNT");
-        if(discountType.getCode().getCode().equals("NotSelected")) {
+        if (discountType.getCode().getCode().equals("NotSelected")) {
             discountAmount = 0;
-        }
-        else if (discountType != null) {
+        } else if (discountType != null) {
             float discountPercent = Float.parseFloat(discountRepo.findDiscountPercent(discountType.getCode().getCode()));
             float discountDecimal = discountPercent / 100;
 
             discountAmount = (long) (subtotal * discountDecimal);
-        }
-        else{
-            discountAmount =0;
+        } else {
+            discountAmount = 0;
         }
         node.put("discount", customerClientUtil.formatAmount(discountAmount));
 
@@ -537,28 +531,26 @@ public class UserServicesImp implements UserServices {
     /**
      * Method to decrease inventory from lot
      * in database.
-     *
      */
-    public void decreaseInventory(HttpServletRequest request){
+    public void decreaseInventory(HttpServletRequest request) {
         //get line items to determine what was sold
         HttpSession session = request.getSession();
         Cart cart = (Cart) session.getAttribute("CART");
         ArrayList<LineItem> lineItems = (ArrayList<LineItem>) cart.getLineItems();
 
         //loop through the items in the order
-        for(int i = 0; i < lineItems.size(); i++) {
+        for (int i = 0; i < lineItems.size(); i++) {
             ArrayList<Lot> lotsToUse = (ArrayList<Lot>) obtainSufficientQtyLots(lineItems.get(i).getQuantity(), lineItems.get(i).getProduct());
 
             int orderedQty = lineItems.get(i).getQuantity();
-            for(int j = 0; j < lotsToUse.size() && orderedQty > 0; j++){
+            for (int j = 0; j < lotsToUse.size() && orderedQty > 0; j++) {
                 int lotQuantity = lotsToUse.get(j).getQuantity();
 
-                if(lotQuantity >= orderedQty){
+                if (lotQuantity >= orderedQty) {
                     lotsToUse.get(j).setQuantity(lotQuantity - orderedQty);
                     lotRepo.save(lotsToUse.get(j));
                     orderedQty = 0;
-                }
-                else if(lotQuantity < orderedQty){
+                } else if (lotQuantity < orderedQty) {
                     lotsToUse.get(j).setQuantity(0);
                     lotRepo.save(lotsToUse.get(j));
                     orderedQty -= lotQuantity;
@@ -583,7 +575,7 @@ public class UserServicesImp implements UserServices {
         ArrayList<Lot> lotsToUse = new ArrayList<>();
 
         //get the lots to be used for the order
-        for(int i = 0; i < lots.size() && qty > 0; i++) {
+        for (int i = 0; i < lots.size() && qty > 0; i++) {
             int qtyInLot = lots.get(i).getQuantity();
             int result = qtyInLot - qty;
 
@@ -606,7 +598,7 @@ public class UserServicesImp implements UserServices {
      * @param request for the session
      * @return the Invoice saved to the database
      */
-    public Invoice saveInvoice(HttpServletRequest request){
+    public Invoice saveInvoice(HttpServletRequest request) {
         //grab the invoice already generated
         HttpSession session = request.getSession();
         Invoice newInvoice = (Invoice) session.getAttribute("INVOICE");
@@ -636,10 +628,11 @@ public class UserServicesImp implements UserServices {
 
     /**
      * Method to save cart and line items to database
+     *
      * @param request for the session
      * @param invoice the line items belong to
      */
-    public void saveLineItems(HttpServletRequest request, Invoice invoice){
+    public void saveLineItems(HttpServletRequest request, Invoice invoice) {
         HttpSession session = request.getSession();
 
         //grab the cart to get the line items
@@ -650,7 +643,7 @@ public class UserServicesImp implements UserServices {
         cartRepo.save(cart);
 
         //loop through lineitems. Assign cart number & invoice number and persist line item
-        for(int i = 0; i < lineItems.size(); i++){
+        for (int i = 0; i < lineItems.size(); i++) {
             lineItems.get(i).setInvoice(invoice);
             lineItems.get(i).setCart(cart);
             lineItemRepo.save(lineItems.get(i));
