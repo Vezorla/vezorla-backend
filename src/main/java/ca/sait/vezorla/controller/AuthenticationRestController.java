@@ -86,7 +86,7 @@ public class AuthenticationRestController {
      * @param request Http Request
      * @return result result if the session was invalidated
      */
-    @GetMapping("logout")
+    @DeleteMapping("logout")
     public boolean logout(HttpServletRequest request) {
         boolean result = false;
         HttpSession session = request.getSession(false);

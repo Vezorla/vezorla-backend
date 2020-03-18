@@ -267,7 +267,7 @@ public class CustomerRestController {
             return created;
         else {
             newAccount = Optional.of(new Account(email, password));
-            created = userServices.createAccount(newAccount.get());
+            created = userServices.saveAccount(newAccount.get());
             if (!created)
                 throw new UnableToSaveException();
             else
