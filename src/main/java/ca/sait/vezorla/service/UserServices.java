@@ -55,7 +55,7 @@ public interface UserServices {
 
     LineItem createLineItemSession(Optional<Product> product, String quantity, HttpServletRequest request);
 
-    boolean createAccount(Account account);
+    boolean saveAccount(Account account);
 
     Optional<Account> findAccount(String email);
 

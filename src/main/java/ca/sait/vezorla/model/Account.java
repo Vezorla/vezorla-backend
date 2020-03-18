@@ -7,6 +7,7 @@
  */
 package ca.sait.vezorla.model;
 
+import com.fasterxml.jackson.annotation.JsonIgnore;
 import lombok.AllArgsConstructor;
 import lombok.Data;
 import lombok.NoArgsConstructor;
@@ -88,6 +89,7 @@ public class Account implements Serializable {
 //    		inverseJoinColumns = @JoinColumn(name = "code"))
 //    private List<Discount> discountList;
 
+    @JsonIgnore
     @OneToMany(mappedBy = "email")
     private List<AccountDiscount> accountDiscounts;
 

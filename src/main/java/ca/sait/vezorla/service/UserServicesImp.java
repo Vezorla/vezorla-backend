@@ -211,7 +211,7 @@ public class UserServicesImp implements UserServices {
      * @param account
      * @return
      */
-    public boolean createAccount(Account account) {
+    public boolean saveAccount(Account account) {
         boolean result = false;
         Account saved = accountRepo.save(account);
         if (saved != null)
