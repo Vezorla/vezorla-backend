@@ -57,9 +57,8 @@ public class UserServicesImp implements UserServices {
         HttpSession session = request.getSession();
         AccountDiscount accountDiscount = (AccountDiscount) session.getAttribute("ACCOUNT_DISCOUNT");
 
-        //Discount discount = new Discount(accountDiscount.getCode().getCode(), accountDiscount);
-
-        if(!accountDiscount.getCode().getCode().equals("NotSelected")) {
+        //if discount code is 0 that means customer didn't apply a discount
+        if(!accountDiscount.getCode().getCode().equals("0")) {
             accountDiscountRepo.insertWithQuery(accountDiscount);
         }
 
@@ -490,7 +489,9 @@ public class UserServicesImp implements UserServices {
         //get discount
         long discountAmount;
         AccountDiscount discountType = (AccountDiscount) session.getAttribute("ACCOUNT_DISCOUNT");
-        if(discountType.getCode().getCode().equals("NotSelected")) {
+
+        //if discount code is 0 that means customer didn't apply a discount
+        if(discountType.getCode().getCode().equals("0")) {
             discountAmount = 0;
         }
         else if (discountType != null) {
