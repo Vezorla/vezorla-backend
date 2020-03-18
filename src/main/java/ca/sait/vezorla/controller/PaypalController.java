@@ -5,14 +5,13 @@ import ca.sait.vezorla.exception.UnauthorizedException;
 import ca.sait.vezorla.model.Invoice;
 import ca.sait.vezorla.service.PaypalServices;
 import ca.sait.vezorla.service.UserServices;
-import ca.sait.vezorla.service.UserServicesImp;
 import com.paypal.api.payments.Links;
 import com.paypal.api.payments.Payment;
 import com.paypal.base.rest.PayPalRESTException;
+import lombok.AllArgsConstructor;
 import org.springframework.stereotype.Controller;
 import org.springframework.web.bind.annotation.*;
 
-import javax.persistence.EntityManager;
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpSession;
 
@@ -24,6 +23,7 @@ import javax.servlet.http.HttpSession;
  */
 @Controller
 @CrossOrigin
+@AllArgsConstructor
 public class PaypalController {
 
     public static final String SUCCESS_URL = "cart/payment/success";
@@ -31,11 +31,6 @@ public class PaypalController {
     PaypalServices paypalServices;
 
     private UserServices userServices;
-
-    public PaypalController(PaypalServices paypalServices, UserServices userServices){
-        this.paypalServices = paypalServices;
-        this.userServices = userServices;
-    }
 
     @PostMapping("/customer/cart/payment")
     public String makePayment(HttpServletRequest request) throws UnauthorizedException {
@@ -57,7 +52,7 @@ public class PaypalController {
         double totalAsDouble = Double.parseDouble(formattedTotal);
 
         try {
-            Payment payment = paypalServices.createPayment(10.0, "CAD", "paypal",
+            Payment payment = paypalServices.createPayment(totalAsDouble, "CAD", "paypal",
                     "sale", "Place Order", "http://localhost:8080/" + CANCEL_URL,
                     "http://localhost:8080/" + SUCCESS_URL);
             for(Links link:payment.getLinks()) {

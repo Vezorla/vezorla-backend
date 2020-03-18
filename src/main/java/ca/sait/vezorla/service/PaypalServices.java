@@ -3,6 +3,7 @@ package ca.sait.vezorla.service;
 import com.paypal.api.payments.*;
 import com.paypal.base.rest.APIContext;
 import com.paypal.base.rest.PayPalRESTException;
+import lombok.AllArgsConstructor;
 import org.springframework.stereotype.Service;
 
 import java.math.BigDecimal;
@@ -17,13 +18,10 @@ import java.util.List;
  * Taken from: https://github.com/Java-Techie-jt/spring-boot-paypal-example/blob/master/src/main/java/com/javatechie/spring/paypal/api/PaypalService.java
  */
 @Service
+@AllArgsConstructor
 public class PaypalServices {
 
     private APIContext apiContext;
-
-    public PaypalServices(APIContext apiContext){
-        this.apiContext = apiContext;
-    }
 
     public Payment createPayment(
             Double total,
