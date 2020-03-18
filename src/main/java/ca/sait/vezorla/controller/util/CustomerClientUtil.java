@@ -49,6 +49,4 @@ public class CustomerClientUtil {
             throw new InvalidInputException();
         }
     }
-
-
 }

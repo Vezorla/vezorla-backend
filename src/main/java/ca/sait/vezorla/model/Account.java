@@ -108,12 +108,41 @@ public class Account implements Serializable {
         this.province = province;
         this.country = country;
         this.postalCode = postalCode;
+        this.password = null;
         this.userCreated = false;
         this.accountAdmin = false;
         this.accountType = 'C';
         this.isConfirmed = false;
         this.isSubscript = false;
-//        this.discountList = new ArrayList<>();
+        this.carts = new ArrayList<>();
+        this.invoices = new ArrayList<>();
+        this.accountDiscounts = new ArrayList<>();
+    }
+
+    /**
+     * Constructor for creating account
+     *
+     * @author: matthewjflee
+     * @param email
+     * @param password
+     */
+    public Account(String email, String password) {
+        this.email = email;
+        this.lastName = null;
+        this.firstName = null;
+        this.phoneNum = null;
+        this.address = null;
+        this.city = null;
+        this.country = null;
+        this.postalCode = null;
+        this.password = password;
+        this.userCreated = true;
+        this.accountAdmin = false;
+        this.accountType = 'C';
+        this.isConfirmed = false;
+        this.isSubscript = false;
+        this.carts = new ArrayList<>();
+        this.invoices = new ArrayList<>();
         this.accountDiscounts = new ArrayList<>();
     }
 }

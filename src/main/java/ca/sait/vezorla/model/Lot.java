@@ -1,5 +1,6 @@
 package ca.sait.vezorla.model;
 
+import java.io.Serializable;
 import java.sql.Date;
 import java.util.ArrayList;
 import java.util.Currency;
@@ -30,7 +31,7 @@ import lombok.NoArgsConstructor;
 @Table(name = "lot")
 @AllArgsConstructor
 @NoArgsConstructor
-public class Lot {
+public class Lot implements Serializable {
 
 	@Id
 	private Long lotNum;

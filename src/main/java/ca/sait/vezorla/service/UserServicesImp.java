@@ -2,6 +2,7 @@ package ca.sait.vezorla.service;
 
 import ca.sait.vezorla.controller.util.CustomerClientUtil;
 import ca.sait.vezorla.exception.InvalidInputException;
+import ca.sait.vezorla.exception.UnableToSaveException;
 import ca.sait.vezorla.model.*;
 import ca.sait.vezorla.repository.*;
 import com.fasterxml.jackson.core.JsonProcessingException;
@@ -283,19 +284,23 @@ public class UserServicesImp implements UserServices {
     }
 
     /**
-     * Create an account in the Accounts table
+     * Create and persist an account in the Accounts table
      *
      * @param account
      * @return
      * @author matthewjflee, jjrr1717
      */
-    public boolean saveAccount(Account account) {
+    public boolean createAccount(Account account) {
         boolean result = false;
         Account saved = accountRepo.save(account);
         if (saved != null)
             result = true;
 
         return result;
+    }
+
+    public Optional<Account> findAccount(String email) {
+        return accountRepo.findById(email);
     }
 
     /**
