@@ -35,10 +35,6 @@ public interface UserServices {
 
     boolean removeLineItemSession(Long id, Cart cart, HttpServletRequest request);
 
-    boolean searchEmail(String email);
-
-    boolean subscribeEmail(String email);
-
     boolean updateLineItemSession(Long id, int quantity, Cart cart, HttpServletRequest request);
 
     Cart getSessionCart(HttpSession session);
@@ -57,7 +53,7 @@ public interface UserServices {
 
     boolean saveAccount(Account account);
 
-    Optional<Account> findAccount(String email);
+    Optional<Account> findAccountByEmail(String email);
 
     void getSelectedDiscount(String code, HttpServletRequest request, HttpSession session);
 
