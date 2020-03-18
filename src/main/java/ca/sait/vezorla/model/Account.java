@@ -150,4 +150,14 @@ public class Account implements Serializable {
         this.invoices = new ArrayList<>();
         this.accountDiscounts = new ArrayList<>();
     }
+
+    /**
+     * Constructor for subscribing email
+     *
+     * @author: matthewjflee
+     * @param email
+     */
+    public Account(String email) {
+        this.email = email;
+    }
 }

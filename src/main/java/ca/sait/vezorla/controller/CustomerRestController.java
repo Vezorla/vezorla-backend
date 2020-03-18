@@ -20,6 +20,7 @@ import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 
 import javax.servlet.http.HttpServletRequest;
+import javax.servlet.http.HttpServletResponse;
 import javax.servlet.http.HttpSession;
 import java.util.ArrayList;
 import java.util.List;
@@ -262,12 +263,12 @@ public class CustomerRestController {
             return created;
 
         //Check if account exists
-        Optional<Account> newAccount = userServices.findAccount(email);
+        Optional<Account> newAccount = userServices.findAccountByEmail(email);
         if (newAccount.isPresent()) //Account exists.
             return created;
         else {
             newAccount = Optional.of(new Account(email, password));
-            created = userServices.createAccount(newAccount.get());
+            created = userServices.saveAccount(newAccount.get());
             if (!created)
                 throw new UnableToSaveException();
             else
@@ -277,10 +278,23 @@ public class CustomerRestController {
         return created;
     }
 
+    /**
+     * Subscribe user to the mailing list
+     * If the user's account does not exist, create a new account and save to the Accounts table
+     * @author: matthewjflee
+     *
+     * @param email
+     */
+    @PostMapping("subscribe")
+    public void subscribeEmail(@RequestBody String email, HttpServletResponse response) {
+        String replaceEmail = email.replaceAll("\"", "");
+        Account account = userServices.findAccountByEmail(replaceEmail).orElse(new Account(replaceEmail));
+        account.setSubscript(true);
+        boolean save = userServices.saveAccount(account);
+        if (!save)
+            throw new UnableToSaveException();
 
-    @GetMapping("subscribe/{email}")
-    public void subscribeEmail(@PathVariable String email) {
-
+        response.setStatus(HttpServletResponse.SC_ACCEPTED);
     }
 
     @GetMapping("contact")
