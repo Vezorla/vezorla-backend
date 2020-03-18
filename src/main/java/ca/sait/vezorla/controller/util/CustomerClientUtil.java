@@ -1,11 +1,12 @@
 package ca.sait.vezorla.controller.util;
 
 import ca.sait.vezorla.exception.InvalidInputException;
-import lombok.NoArgsConstructor;
+import ca.sait.vezorla.model.AccountDiscount;
 
+import javax.persistence.EntityManager;
+import javax.transaction.Transactional;
 import java.util.regex.Pattern;
 
-@NoArgsConstructor
 public class CustomerClientUtil {
 
     /**
@@ -36,10 +37,10 @@ public class CustomerClientUtil {
      * @throws InvalidInputException
      */
     public void validatePhoneNumber(String phoneNumber) throws InvalidInputException {
-       Pattern pattern = Pattern.compile("^([\\+][0-9]{1,3}([ \\.\\-])?)?([\\(]{1}[0-9]{3}[\\)])?([0-9A-Z \\.\\-]{1,32})((x|ext|extension)?[0-9]{1,4}?)$");
-       if(!pattern.matcher(phoneNumber).matches()){
-           throw new InvalidInputException();
-       }
+        Pattern pattern = Pattern.compile("^([\\+][0-9]{1,3}([ \\.\\-])?)?([\\(]{1}[0-9]{3}[\\)])?([0-9A-Z \\.\\-]{1,32})((x|ext|extension)?[0-9]{1,4}?)$");
+        if(!pattern.matcher(phoneNumber).matches()){
+            throw new InvalidInputException();
+        }
     }
 
     public void validatePostalCode(String postalCode) throws InvalidInputException{
@@ -48,4 +49,6 @@ public class CustomerClientUtil {
             throw new InvalidInputException();
         }
     }
+
+
 }

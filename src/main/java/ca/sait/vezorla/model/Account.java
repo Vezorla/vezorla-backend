@@ -40,7 +40,7 @@ public class Account implements Serializable {
     private String firstName;
 
     @Column(name = "phone_num")
-    @Pattern(regexp = "((\\(\\d{3}\\) ?)|(\\d{3}-))?\\d{3}-\\d{4}")
+    //@Pattern(regexp = "((\\(\\d{3}\\) ?)|(\\d{3}-))?\\d{3}-\\d{4}")
     private String phoneNum;
 
     @Column(name = "address")
@@ -49,11 +49,14 @@ public class Account implements Serializable {
     @Column(name = "city")
     private String city;
 
+    @Column(name = "province")
+    private String province;
+
     @Column(name = "country")
     private String country;
 
     @Column(name = "postalCode")
-    @Pattern(regexp = "^([A-Za-z]\\d[A-Za-z][-]?\\d[A-Za-z]\\d)")
+    //@Pattern(regexp = "^([A-Za-z]\\d[A-Za-z][-]?\\d[A-Za-z]\\d)")
     private String postalCode;
 
     @Column(name = "password")
@@ -75,6 +78,8 @@ public class Account implements Serializable {
     @Type(type = "org.hibernate.type.NumericBooleanType")
     private boolean isSubscript;
 
+    private String pickup;
+
     @Column(name = "cart")
     @OneToMany(mappedBy = "account")
     private List<Cart> carts;
@@ -93,7 +98,7 @@ public class Account implements Serializable {
     @OneToMany(mappedBy = "email")
     private List<AccountDiscount> accountDiscounts;
 
-    /**
+     /**
      * Constructor for gettings shipping information from a customer
      *
      * @author: matthewjflee, jjrr1717
@@ -106,13 +111,16 @@ public class Account implements Serializable {
      * @param country
      * @param postalCode
      */
-    public Account(String email, String lastName, String firstName, String phoneNum, String address, String city, String country, String postalCode) {
+    public Account(String email, String lastName, String firstName,
+                   String phoneNum, String address, String city,
+                   String country, String province, String postalCode) {
         this.email = email;
         this.lastName = lastName;
         this.firstName = firstName;
         this.phoneNum = phoneNum;
         this.address = address;
         this.city = city;
+        this.province = province;
         this.country = country;
         this.postalCode = postalCode;
         this.password = null;

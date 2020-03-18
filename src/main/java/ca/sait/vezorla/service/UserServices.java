@@ -1,9 +1,12 @@
 package ca.sait.vezorla.service;
 
+import ca.sait.vezorla.exception.InvalidInputException;
 import ca.sait.vezorla.model.*;
 import com.fasterxml.jackson.core.JsonProcessingException;
 import com.fasterxml.jackson.databind.node.ArrayNode;
+import org.springframework.http.HttpEntity;
 
+import javax.persistence.EntityManager;
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpSession;
 import java.util.ArrayList;
@@ -15,7 +18,7 @@ import java.util.Optional;
  */
 public interface UserServices {
 
-    void applyDiscount(Discount discount);
+    void applyDiscount(HttpServletRequest request);
 
     void createLineItems(Long id);
 
@@ -31,7 +34,7 @@ public interface UserServices {
 
     List<Discount> getValidDiscounts(String email);
 
-    List<Lot> obtainSufficientQtyLots();
+    List<Lot> obtainSufficientQtyLots(int qty, Product product);
 
     boolean removeLineItemSession(Long id, Cart cart, HttpServletRequest request);
 
@@ -45,7 +48,7 @@ public interface UserServices {
 
     int getProductQuantity(Long id);
 
-    void createLineItems(Product product);
+    String getTotalCartQuantity(ArrayList<LineItem> lineItems);
 
     int validateOrderedQuantity(String orderedQuantitySent, int inStockQuantity);
 
@@ -57,5 +60,21 @@ public interface UserServices {
 
     void getSelectedDiscount(String code, HttpServletRequest request, HttpSession session);
 
-    ArrayNode viewSessionCart(HttpSession session) throws JsonProcessingException;
+    void getSelectedDiscount(String code, HttpServletRequest request, HttpSession session);
+
+    ArrayNode viewSessionCart(HttpServletRequest request, Cart cart) throws JsonProcessingException;
+
+    String getShippingInfo(HttpServletRequest request, Account account) throws InvalidInputException, JsonProcessingException;
+
+    ArrayNode buildValidDiscounts(HttpSession session, ArrayNode arrayNode);
+
+    ArrayNode reviewOrder(HttpSession session, ArrayNode mainArrayNode, Cart cart);
+
+    ArrayNode checkItemsOrderedOutOfStock(Cart cart, HttpServletRequest request);
+
+    void decreaseInventory(HttpServletRequest request);
+
+    Invoice saveInvoice(HttpServletRequest request);
+
+    void saveLineItems(HttpServletRequest request, Invoice invoice);
 }

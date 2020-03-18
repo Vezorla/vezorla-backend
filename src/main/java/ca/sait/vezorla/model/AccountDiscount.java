@@ -16,6 +16,7 @@ import java.io.Serializable;
 @NoArgsConstructor
 @Entity
 @Data
+@IdClass(AccountDiscount.class)
 @Table(name = "account_discount")
 public class AccountDiscount implements Serializable {
 
@@ -27,15 +28,7 @@ public class AccountDiscount implements Serializable {
 //    @Column(name="discount_code")
 //    private String discountCode;
 
-//    @Id
-//    @ManyToOne
-//    @PrimaryKeyJoinColumn(name="email", referencedColumnName = "email")
-//    private Account email;
-//
-//    @Id
-//    @ManyToOne
-//    @PrimaryKeyJoinColumn(name="code", referencedColumnName = "code")
-//    private Discount code;
+
 
     @Id
     @ManyToOne
@@ -46,5 +39,19 @@ public class AccountDiscount implements Serializable {
     @ManyToOne
     @JoinColumn(name="discount_code")
     private Discount code;
+
+//    @Id
+//    private String emailString;// = email.getEmail();
+//
+//    @Id
+//    private String codeString;// = code.getCode();
+//
+//    public AccountDiscount(Account account, Discount discount){
+//        this.email = account;
+//        this.code = discount;
+//        this.emailString = email.getEmail();
+//        this.codeString = discount.getCode();
+//    }
+
 
 }
