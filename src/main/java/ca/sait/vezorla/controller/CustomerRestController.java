@@ -8,6 +8,7 @@ import ca.sait.vezorla.model.Account;
 import ca.sait.vezorla.model.Cart;
 import ca.sait.vezorla.model.LineItem;
 import ca.sait.vezorla.model.Product;
+import ca.sait.vezorla.service.EmailServices;
 import ca.sait.vezorla.service.UserServices;
 import com.fasterxml.jackson.core.JsonProcessingException;
 import com.fasterxml.jackson.databind.ObjectMapper;
@@ -16,8 +17,11 @@ import lombok.AllArgsConstructor;
 import org.json.simple.JSONObject;
 import org.json.simple.parser.JSONParser;
 import org.json.simple.parser.ParseException;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
+import org.springframework.mail.MailException;
 import org.springframework.web.bind.annotation.*;
 
 import javax.servlet.http.HttpServletRequest;
@@ -39,6 +43,7 @@ public class CustomerRestController {
 
     protected static final String URL = "/api/customer/";
     private UserServices userServices;
+    private EmailServices emailServices;
 
     /**
      * Get all products
@@ -325,8 +330,37 @@ public class CustomerRestController {
         return mapper.writerWithDefaultPrettyPrinter().writeValueAsString(mainArrayNode);
     }
 
-    @GetMapping("contact")
-    public void contactBusiness(String sender, String message) {
 
+    @PostMapping("contact-us")
+    public void contactBusiness(@RequestBody String body) {
+        String name = null;
+        String sender = null;
+        String message = null;
+        try {
+            Object obj = new JSONParser().parse(body);
+            JSONObject jo = (JSONObject) obj;
+            name = (String) jo.get("name");
+            sender = (String) jo.get("sender");
+            message = (String) jo.get("message");
+        } catch (ParseException e) {
+        }
+
+        //Test
+        assert name != null;
+        assert sender != null;
+        assert message != null;
+
+        //Testing out logger instead of sout. Using org.slf4j.Logger;
+        Logger logger = LoggerFactory.getLogger(CustomerRestController.class);
+        logger.info("sender " + sender);
+        logger.info("msg " + message);
+
+        try {
+            emailServices.sendContactUsEmail(sender, message);
+        } catch (MailException e) {
+            logger.error("Error sending email " + e.getMessage());
+        }
+
+        System.out.println("Email sent!");
     }
 }
