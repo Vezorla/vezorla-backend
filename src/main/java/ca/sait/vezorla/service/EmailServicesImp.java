@@ -1,5 +1,7 @@
 package ca.sait.vezorla.service;
 
+import ca.sait.vezorla.controller.util.CustomerClientUtil;
+import ca.sait.vezorla.exception.InvalidInputException;
 import lombok.AllArgsConstructor;
 import org.springframework.mail.MailException;
 import org.springframework.mail.SimpleMailMessage;
@@ -25,7 +27,11 @@ public class EmailServicesImp implements EmailServices{
      * @param message
      * @throws MailException
      */
-    public void sendContactUsEmail(String name, String senderEmail, String message) throws MailException {
+    public void sendContactUsEmail(String name, String senderEmail, String message) throws MailException, InvalidInputException {
+        //Validate email
+        CustomerClientUtil ccu = new CustomerClientUtil();
+        ccu.validateEmail(senderEmail);
+
         SimpleMailMessage mail = new SimpleMailMessage();
         mail.setTo("vezorla.test@gmail.com");
         mail.setFrom("vezorla.test@gmail.com");

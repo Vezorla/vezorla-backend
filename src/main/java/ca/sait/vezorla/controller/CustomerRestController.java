@@ -111,7 +111,7 @@ public class CustomerRestController {
 
     /**
      * View cart for a customer
-     *
+     *v
      * @param request
      * @return
      * @throws JsonProcessingException
@@ -357,7 +357,7 @@ public class CustomerRestController {
         if(name != null && senderEmail != null && message != null) {
             try {
                 emailServices.sendContactUsEmail(name, senderEmail, message);
-            } catch (MailException e) {
+            } catch (MailException | InvalidInputException e) {
                 return false;
             }
 
