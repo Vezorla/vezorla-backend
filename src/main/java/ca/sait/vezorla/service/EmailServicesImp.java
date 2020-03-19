@@ -4,11 +4,14 @@ import ca.sait.vezorla.controller.util.CustomerClientUtil;
 import ca.sait.vezorla.exception.InvalidInputException;
 import ca.sait.vezorla.model.Invoice;
 import ca.sait.vezorla.model.LineItem;
+import ca.sait.vezorla.repository.LineItemRepo;
 import lombok.AllArgsConstructor;
 import org.springframework.mail.MailException;
 import org.springframework.mail.SimpleMailMessage;
 import org.springframework.mail.javamail.JavaMailSender;
 import org.springframework.stereotype.Service;
+
+import java.util.List;
 
 /**
  * Service to send emails
@@ -20,6 +23,7 @@ import org.springframework.stereotype.Service;
 public class EmailServicesImp implements EmailServices {
 
     private JavaMailSender mailSender;
+    private LineItemRepo lineItemRepo;
 
     /**
      * Send contact us email to vezorla.test@gmail.com
@@ -77,19 +81,39 @@ public class EmailServicesImp implements EmailServices {
 
         //Append Line Items
         StringBuilder sb = new StringBuilder(msgHeader);
-        System.out.println("size " + invoice.getLineItemList().size());
-        for(LineItem li : invoice.getLineItemList()) {
-            sb.append(li.getCurrentName()).append("\n").append(li.getQuantity()).append("\t").append(li.getExtendedPrice());
+
+        List<LineItem> lineItems = lineItemRepo.findLineItemByInvoice(invoice);
+
+        for(LineItem li : lineItems) {
+            sb.append(li.getCurrentName())
+                    .append("\nQuantity: ")
+                    .append(li.getQuantity())
+                    .append("\tPrice: ")
+                    .append(li.getExtendedPrice());
         }
 
         CustomerClientUtil ccu = new CustomerClientUtil();
 
         //Append pricing
-        sb.append("\n\n").append("\t\t\t").append("Item Subtotal:").append("\tCDN$").append(ccu.formatAmount(invoice.getSubtotal()));
-        sb.append("\n\n").append("\t\t\t").append("Shipping & Handling:").append("\tCDN$").append(ccu.formatAmount(invoice.getShippingCost()));
-        sb.append("\n\n").append("\t\t\t").append("Discount:").append("\tCDN$").append(ccu.formatAmount(invoice.getDiscount()));
-        sb.append("\n\n").append("\t\t\t").append("Taxes:").append("\tCDN$").append(ccu.formatAmount(invoice.getTaxes()));
-        sb.append("\n\n").append("\t\t\t").append("Total:").append("\tCDN$").append(total);
+        sb.append("\n\n\t\t\t")
+                .append("Item Subtotal:")
+                .append("\tCDN$")
+                .append(ccu.formatAmount(invoice.getSubtotal()));
+        sb.append("\n\n\t\t\t")
+                .append("Shipping & Handling:")
+                .append("\tCDN$")
+                .append(ccu.formatAmount(invoice.getShippingCost()));
+        sb.append("\n\n\t\t\t")
+                .append("Discount:")
+                .append("\tCDN$")
+                .append(ccu.formatAmount(invoice.getDiscount()));
+        sb.append("\n\n\t\t\t")
+                .append("Taxes:")
+                .append("\tCDN$")
+                .append(ccu.formatAmount(invoice.getTaxes()));
+        sb.append("\n\n\t\t\t")
+                .append("Total:")
+                .append("\tCDN$").append(total);
 
         String message = sb.toString();
         System.out.println(message);
