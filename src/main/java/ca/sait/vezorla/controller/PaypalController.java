@@ -5,21 +5,22 @@ import ca.sait.vezorla.exception.UnauthorizedException;
 import ca.sait.vezorla.model.Invoice;
 import ca.sait.vezorla.service.PaypalServices;
 import ca.sait.vezorla.service.UserServices;
-import ca.sait.vezorla.service.UserServicesImp;
 import com.paypal.api.payments.Links;
 import com.paypal.api.payments.Payment;
 import com.paypal.base.rest.PayPalRESTException;
 import org.springframework.stereotype.Controller;
-import org.springframework.web.bind.annotation.*;
+import org.springframework.web.bind.annotation.CrossOrigin;
+import org.springframework.web.bind.annotation.GetMapping;
+import org.springframework.web.bind.annotation.PostMapping;
+import org.springframework.web.bind.annotation.RequestParam;
 
-import javax.persistence.EntityManager;
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpSession;
 
 /**
  * Controller for paypal payments
  * JR is the number one
- *
+ * <p>
  * Taken from: https://github.com/Java-Techie-jt/spring-boot-paypal-example/blob/master/src/main/java/com/javatechie/spring/paypal/api/PaypalController.java
  */
 @Controller
@@ -32,7 +33,7 @@ public class PaypalController {
 
     private UserServices userServices;
 
-    public PaypalController(PaypalServices paypalServices, UserServices userServices){
+    public PaypalController(PaypalServices paypalServices, UserServices userServices) {
         this.paypalServices = paypalServices;
         this.userServices = userServices;
     }
@@ -50,7 +51,7 @@ public class PaypalController {
         userServices.saveLineItems(request, newInvoice);
 
         //check to ensure all previous steps have been performed
-        if(session.getAttribute("INVOICE") == null){
+        if (session.getAttribute("INVOICE") == null) {
             throw new UnauthorizedException();
         }
 
@@ -64,9 +65,9 @@ public class PaypalController {
             Payment payment = paypalServices.createPayment(10.0, "CAD", "paypal",
                     "sale", "Place Order", "http://localhost:8080/" + CANCEL_URL,
                     "http://localhost:8080/" + SUCCESS_URL);
-            for(Links link:payment.getLinks()) {
-                if(link.getRel().equals("approval_url")) {
-                    return "redirect:"+link.getHref();
+            for (Links link : payment.getLinks()) {
+                if (link.getRel().equals("approval_url")) {
+                    return "redirect:" + link.getHref();
                 }
             }
 

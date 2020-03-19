@@ -13,7 +13,7 @@ public interface EmailServices {
 
     void sendForgotPassword(String email, String tempPassword);
 
-    void sendInvoiceEmail(String to, Invoice invoice) throws InvalidInputException;
+    void sendInvoiceEmail(String to, Invoice invoice, double total) throws InvalidInputException;
 
     void sendSubscriptionEmail(String to, String additionText);
 

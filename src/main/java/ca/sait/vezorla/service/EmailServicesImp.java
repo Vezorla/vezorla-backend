@@ -3,6 +3,7 @@ package ca.sait.vezorla.service;
 import ca.sait.vezorla.controller.util.CustomerClientUtil;
 import ca.sait.vezorla.exception.InvalidInputException;
 import ca.sait.vezorla.model.Invoice;
+import ca.sait.vezorla.model.LineItem;
 import lombok.AllArgsConstructor;
 import org.springframework.mail.MailException;
 import org.springframework.mail.SimpleMailMessage;
@@ -57,7 +58,7 @@ public class EmailServicesImp implements EmailServices {
 
     }
 
-    public void sendInvoiceEmail(String to, Invoice invoice) throws MailException,
+    public void sendInvoiceEmail(String to, Invoice invoice, double total) throws MailException,
                                                                 InvalidInputException {
         verifyEmail(to);
 
@@ -66,7 +67,29 @@ public class EmailServicesImp implements EmailServices {
         mail.setFrom("vezorla.test@gmail.com");
         mail.setSubject("Your Vezorla Receipt");
 
-        String message = "";
+
+        //Create header
+        String msgHeader = "Hello " + invoice.getAccount().getFirstName() + "," +
+                "\nYour order details are indicated below.\n\n" +
+                "Order Details\n" +
+                "Invoice #" + invoice.getInvoiceNum() +
+                "Placed on " + invoice.getDate();
+
+        //Append Line Items
+        StringBuilder sb = new StringBuilder(msgHeader);
+        for(LineItem li : invoice.getLineItemList()) {
+            sb.append(li.getCurrentName()).append("\n").append(li.getQuantity()).append("\t").append(li.getExtendedPrice());
+        }
+
+        //Append pricing
+        sb.append("\n\n").append("\t\t\t").append("Item Subtotal:").append("\tCDN").append(invoice.getSubtotal());
+        sb.append("\n\n").append("\t\t\t").append("Shipping & Handling:").append("\tCDN").append(invoice.getShippingCost());
+        sb.append("\n\n").append("\t\t\t").append("Shipping & Handling:").append("\tCDN").append(invoice.getDiscount());
+        sb.append("\n\n").append("\t\t\t").append("Shipping & Handling:").append("\tCDN").append(invoice.getTaxes());
+        sb.append("\n\n").append("\t\t\t").append("Shipping & Handling:").append("\tCDN").append(invoice.getTotal());
+
+        String message = sb.toString();
+        System.out.println(message);
     }
 
     public void sendSubscriptionEmail(String to, String additionText) {
