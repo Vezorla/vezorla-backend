@@ -31,9 +31,9 @@ public class EmailServicesImp implements EmailServices{
         mail.setFrom("vezorla.test@gmail.com");
         mail.setSubject("Message from " + name);
         mail.setText("Contact-Us Message"+ "\n\n" +
-                "<b>Name:</b> " + name + "\n\n" +
-                "<b>Sender's email:</b> " + sender + "\n\n" +
-                "<b>Message:</b> " + message);
+                "Sender's Name: " + name + "\n\n" +
+                "Sender's email: " + sender + "\n\n" +
+                "Message: " + message);
 
         mailSender.send(mail);
     }

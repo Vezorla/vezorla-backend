@@ -332,16 +332,16 @@ public class CustomerRestController {
 
     /**
      * Send contact us email
+     * Returns <code>true</code> if email is sent
+     * <code>false</code> if email fails to send
      *
      * @author: matthewjflee
      * @param body
      */
     @PostMapping("contact-us")
     public boolean contactBusiness(@RequestBody String body) {
-        boolean sent = false;
-        String name = null;
-        String sender = null;
-        String message = null;
+        String name, sender, message;
+
         try {
             Object obj = new JSONParser().parse(body);
             JSONObject jo = (JSONObject) obj;
@@ -349,25 +349,20 @@ public class CustomerRestController {
             sender = (String) jo.get("sender");
             message = (String) jo.get("message");
         } catch (ParseException e) {
+            return false;
         }
 
-        //Test
-        assert name != null;
-        assert sender != null;
-        assert message != null;
+        if(name != null && sender != null && message != null) {
+            try {
+                emailServices.sendContactUsEmail(name, sender, message);
+            } catch (MailException e) {
+                return false;
+            }
 
-        //Testing out logger instead of sout. Using org.slf4j.Logger;
-        Logger logger = LoggerFactory.getLogger(CustomerRestController.class);
-        logger.info("name: " + name);
-        logger.info("sender: " + sender);
-        logger.info("msg: " + message);
-
-        try {
-            emailServices.sendContactUsEmail(name, sender, message);
-        } catch (MailException e) {
-            logger.error("Error sending email " + e.getMessage());
+            System.out.println("Email sent!");
+            return true;
         }
 
-        System.out.println("Email sent!");
+        return false;
     }
 }
