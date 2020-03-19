@@ -78,7 +78,7 @@ public class EmailServicesImp implements EmailServices {
                 "Order Details\n" +
                 "Invoice #" + invoice.getInvoiceNum() + "\n" +
                 "Placed on " + invoice.getDate() + "\n\n" +
-                "-------------------------------------------------------\n";
+                "--------------------------------------------------------------------------\n";
 
         //Append Line Items
         StringBuilder sb = new StringBuilder(msgHeader);
@@ -89,16 +89,16 @@ public class EmailServicesImp implements EmailServices {
             sb.append(li.getCurrentName())
                     .append("\nQuantity: ")
                     .append(li.getQuantity())
-                    .append("\t\tPrice: CDN$")
+                    .append("\t\tPrice:\t\t\t\tCDN$")
                     .append(ccu.formatAmount(li.getQuantity() * li.getCurrentPrice()))
                     .append("\n\n");
         }
 
         //Append pricing
         sb.append("\n\n")
-                .append("-------------------------------------------------------\n\n\t\t\t")
+                .append("--------------------------------------------------------------------------\n\n\t\t\t")
                 .append("Item Subtotal:")
-                .append("\t\tCDN$")
+                .append("\t\t\t\tCDN$")
                 .append(ccu.formatAmount(invoice.getSubtotal()));
         sb.append("\n\n\t\t\t")
                 .append("Shipping & Handling:")
@@ -106,15 +106,15 @@ public class EmailServicesImp implements EmailServices {
                 .append(ccu.formatAmount(invoice.getShippingCost()));
         sb.append("\n\n\t\t\t")
                 .append("Discount:")
-                .append("\t\tCDN$")
+                .append("\t\t\t\tCDN$")
                 .append(ccu.formatAmount(invoice.getDiscount()));
         sb.append("\n\n\t\t\t")
                 .append("Taxes:")
-                .append("\t\tCDN$")
+                .append("\t\t\t\t\tCDN$")
                 .append(ccu.formatAmount(invoice.getTaxes()));
         sb.append("\n\n\t\t\t")
                 .append("Total:")
-                .append("\t\tCDN$").append(total);
+                .append("\t\t\t\t\tCDN$").append(total);
 
         String message = sb.toString();
         mail.setText(message);
