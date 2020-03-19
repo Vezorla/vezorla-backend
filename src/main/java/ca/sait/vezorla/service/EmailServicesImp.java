@@ -81,18 +81,16 @@ public class EmailServicesImp implements EmailServices {
 
         //Append Line Items
         StringBuilder sb = new StringBuilder(msgHeader);
-
         List<LineItem> lineItems = lineItemRepo.findLineItemByInvoice(invoice);
+        CustomerClientUtil ccu = new CustomerClientUtil();
 
         for(LineItem li : lineItems) {
             sb.append(li.getCurrentName())
                     .append("\nQuantity: ")
                     .append(li.getQuantity())
-                    .append("\tPrice: ")
-                    .append(li.getExtendedPrice());
+                    .append("\t\tPrice: CDN$")
+                    .append(ccu.formatAmount(li.getQuantity() * li.getCurrentPrice()));
         }
-
-        CustomerClientUtil ccu = new CustomerClientUtil();
 
         //Append pricing
         sb.append("\n\n\t\t\t")
