@@ -8,6 +8,7 @@ import ca.sait.vezorla.model.Account;
 import ca.sait.vezorla.model.Cart;
 import ca.sait.vezorla.model.LineItem;
 import ca.sait.vezorla.model.Product;
+import ca.sait.vezorla.service.EmailServices;
 import ca.sait.vezorla.service.UserServices;
 import com.fasterxml.jackson.core.JsonProcessingException;
 import com.fasterxml.jackson.databind.ObjectMapper;
@@ -16,8 +17,11 @@ import lombok.AllArgsConstructor;
 import org.json.simple.JSONObject;
 import org.json.simple.parser.JSONParser;
 import org.json.simple.parser.ParseException;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
+import org.springframework.mail.MailException;
 import org.springframework.web.bind.annotation.*;
 
 import javax.servlet.http.HttpServletRequest;
@@ -39,6 +43,7 @@ public class CustomerRestController {
 
     protected static final String URL = "/api/customer/";
     private UserServices userServices;
+    private EmailServices emailServices;
 
     /**
      * Get all products
@@ -106,7 +111,7 @@ public class CustomerRestController {
 
     /**
      * View cart for a customer
-     *
+     *v
      * @param request
      * @return
      * @throws JsonProcessingException
@@ -252,8 +257,9 @@ public class CustomerRestController {
      * @author: matthewjflee
      */
     @PostMapping("subscribe")
-    public boolean subscribeEmail(@RequestBody String email) {
+    public boolean subscribeEmail(@RequestBody String email) throws InvalidInputException {
         String replaceEmail = email.replaceAll("\"", "");
+        emailServices.verifyEmail(replaceEmail);
         Account account = userServices.findAccountByEmail(replaceEmail).orElse(new Account(replaceEmail));
         account.setSubscript(true);
         boolean save = userServices.saveAccount(account);
@@ -325,36 +331,41 @@ public class CustomerRestController {
         return mapper.writerWithDefaultPrettyPrinter().writeValueAsString(mainArrayNode);
     }
 
-
     /**
-     * Apply discount to the cart
+     * Send contact us email
+     * Returns <code>true</code> if email is sent
+     * <code>false</code> if email fails to send
      *
-     * @return
-     * @author matthewjflee, jjrr1717
+     * @author: matthewjflee
+     * @param body
      */
-    @GetMapping("discounts/apply")
-    public boolean applyDiscount() {
+    @PostMapping("contact-us")
+    public boolean contactBusiness(@RequestBody String body) {
+        String name, senderEmail, message;
+
+        //Parse request
+        try {
+            Object obj = new JSONParser().parse(body);
+            JSONObject jo = (JSONObject) obj;
+            name = (String) jo.get("name");
+            senderEmail = (String) jo.get("senderEmail");
+            message = (String) jo.get("message");
+        } catch (ParseException e) {
+            return false;
+        }
+
+        //Send email
+        if(name != null && senderEmail != null && message != null) {
+            try {
+                emailServices.sendContactUsEmail(name, senderEmail, message);
+            } catch (MailException | InvalidInputException e) {
+                return false;
+            }
+
+            System.out.println("Email sent!");
+            return true;
+        }
 
         return false;
-    }
-
-    @GetMapping("account/forgotpassword/{email}")
-    public void forgotPassword(@PathVariable String email) {
-
-    }
-
-    @GetMapping("contact")
-    public void contactBusiness(String sender, String message) {
-
-    }
-
-    @GetMapping("cart/update/{id}")
-    public void updateCart(@PathVariable Long id) {
-
-    }
-
-    @GetMapping("account/find/{id}")
-    public Account findAccountById(@PathVariable Long id) {
-        return null;
     }
 }
