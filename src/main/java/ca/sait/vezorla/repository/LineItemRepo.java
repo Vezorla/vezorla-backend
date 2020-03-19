@@ -1,11 +1,14 @@
 package ca.sait.vezorla.repository;
 
 import java.sql.Date;
+import java.util.List;
 
+import ca.sait.vezorla.model.Invoice;
 import org.springframework.data.jpa.repository.JpaRepository;
 import org.springframework.data.jpa.repository.Query;
 
 import ca.sait.vezorla.model.LineItem;
+import org.springframework.data.repository.query.Param;
 import org.springframework.stereotype.Repository;
 
 @Repository
@@ -19,4 +22,6 @@ public interface LineItemRepo extends JpaRepository<LineItem, Long>{
 //     * @return Line Item
 //     */
 //    LineItem findLineItemByDate(Date startDate, Date endDate);
+    @Query("FROM LineItem l WHERE l.invoice = :invoice")
+    List<LineItem> findLineItemByInvoice(@Param("invoice") Invoice invoice);
 }

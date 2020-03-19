@@ -441,18 +441,23 @@ public class UserServicesImp implements UserServices {
 
         session.setAttribute("ACCOUNT", account);
         session.setAttribute("PICKUP", account.getPickup());
-        created = true;
+        created = saveAccount(account);
 
         return mapper.writerWithDefaultPrettyPrinter().writeValueAsString(created);
     }
 
+    /**
+     * @param session
+     * @param mainArrayNode
+     * @param cart
+     * @return
+     * @author jjrr1717
+     */
     public ArrayNode reviewOrder(HttpSession session, ArrayNode mainArrayNode, Cart cart) {
         CustomerClientUtil customerClientUtil = new CustomerClientUtil();
 
-        ObjectNode root = mapper.createObjectNode();
         ObjectNode node = mapper.createObjectNode();
         ArrayNode itemsArrayNode = mapper.createArrayNode();
-
 
         long subtotal = 0;
         long shippingRate = 1000;
@@ -554,8 +559,6 @@ public class UserServicesImp implements UserServices {
                     lotsToUse.get(j).setQuantity(0);
                     lotRepo.save(lotsToUse.get(j));
                     orderedQty -= lotQuantity;
-
-
                 }
 
             }
@@ -618,7 +621,6 @@ public class UserServicesImp implements UserServices {
         //add the above to the newInvoice
         newInvoice.setDate(sqlDate);
         newInvoice.setAccount(account);
-        //newInvoice.setLineItemList(lineItems);
         newInvoice.setPickup(pickup);
 
         //save to database
@@ -631,6 +633,7 @@ public class UserServicesImp implements UserServices {
      *
      * @param request for the session
      * @param invoice the line items belong to
+     * @author jjrr1717
      */
     public void saveLineItems(HttpServletRequest request, Invoice invoice) {
         HttpSession session = request.getSession();
@@ -650,12 +653,17 @@ public class UserServicesImp implements UserServices {
         }
     }
 
+    /**
+     * Apply line items to the invoice.
+     * Line items are found in the database
+     * @param invoice the invoice to apply
+     *         the line items to.
+     */
+    public void applyLineItemsToInvoice(Invoice invoice) {
+        //obtain the line items from database
+        ArrayList<LineItem> lineItems = (ArrayList<LineItem>) lineItemRepo.findLineItemByInvoice(invoice);
 
-    public boolean searchEmail(String email) {
-        return false;
-    }
-
-    public boolean subscribeEmail(String email) {
-        return false;
+        //add these to the invoice
+        invoice.setLineItemList(lineItems);
     }
 }
