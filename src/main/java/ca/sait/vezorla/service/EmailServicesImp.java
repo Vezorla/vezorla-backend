@@ -2,6 +2,7 @@ package ca.sait.vezorla.service;
 
 import ca.sait.vezorla.controller.util.CustomerClientUtil;
 import ca.sait.vezorla.exception.InvalidInputException;
+import ca.sait.vezorla.model.Invoice;
 import lombok.AllArgsConstructor;
 import org.springframework.mail.MailException;
 import org.springframework.mail.SimpleMailMessage;
@@ -56,8 +57,16 @@ public class EmailServicesImp implements EmailServices {
 
     }
 
-    public void sendInvoiceEmail(String to, String additionText) {
+    public void sendInvoiceEmail(String to, Invoice invoice) throws MailException,
+                                                                InvalidInputException {
+        verifyEmail(to);
 
+        SimpleMailMessage mail = new SimpleMailMessage();
+        mail.setTo(to);
+        mail.setFrom("vezorla.test@gmail.com");
+        mail.setSubject("Your Vezorla Receipt");
+
+        String message = "";
     }
 
     public void sendSubscriptionEmail(String to, String additionText) {
@@ -76,5 +85,4 @@ public class EmailServicesImp implements EmailServices {
         CustomerClientUtil ccu = new CustomerClientUtil();
         return ccu.validateEmail(email);
     }
-
 }

@@ -1,6 +1,7 @@
 package ca.sait.vezorla.service;
 
 import ca.sait.vezorla.exception.InvalidInputException;
+import ca.sait.vezorla.model.Invoice;
 
 public interface EmailServices {
 
@@ -12,7 +13,7 @@ public interface EmailServices {
 
     void sendForgotPassword(String email, String tempPassword);
 
-    void sendInvoiceEmail(String to, String additionText);
+    void sendInvoiceEmail(String to, Invoice invoice) throws InvalidInputException;
 
     void sendSubscriptionEmail(String to, String additionText);
 

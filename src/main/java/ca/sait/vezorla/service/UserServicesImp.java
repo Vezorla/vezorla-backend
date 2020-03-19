@@ -625,7 +625,6 @@ public class UserServicesImp implements UserServices {
 
         //save to database
         return invoiceRepo.save(newInvoice);
-
     }
 
     /**

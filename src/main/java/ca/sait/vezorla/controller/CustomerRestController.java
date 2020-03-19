@@ -340,7 +340,7 @@ public class CustomerRestController {
      * @param body
      */
     @PostMapping("contact-us")
-    public boolean contactBusiness(@RequestBody String body) {
+    public boolean contactBusiness(@RequestBody String body) throws InvalidInputException {
         String name, senderEmail, message;
 
         //Parse request
@@ -358,7 +358,7 @@ public class CustomerRestController {
         if(name != null && senderEmail != null && message != null) {
             try {
                 emailServices.sendContactUsEmail(name, senderEmail, message);
-            } catch (MailException | InvalidInputException e) {
+            } catch (MailException e) {
                 return false;
             }
 
