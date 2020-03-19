@@ -441,6 +441,9 @@ public class UserServicesImp implements UserServices {
 
         session.setAttribute("ACCOUNT", account);
         session.setAttribute("PICKUP", account.getPickup());
+
+        account.setAccountAdmin(false);
+        account.setAccountType('C');
         created = saveAccount(account);
 
         return mapper.writerWithDefaultPrettyPrinter().writeValueAsString(created);

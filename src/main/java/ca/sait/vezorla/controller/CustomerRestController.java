@@ -17,8 +17,6 @@ import lombok.AllArgsConstructor;
 import org.json.simple.JSONObject;
 import org.json.simple.parser.JSONParser;
 import org.json.simple.parser.ParseException;
-import org.slf4j.Logger;
-import org.slf4j.LoggerFactory;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.mail.MailException;
@@ -111,7 +109,8 @@ public class CustomerRestController {
 
     /**
      * View cart for a customer
-     *v
+     * v
+     *
      * @param request
      * @return
      * @throws JsonProcessingException
@@ -336,8 +335,8 @@ public class CustomerRestController {
      * Returns <code>true</code> if email is sent
      * <code>false</code> if email fails to send
      *
-     * @author: matthewjflee
      * @param body
+     * @author: matthewjflee
      */
     @PostMapping("contact-us")
     public boolean contactBusiness(@RequestBody String body) throws InvalidInputException {
@@ -355,7 +354,7 @@ public class CustomerRestController {
         }
 
         //Send email
-        if(name != null && senderEmail != null && message != null) {
+        if (name != null && senderEmail != null && message != null) {
             try {
                 emailServices.sendContactUsEmail(name, senderEmail, message);
             } catch (MailException e) {

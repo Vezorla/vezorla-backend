@@ -72,21 +72,24 @@ public class EmailServicesImp implements EmailServices {
         String msgHeader = "Hello " + invoice.getAccount().getFirstName() + "," +
                 "\nYour order details are indicated below.\n\n" +
                 "Order Details\n" +
-                "Invoice #" + invoice.getInvoiceNum() +
+                "Invoice #" + invoice.getInvoiceNum() + "\n" +
                 "Placed on " + invoice.getDate();
 
         //Append Line Items
         StringBuilder sb = new StringBuilder(msgHeader);
+        System.out.println("size " + invoice.getLineItemList().size());
         for(LineItem li : invoice.getLineItemList()) {
             sb.append(li.getCurrentName()).append("\n").append(li.getQuantity()).append("\t").append(li.getExtendedPrice());
         }
 
+        CustomerClientUtil ccu = new CustomerClientUtil();
+
         //Append pricing
-        sb.append("\n\n").append("\t\t\t").append("Item Subtotal:").append("\tCDN").append(invoice.getSubtotal());
-        sb.append("\n\n").append("\t\t\t").append("Shipping & Handling:").append("\tCDN").append(invoice.getShippingCost());
-        sb.append("\n\n").append("\t\t\t").append("Shipping & Handling:").append("\tCDN").append(invoice.getDiscount());
-        sb.append("\n\n").append("\t\t\t").append("Shipping & Handling:").append("\tCDN").append(invoice.getTaxes());
-        sb.append("\n\n").append("\t\t\t").append("Shipping & Handling:").append("\tCDN").append(invoice.getTotal());
+        sb.append("\n\n").append("\t\t\t").append("Item Subtotal:").append("\tCDN$").append(ccu.formatAmount(invoice.getSubtotal()));
+        sb.append("\n\n").append("\t\t\t").append("Shipping & Handling:").append("\tCDN$").append(ccu.formatAmount(invoice.getShippingCost()));
+        sb.append("\n\n").append("\t\t\t").append("Discount:").append("\tCDN$").append(ccu.formatAmount(invoice.getDiscount()));
+        sb.append("\n\n").append("\t\t\t").append("Taxes:").append("\tCDN$").append(ccu.formatAmount(invoice.getTaxes()));
+        sb.append("\n\n").append("\t\t\t").append("Total:").append("\tCDN$").append(total);
 
         String message = sb.toString();
         System.out.println(message);

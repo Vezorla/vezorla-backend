@@ -1,13 +1,16 @@
 package ca.sait.vezorla.controller;
 
 import ca.sait.vezorla.controller.util.CustomerClientUtil;
+import ca.sait.vezorla.exception.InvalidInputException;
 import ca.sait.vezorla.exception.UnauthorizedException;
 import ca.sait.vezorla.model.Invoice;
+import ca.sait.vezorla.service.EmailServices;
 import ca.sait.vezorla.service.PaypalServices;
 import ca.sait.vezorla.service.UserServices;
 import com.paypal.api.payments.Links;
 import com.paypal.api.payments.Payment;
 import com.paypal.base.rest.PayPalRESTException;
+import lombok.AllArgsConstructor;
 import org.springframework.stereotype.Controller;
 import org.springframework.web.bind.annotation.CrossOrigin;
 import org.springframework.web.bind.annotation.GetMapping;
@@ -23,6 +26,7 @@ import javax.servlet.http.HttpSession;
  * <p>
  * Taken from: https://github.com/Java-Techie-jt/spring-boot-paypal-example/blob/master/src/main/java/com/javatechie/spring/paypal/api/PaypalController.java
  */
+@AllArgsConstructor
 @Controller
 @CrossOrigin
 public class PaypalController {
@@ -32,14 +36,10 @@ public class PaypalController {
     PaypalServices paypalServices;
 
     private UserServices userServices;
-
-    public PaypalController(PaypalServices paypalServices, UserServices userServices) {
-        this.paypalServices = paypalServices;
-        this.userServices = userServices;
-    }
+    private EmailServices emailServices;
 
     @PostMapping("/customer/cart/payment")
-    public String makePayment(HttpServletRequest request) throws UnauthorizedException {
+    public String makePayment(HttpServletRequest request) throws UnauthorizedException, InvalidInputException {
         HttpSession session = request.getSession();
 
         userServices.decreaseInventory(request);
@@ -60,6 +60,10 @@ public class PaypalController {
 
         String formattedTotal = ccu.formatAmount(invoice.getTotal());
         double totalAsDouble = Double.parseDouble(formattedTotal);
+
+        //Send email
+        //Move later
+        emailServices.sendInvoiceEmail(invoice.getAccount().getEmail(), invoice, totalAsDouble);
 
         try {
             Payment payment = paypalServices.createPayment(10.0, "CAD", "paypal",
