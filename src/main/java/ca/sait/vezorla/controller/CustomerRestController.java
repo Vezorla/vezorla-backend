@@ -325,36 +325,8 @@ public class CustomerRestController {
         return mapper.writerWithDefaultPrettyPrinter().writeValueAsString(mainArrayNode);
     }
 
-
-    /**
-     * Apply discount to the cart
-     *
-     * @return
-     * @author matthewjflee, jjrr1717
-     */
-    @GetMapping("discounts/apply")
-    public boolean applyDiscount() {
-
-        return false;
-    }
-
-    @GetMapping("account/forgotpassword/{email}")
-    public void forgotPassword(@PathVariable String email) {
-
-    }
-
     @GetMapping("contact")
     public void contactBusiness(String sender, String message) {
 
-    }
-
-    @GetMapping("cart/update/{id}")
-    public void updateCart(@PathVariable Long id) {
-
-    }
-
-    @GetMapping("account/find/{id}")
-    public Account findAccountById(@PathVariable Long id) {
-        return null;
     }
 }
