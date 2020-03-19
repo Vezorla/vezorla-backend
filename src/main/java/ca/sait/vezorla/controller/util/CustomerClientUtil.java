@@ -48,11 +48,13 @@ public class CustomerClientUtil {
         }
     }
 
-    public void validateEmail(String email) throws InvalidInputException {
+    public boolean validateEmail(String email) throws InvalidInputException {
         final String EMAIL_REGEX = "^[\\w-\\+]+(\\.[\\w]+)*@[\\w-]+(\\.[\\w]+)*(\\.[a-z]{2,})$";
         Pattern pattern = Pattern.compile(EMAIL_REGEX);
         if (!pattern.matcher(email).matches()) {
             throw new InvalidInputException();
         }
+
+        return true;
     }
 }

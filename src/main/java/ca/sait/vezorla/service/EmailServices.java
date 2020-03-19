@@ -15,4 +15,6 @@ public interface EmailServices {
     void sendInvoiceEmail(String to, String additionText);
 
     void sendSubscriptionEmail(String to, String additionText);
+
+    boolean verifyEmail(String email) throws InvalidInputException;
 }
