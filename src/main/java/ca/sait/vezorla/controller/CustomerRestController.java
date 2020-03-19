@@ -340,23 +340,23 @@ public class CustomerRestController {
      */
     @PostMapping("contact-us")
     public boolean contactBusiness(@RequestBody String body) {
-        String name, sender, message;
+        String name, senderEmail, message;
 
         //Parse request
         try {
             Object obj = new JSONParser().parse(body);
             JSONObject jo = (JSONObject) obj;
             name = (String) jo.get("name");
-            sender = (String) jo.get("sender");
+            senderEmail = (String) jo.get("senderEmail");
             message = (String) jo.get("message");
         } catch (ParseException e) {
             return false;
         }
 
         //Send email
-        if(name != null && sender != null && message != null) {
+        if(name != null && senderEmail != null && message != null) {
             try {
-                emailServices.sendContactUsEmail(name, sender, message);
+                emailServices.sendContactUsEmail(name, senderEmail, message);
             } catch (MailException e) {
                 return false;
             }

@@ -21,18 +21,18 @@ public class EmailServicesImp implements EmailServices{
      * Send contact us email to vezorla.test@gmail.com
      *
      * @author: matthewjflee
-     * @param sender
+     * @param senderEmail
      * @param message
      * @throws MailException
      */
-    public void sendContactUsEmail(String name, String sender, String message) throws MailException {
+    public void sendContactUsEmail(String name, String senderEmail, String message) throws MailException {
         SimpleMailMessage mail = new SimpleMailMessage();
         mail.setTo("vezorla.test@gmail.com");
         mail.setFrom("vezorla.test@gmail.com");
         mail.setSubject("Message from " + name);
         mail.setText("Contact-Us Message"+ "\n\n" +
                 "Sender's Name: " + name + "\n\n" +
-                "Sender's email: " + sender + "\n\n" +
+                "Sender's email: " + senderEmail + "\n\n" +
                 "Message: " + message);
 
         mailSender.send(mail);
