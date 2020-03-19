@@ -342,6 +342,7 @@ public class CustomerRestController {
     public boolean contactBusiness(@RequestBody String body) {
         String name, sender, message;
 
+        //Parse request
         try {
             Object obj = new JSONParser().parse(body);
             JSONObject jo = (JSONObject) obj;
@@ -352,6 +353,7 @@ public class CustomerRestController {
             return false;
         }
 
+        //Send email
         if(name != null && sender != null && message != null) {
             try {
                 emailServices.sendContactUsEmail(name, sender, message);
