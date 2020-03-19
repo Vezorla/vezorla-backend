@@ -50,7 +50,7 @@ public class EmailServicesImp implements EmailServices{
 
     }
 
-    public void sendPurchaseOrderEmail(String to, String additionText) {
+    public void sendInvoiceEmail(String to, String additionText) {
 
     }
 
