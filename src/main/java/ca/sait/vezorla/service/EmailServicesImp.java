@@ -17,12 +17,23 @@ public class EmailServicesImp implements EmailServices{
 
     private JavaMailSender mailSender;
 
-    public void sendContactUsEmail(String sender, String message) throws MailException {
+    /**
+     * Send contact us email to vezorla.test@gmail.com
+     *
+     * @author: matthewjflee
+     * @param sender
+     * @param message
+     * @throws MailException
+     */
+    public void sendContactUsEmail(String name, String sender, String message) throws MailException {
         SimpleMailMessage mail = new SimpleMailMessage();
         mail.setTo("vezorla.test@gmail.com");
         mail.setFrom("vezorla.test@gmail.com");
-        mail.setSubject("Message from " + sender);
-        mail.setText(message);
+        mail.setSubject("Message from " + name);
+        mail.setText("Contact-Us Message"+ "\n\n" +
+                "<b>Name:</b> " + name + "\n\n" +
+                "<b>Sender's email:</b> " + sender + "\n\n" +
+                "<b>Message:</b> " + message);
 
         mailSender.send(mail);
     }

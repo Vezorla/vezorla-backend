@@ -330,9 +330,15 @@ public class CustomerRestController {
         return mapper.writerWithDefaultPrettyPrinter().writeValueAsString(mainArrayNode);
     }
 
-
+    /**
+     * Send contact us email
+     *
+     * @author: matthewjflee
+     * @param body
+     */
     @PostMapping("contact-us")
-    public void contactBusiness(@RequestBody String body) {
+    public boolean contactBusiness(@RequestBody String body) {
+        boolean sent = false;
         String name = null;
         String sender = null;
         String message = null;
@@ -352,11 +358,12 @@ public class CustomerRestController {
 
         //Testing out logger instead of sout. Using org.slf4j.Logger;
         Logger logger = LoggerFactory.getLogger(CustomerRestController.class);
-        logger.info("sender " + sender);
-        logger.info("msg " + message);
+        logger.info("name: " + name);
+        logger.info("sender: " + sender);
+        logger.info("msg: " + message);
 
         try {
-            emailServices.sendContactUsEmail(sender, message);
+            emailServices.sendContactUsEmail(name, sender, message);
         } catch (MailException e) {
             logger.error("Error sending email " + e.getMessage());
         }
