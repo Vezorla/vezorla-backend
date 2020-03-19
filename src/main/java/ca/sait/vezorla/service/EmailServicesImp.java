@@ -66,18 +66,19 @@ public class EmailServicesImp implements EmailServices {
                                                                 InvalidInputException {
         verifyEmail(to);
 
+        //Set up email
         SimpleMailMessage mail = new SimpleMailMessage();
         mail.setTo(to);
         mail.setFrom("vezorla.test@gmail.com");
         mail.setSubject("Your Vezorla Receipt");
-
 
         //Create header
         String msgHeader = "Hello " + invoice.getAccount().getFirstName() + "," +
                 "\nYour order details are indicated below.\n\n" +
                 "Order Details\n" +
                 "Invoice #" + invoice.getInvoiceNum() + "\n" +
-                "Placed on " + invoice.getDate();
+                "Placed on " + invoice.getDate() + "\n\n" +
+                "-------------------------------------------------------\n";
 
         //Append Line Items
         StringBuilder sb = new StringBuilder(msgHeader);
@@ -89,32 +90,36 @@ public class EmailServicesImp implements EmailServices {
                     .append("\nQuantity: ")
                     .append(li.getQuantity())
                     .append("\t\tPrice: CDN$")
-                    .append(ccu.formatAmount(li.getQuantity() * li.getCurrentPrice()));
+                    .append(ccu.formatAmount(li.getQuantity() * li.getCurrentPrice()))
+                    .append("\n\n");
         }
 
         //Append pricing
-        sb.append("\n\n\t\t\t")
+        sb.append("\n\n")
+                .append("-------------------------------------------------------\n\n\t\t\t")
                 .append("Item Subtotal:")
-                .append("\tCDN$")
+                .append("\t\tCDN$")
                 .append(ccu.formatAmount(invoice.getSubtotal()));
         sb.append("\n\n\t\t\t")
                 .append("Shipping & Handling:")
-                .append("\tCDN$")
+                .append("\t\tCDN$")
                 .append(ccu.formatAmount(invoice.getShippingCost()));
         sb.append("\n\n\t\t\t")
                 .append("Discount:")
-                .append("\tCDN$")
+                .append("\t\tCDN$")
                 .append(ccu.formatAmount(invoice.getDiscount()));
         sb.append("\n\n\t\t\t")
                 .append("Taxes:")
-                .append("\tCDN$")
+                .append("\t\tCDN$")
                 .append(ccu.formatAmount(invoice.getTaxes()));
         sb.append("\n\n\t\t\t")
                 .append("Total:")
-                .append("\tCDN$").append(total);
+                .append("\t\tCDN$").append(total);
 
         String message = sb.toString();
-        System.out.println(message);
+        mail.setText(message);
+
+        mailSender.send(mail);
     }
 
     public void sendSubscriptionEmail(String to, String additionText) {
