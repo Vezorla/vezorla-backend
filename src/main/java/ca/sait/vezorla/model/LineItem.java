@@ -8,7 +8,6 @@
  */
 package ca.sait.vezorla.model;
 
-import com.fasterxml.jackson.annotation.JsonIgnore;
 import lombok.AllArgsConstructor;
 import lombok.Data;
 import lombok.NoArgsConstructor;
@@ -16,8 +15,6 @@ import org.hibernate.annotations.Formula;
 
 import javax.persistence.*;
 import java.io.Serializable;
-import java.math.BigDecimal;
-import java.util.Currency;
 
 @Entity
 @Data
@@ -39,10 +36,6 @@ public class LineItem implements Serializable {
 
     @Column(name = "current_price")
     private long currentPrice;
-
-    @Column(name = "extended_price")
-    @Formula(value = "current_price * quantity")
-    private long extendedPrice;
 
     @ManyToOne
     @JoinColumn(name = "order_num")
