@@ -48,7 +48,7 @@ public class HttpSessionConfig implements WebMvcConfigurer {
             public void addCorsMappings(CorsRegistry registry) {
                 registry.addMapping("/api/**")
                         .allowedOrigins("http://localhost:3000")
-                        .allowedMethods("PUT", "POST", "GET")
+                        .allowedMethods("PUT", "POST", "GET", "DELETE")
                         .allowedHeaders("*")
                         .exposedHeaders("Content-Type", "Expires")
                         .allowCredentials(true).maxAge(3600);
