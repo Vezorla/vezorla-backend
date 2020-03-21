@@ -18,7 +18,6 @@ import javax.servlet.http.HttpSession;
 
 /**
  * Controller for paypal payments
- * JR is the number one
  *
  * Taken from: https://github.com/Java-Techie-jt/spring-boot-paypal-example/blob/master/src/main/java/com/javatechie/spring/paypal/api/PaypalController.java
  */
@@ -37,6 +36,12 @@ public class PaypalController {
         this.userServices = userServices;
     }
 
+    /**
+     * Method to make the payment through paypal
+     * @param request the session
+     * @return a String to redirect user
+     * @throws UnauthorizedException
+     */
     @PostMapping("/customer/cart/payment")
     public String makePayment(HttpServletRequest request) throws UnauthorizedException {
         HttpSession session = request.getSession();
@@ -78,12 +83,23 @@ public class PaypalController {
         return "redirect:/";
     }
 
+    /**
+     * Method if the payment was cancelled
+     * @return
+     */
     @GetMapping(value = "/customer/cart/payment/cancel")
     public String cancelPay() {
         System.out.println("Cancelled");
         return "redirect:/";
     }
 
+    /**
+     * Method if the payment was successful
+     * @param paymentId
+     * @param payerId
+     * @param request
+     * @return
+     */
     @GetMapping(value = "/customer/cart/payment/success")
     public String successPay(@RequestParam("paymentId") String paymentId, @RequestParam("PayerID") String payerId, HttpServletRequest request) {
         try {

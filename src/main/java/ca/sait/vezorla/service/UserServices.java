@@ -18,8 +18,6 @@ public interface UserServices {
 
     void applyDiscount(HttpServletRequest request);
 
-    void createLineItems(Long id);
-
     List<Product> getAllProducts();
 
     Cart getCart();

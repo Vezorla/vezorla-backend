@@ -93,8 +93,10 @@ public class CustomerRestController {
         int productInStock = userServices.getProductQuantity(id);
         int checkProductStock = userServices.validateOrderedQuantity(quantity, productInStock);
 
-        if (checkProductStock >= 0)
+        if (checkProductStock >= 0) {
             lineItem = userServices.createLineItemSession(product, quantity, request);
+            result = true;
+        }
 
         if (lineItem != null) {
             userServices.updateSessionCart(lineItem, request);
