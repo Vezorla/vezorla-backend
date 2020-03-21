@@ -1,3 +1,4 @@
+
 package ca.sait.vezorla.controller;
 
 import ca.sait.vezorla.exception.InvalidInputException;
@@ -8,8 +9,9 @@ import ca.sait.vezorla.model.Account;
 import ca.sait.vezorla.model.Cart;
 import ca.sait.vezorla.model.LineItem;
 import ca.sait.vezorla.model.Product;
-import ca.sait.vezorla.service.EmailServices;
 import ca.sait.vezorla.service.UserServices;
+import ca.sait.vezorla.model.Product;
+import ca.sait.vezorla.service.EmailServices;
 import com.fasterxml.jackson.core.JsonProcessingException;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import com.fasterxml.jackson.databind.node.ArrayNode;
@@ -18,8 +20,8 @@ import org.json.simple.JSONObject;
 import org.json.simple.parser.JSONParser;
 import org.json.simple.parser.ParseException;
 import org.springframework.http.HttpStatus;
-import org.springframework.http.ResponseEntity;
 import org.springframework.mail.MailException;
+import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 
 import javax.servlet.http.HttpServletRequest;
@@ -96,8 +98,10 @@ public class CustomerRestController {
         int productInStock = userServices.getProductQuantity(id);
         int checkProductStock = userServices.validateOrderedQuantity(quantity, productInStock);
 
-        if (checkProductStock >= 0)
+        if (checkProductStock >= 0) {
             lineItem = userServices.createLineItemSession(product, quantity, request);
+            result = true;
+        }
 
         if (lineItem != null) {
             userServices.updateSessionCart(lineItem, request);
@@ -109,7 +113,6 @@ public class CustomerRestController {
 
     /**
      * View cart for a customer
-     * v
      *
      * @param request
      * @return
@@ -256,7 +259,7 @@ public class CustomerRestController {
      * @author: matthewjflee
      */
     @PostMapping("subscribe")
-    public boolean subscribeEmail(@RequestBody String email) throws InvalidInputException {
+    public boolean subscribeEmail(@RequestBody String email) {
         String replaceEmail = email.replaceAll("\"", "");
         emailServices.verifyEmail(replaceEmail);
         Account account = userServices.findAccountByEmail(replaceEmail).orElse(new Account(replaceEmail));
@@ -366,5 +369,37 @@ public class CustomerRestController {
         }
 
         return false;
+    }
+
+    /**
+     * Apply discount to the cart
+     *
+     * @return
+     * @author matthewjflee, jjrr1717
+     */
+    @GetMapping("discounts/apply")
+    public boolean applyDiscount() {
+
+        return false;
+    }
+
+    @GetMapping("account/forgotpassword/{email}")
+    public void forgotPassword(@PathVariable String email) {
+
+    }
+
+    @GetMapping("contact")
+    public void contactBusiness(String sender, String message) {
+
+    }
+
+    @GetMapping("cart/update/{id}")
+    public void updateCart(@PathVariable Long id) {
+
+    }
+
+    @GetMapping("account/find/{id}")
+    public Account findAccountById(@PathVariable Long id) {
+        return null;
     }
 }

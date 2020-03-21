@@ -40,14 +40,14 @@ public class UserServicesImp implements UserServices {
     /**
      * Method to save the discount used on
      * a order to the Account_Discount table
+     * @author jjrr1717
+     * @param request for the session
      */
     public void applyDiscount(HttpServletRequest request) {
 
         //get discount from the session
         HttpSession session = request.getSession();
         AccountDiscount accountDiscount = (AccountDiscount) session.getAttribute("ACCOUNT_DISCOUNT");
-
-        //Discount discount = new Discount(accountDiscount.getCode().getCode(), accountDiscount);
 
         if (!accountDiscount.getCode().getCode().equals("NotSelected")) {
             accountDiscountRepo.insertWithQuery(accountDiscount);
@@ -58,8 +58,8 @@ public class UserServicesImp implements UserServices {
     /**
      * Get the customer's cart from the session
      *
-     * @param session
-     * @return
+     * @param session to access the cart
+     * @return the cart
      * @author matthewjflee, jjrr1717
      */
     public Cart getSessionCart(HttpSession session) {
@@ -74,9 +74,9 @@ public class UserServicesImp implements UserServices {
     /**
      * Adding line item to cart
      *
-     * @param lineItem
-     * @param request
-     * @return
+     * @param lineItem to add to the cart
+     * @param request for the session
+     * @return the cart with new line item added
      * @author matthewjflee, jjrr1717
      */
     public Cart updateSessionCart(LineItem lineItem, HttpServletRequest request) {
@@ -98,8 +98,8 @@ public class UserServicesImp implements UserServices {
     /**
      * Get the total quantity of all line items in the cart
      *
-     * @param lineItems
-     * @return
+     * @param lineItems to count the total quantity in them
+     * @return the quantity as a String
      * @author matthewjflee, jjrr1717
      */
     public String getTotalCartQuantity(ArrayList<LineItem> lineItems) {
@@ -111,8 +111,8 @@ public class UserServicesImp implements UserServices {
     /**
      * Get the total quantity of the product from the Products database
      *
-     * @param id
-     * @return
+     * @param id the product's id to check.
+     * @return the quantity
      * @author matthewjflee, jjrr1717
      */
     public int getProductQuantity(Long id) {
@@ -123,9 +123,10 @@ public class UserServicesImp implements UserServices {
     /**
      * Validate the order quantity before adding the product to the cart as a line item
      *
-     * @param orderedQuantitySent
-     * @param inStockQuantity
-     * @return
+     * @param orderedQuantitySent the quantity wanted to add to the line item
+     * @param inStockQuantity quantity currently in stock in database
+     * @return the difference. >=0 means there is enough stock. >0 means
+     *          there is not enough stock.
      * @author matthewjflee, jjrr1717
      */
     public int validateOrderedQuantity(String orderedQuantitySent, int inStockQuantity) {
@@ -134,6 +135,17 @@ public class UserServicesImp implements UserServices {
         return inStockQuantity - orderedQuantity;
     }
 
+    /**
+     * Method to return the items out of stock that are on
+     * an order.
+     * Would have become out of stock sometime between the
+     * checkout process
+     * @author jjrr1717
+     * @param cart to check if any items are out of stock
+     * @param request for the session
+     * @return an ArrayNode of all the out of stock items for front end
+     *          to use.
+     */
     public ArrayNode checkItemsOrderedOutOfStock(Cart cart, HttpServletRequest request) {
         ArrayNode outOfStockItems = mapper.createArrayNode();
         //check quantity in stock for each item
@@ -162,15 +174,16 @@ public class UserServicesImp implements UserServices {
     /**
      * Create a line item from the product for a customer
      *
-     * @param product
-     * @param sentQuantity
-     * @param request
-     * @return
+     * @param product for the line item
+     * @param sentQuantity quantity for the line item
+     * @param request for the session
+     * @return line item to be added to the session
      * @author matthewjflee, jjrr1717
      */
     public LineItem createLineItemSession(Optional<Product> product, String sentQuantity, HttpServletRequest request) {
         //check if product already exists
         boolean exists = checkProductLineItem(product.get().getProdId(), request);
+
         LineItem lineItem = null;
         if (!exists) {
             lineItem = new LineItem();
@@ -183,7 +196,7 @@ public class UserServicesImp implements UserServices {
             lineItem.setCart((Cart) request.getSession().getAttribute("CART"));
             lineItem.setProduct(product.get());
         } else {
-            updateLineItemAdd();
+            updateLineItemAdd(product.get(), sentQuantity, request);
         }
 
         return lineItem;
@@ -193,9 +206,10 @@ public class UserServicesImp implements UserServices {
      * Method to search for the existence of the
      * line item.
      *
-     * @param id      of the product
-     * @param request
+     * @param id of the product
+     * @param request for the session
      * @return boolean true if it exits in cart already.
+     * @author jjrr1717
      */
     private boolean checkProductLineItem(Long id, HttpServletRequest request) {
         boolean result = false;
@@ -211,16 +225,41 @@ public class UserServicesImp implements UserServices {
     }
 
 
-    private LineItem updateLineItemAdd() {
-        return null;
+    /**
+     * Method to update a line item that already exits in the cart.
+     * It will add the quantity to the existing quantity.
+     * @param product the product already in the cart
+     * @param sentQuantity the quantity to add to the line item
+     * @param request for the session
+     * @author jjrr1717
+     */
+    private void updateLineItemAdd(Product product, String sentQuantity, HttpServletRequest request) {
+        HttpSession session = request.getSession();
+
+        //get cart with line items
+        Cart cart = (Cart) session.getAttribute("CART");
+        ArrayList<LineItem> lineItems = (ArrayList<LineItem>) cart.getLineItems();
+        sentQuantity = sentQuantity.replaceAll("\"", "");
+        int quantity = Integer.parseInt(sentQuantity);
+
+        //loop through to find line item to add additional quantity
+        for(int i = 0; i < lineItems.size(); i++) {
+            if(lineItems.get(i).getProduct().getProdId().equals(product.getProdId())) {
+                lineItems.get(i).setQuantity(lineItems.get(i).getQuantity() + quantity);
+            }
+        }
+
+        cart.setLineItems(lineItems);
+        session.setAttribute("CART", cart);
     }
 
     /**
-     * Update line item quantity in cart
+     * Update line item quantity in cart.
+     * At the review page.
      *
-     * @param id
-     * @param quantity
-     * @param cart
+     * @param id of the product to update
+     * @param quantity of the line item
+     * @param cart to add updated line item
      * @author matthewjflee, jjrr1717
      */
     public boolean updateLineItemSession(Long id, int quantity, Cart cart, HttpServletRequest request) {
@@ -242,10 +281,10 @@ public class UserServicesImp implements UserServices {
     /**
      * Remove a line item from the customer's cart
      *
-     * @param id
-     * @param cart
-     * @param request
-     * @return
+     * @param id of product to remove
+     * @param cart to remove product from
+     * @param request the session
+     * @return a boolean true if successfully removed, otherwise false.
      * @author matthewjflee, jjrr1717
      */
     public boolean removeLineItemSession(Long id, Cart cart, HttpServletRequest request) {
@@ -263,15 +302,11 @@ public class UserServicesImp implements UserServices {
         return result;
     }
 
-    public void createLineItems(Long id) {
-
-    }
-
     /**
      * Create and persist an account in the Accounts table
      *
-     * @param account
-     * @return
+     * @param account to persist in database
+     * @return boolean true if it was succesfully added, otherwise false
      * @author matthewjflee, jjrr1717
      */
     public boolean saveAccount(Account account) {
@@ -326,8 +361,10 @@ public class UserServicesImp implements UserServices {
      * Method to return valid discounts a user
      * can apply to their order
      *
-     * @param
-     * @return
+     * @param email a String for the account
+     *              that is requesting discounts.
+     * @return an ArrayList of valid discounts that can be
+     *              applied to the order.
      * @author matthewjflee, jjrr1717
      */
     public ArrayList<Discount> getValidDiscounts(String email) {
@@ -340,7 +377,7 @@ public class UserServicesImp implements UserServices {
         //list of Discounts
         ArrayList<Discount> discounts = new ArrayList<>();
 
-        //parse the comma deliminted string returned from query
+        //parse the comma delimited string returned from query
         for (String s : stringDiscounts) {
 
             String[] spl = s.split(",");
@@ -356,9 +393,10 @@ public class UserServicesImp implements UserServices {
      * Method to create the discount code and percent json to
      * send to front end.
      *
-     * @param session
-     * @param arrayNode
-     * @return
+     * @param session for the current session
+     * @param arrayNode to add the json
+     * @return ArrayNode containing the discount code and percent
+     * @author jjrr1717
      */
     public ArrayNode buildValidDiscounts(HttpSession session, ArrayNode arrayNode) {
         Account currentAccount = (Account) session.getAttribute("ACCOUNT");
@@ -380,9 +418,10 @@ public class UserServicesImp implements UserServices {
      * the session and the discount code provided by the
      * front-end body.
      *
-     * @param code
-     * @param request
-     * @param session
+     * @param code for the discount
+     * @param request the session
+     * @param session the current session
+     * @author jjrr1717
      */
     public void getSelectedDiscount(String code, HttpServletRequest request, HttpSession session) {
         session = request.getSession();
@@ -401,6 +440,14 @@ public class UserServicesImp implements UserServices {
 
     }
 
+    /**
+     * Method to send information about the cart to the front-end
+     * @param request the session
+     * @param cart to view
+     * @return ArrayNode containing the information for the cart to view
+     * @throws JsonProcessingException
+     * @author jjrr1717, matthewjflee
+     */
     public ArrayNode viewSessionCart(HttpServletRequest request, Cart cart) throws JsonProcessingException {
         CustomerClientUtil customerClientUtil = new CustomerClientUtil();
         HttpSession session = request.getSession();
@@ -422,8 +469,8 @@ public class UserServicesImp implements UserServices {
      * Method to parse the json sent from
      * the front end for the shipping information
      *
-     * @param request
-     * @return
+     * @param request the session
+     * @return String boolean if account is created successfully for shipping info
      * @throws InvalidInputException
      * @throws JsonProcessingException
      */
@@ -441,20 +488,21 @@ public class UserServicesImp implements UserServices {
 
         session.setAttribute("ACCOUNT", account);
         session.setAttribute("PICKUP", account.getPickup());
-
-        account.setAccountAdmin(false);
-        account.setAccountType('C');
         created = saveAccount(account);
 
         return mapper.writerWithDefaultPrettyPrinter().writeValueAsString(created);
     }
 
     /**
-     * @param session
-     * @param mainArrayNode
-     * @param cart
-     * @return
-     * @author jjrr1717
+     * Method to create ArrayNode of all the information that
+     * will be displayed on the review order page.
+     *
+     * @param session of the current session
+     * @param mainArrayNode the node containing all the information
+     * @param cart that contains all the information
+     * @return ArrayNode with all the information needed to review the
+     *          order.
+     * @author jjrr1717 (unfortunately - sorry for the bad coding)
      */
     public ArrayNode reviewOrder(HttpSession session, ArrayNode mainArrayNode, Cart cart) {
         CustomerClientUtil customerClientUtil = new CustomerClientUtil();
@@ -539,6 +587,8 @@ public class UserServicesImp implements UserServices {
     /**
      * Method to decrease inventory from lot
      * in database.
+     * @param request the session
+     * @author jjrr1717
      */
     public void decreaseInventory(HttpServletRequest request) {
         //get line items to determine what was sold
@@ -573,7 +623,10 @@ public class UserServicesImp implements UserServices {
      * Method to obtain lots that contain
      * enough quantity to fulfill order.
      *
-     * @return list of lots
+     * @param qty needed to fulfill order
+     * @param product for the order
+     * @return List of the lots that can fulfill the order
+     * @author jjrr1717
      */
     public List<Lot> obtainSufficientQtyLots(int qty, Product product) {
         //grab lots from database
@@ -603,6 +656,7 @@ public class UserServicesImp implements UserServices {
      *
      * @param request for the session
      * @return the Invoice saved to the database
+     * @author jjrr1717
      */
     public Invoice saveInvoice(HttpServletRequest request) {
         //grab the invoice already generated
@@ -628,6 +682,7 @@ public class UserServicesImp implements UserServices {
 
         //save to database
         return invoiceRepo.save(newInvoice);
+
     }
 
     /**
@@ -660,6 +715,7 @@ public class UserServicesImp implements UserServices {
      * Line items are found in the database
      * @param invoice the invoice to apply
      *         the line items to.
+     * @author jjrr1717
      */
     public void applyLineItemsToInvoice(Invoice invoice) {
         //obtain the line items from database
@@ -669,3 +725,4 @@ public class UserServicesImp implements UserServices {
         invoice.setLineItemList(lineItems);
     }
 }
+
