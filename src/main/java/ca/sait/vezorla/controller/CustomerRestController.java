@@ -1,3 +1,4 @@
+
 package ca.sait.vezorla.controller;
 
 import ca.sait.vezorla.exception.InvalidInputException;
@@ -9,6 +10,8 @@ import ca.sait.vezorla.model.Cart;
 import ca.sait.vezorla.model.LineItem;
 import ca.sait.vezorla.model.Product;
 import ca.sait.vezorla.service.UserServices;
+import ca.sait.vezorla.model.Product;
+import ca.sait.vezorla.service.EmailServices;
 import com.fasterxml.jackson.core.JsonProcessingException;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import com.fasterxml.jackson.databind.node.ArrayNode;
@@ -17,6 +20,7 @@ import org.json.simple.JSONObject;
 import org.json.simple.parser.JSONParser;
 import org.json.simple.parser.ParseException;
 import org.springframework.http.HttpStatus;
+import org.springframework.mail.MailException;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 
@@ -39,6 +43,7 @@ public class CustomerRestController {
 
     protected static final String URL = "/api/customer/";
     private UserServices userServices;
+    private EmailServices emailServices;
 
     /**
      * Get all products
@@ -93,8 +98,10 @@ public class CustomerRestController {
         int productInStock = userServices.getProductQuantity(id);
         int checkProductStock = userServices.validateOrderedQuantity(quantity, productInStock);
 
-        if (checkProductStock >= 0)
+        if (checkProductStock >= 0) {
             lineItem = userServices.createLineItemSession(product, quantity, request);
+            result = true;
+        }
 
         if (lineItem != null) {
             userServices.updateSessionCart(lineItem, request);
@@ -254,6 +261,7 @@ public class CustomerRestController {
     @PostMapping("subscribe")
     public boolean subscribeEmail(@RequestBody String email) {
         String replaceEmail = email.replaceAll("\"", "");
+        emailServices.verifyEmail(replaceEmail);
         Account account = userServices.findAccountByEmail(replaceEmail).orElse(new Account(replaceEmail));
         account.setSubscript(true);
         boolean save = userServices.saveAccount(account);
@@ -325,6 +333,43 @@ public class CustomerRestController {
         return mapper.writerWithDefaultPrettyPrinter().writeValueAsString(mainArrayNode);
     }
 
+    /**
+     * Send contact us email
+     * Returns <code>true</code> if email is sent
+     * <code>false</code> if email fails to send
+     *
+     * @param body
+     * @author: matthewjflee
+     */
+    @PostMapping("contact-us")
+    public boolean contactBusiness(@RequestBody String body) throws InvalidInputException {
+        String name, senderEmail, message;
+
+        //Parse request
+        try {
+            Object obj = new JSONParser().parse(body);
+            JSONObject jo = (JSONObject) obj;
+            name = (String) jo.get("name");
+            senderEmail = (String) jo.get("senderEmail");
+            message = (String) jo.get("message");
+        } catch (ParseException e) {
+            return false;
+        }
+
+        //Send email
+        if (name != null && senderEmail != null && message != null) {
+            try {
+                emailServices.sendContactUsEmail(name, senderEmail, message);
+            } catch (MailException e) {
+                return false;
+            }
+
+            System.out.println("Email sent!");
+            return true;
+        }
+
+        return false;
+    }
 
     /**
      * Apply discount to the cart

@@ -18,8 +18,6 @@ public interface UserServices {
 
     void applyDiscount(HttpServletRequest request);
 
-    void createLineItems(Long id);
-
     List<Product> getAllProducts();
 
     Cart getCart();
@@ -71,4 +69,6 @@ public interface UserServices {
     Invoice saveInvoice(HttpServletRequest request);
 
     void saveLineItems(HttpServletRequest request, Invoice invoice);
+
+    void applyLineItemsToInvoice(Invoice invoice);
 }

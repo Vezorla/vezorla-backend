@@ -196,7 +196,7 @@ public class UserServicesImp implements UserServices {
             lineItem.setCart((Cart) request.getSession().getAttribute("CART"));
             lineItem.setProduct(product.get());
         } else {
-            updateLineItemQuantity(product.get(), sentQuantity, request);
+            updateLineItemAdd(product.get(), sentQuantity, request);
         }
 
         return lineItem;
@@ -233,7 +233,7 @@ public class UserServicesImp implements UserServices {
      * @param request for the session
      * @author jjrr1717
      */
-    private void updateLineItemQuantity(Product product, String sentQuantity, HttpServletRequest request) {
+    private void updateLineItemAdd(Product product, String sentQuantity, HttpServletRequest request) {
         HttpSession session = request.getSession();
 
         //get cart with line items
@@ -725,3 +725,4 @@ public class UserServicesImp implements UserServices {
         invoice.setLineItemList(lineItems);
     }
 }
+
