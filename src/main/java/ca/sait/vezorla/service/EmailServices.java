@@ -1,11 +1,21 @@
 package ca.sait.vezorla.service;
 
+import ca.sait.vezorla.exception.InvalidInputException;
+import ca.sait.vezorla.model.Invoice;
+
 public interface EmailServices {
 
-    public void sendAccountConfirmationEmail(String to, String additionText);
-    public void sendDeclineEmail(String to, String additionText);
-    public void sendEmail(String to, String message);
-    public void sendForgotPassword(String email, String tempPassword);
-    public void sendPurchaseOrderEmail(String to, String additionText);
-    public void sendSubscriptionEmail(String to, String additionText);
+    void sendContactUsEmail(String name, String senderEmail, String message) throws InvalidInputException;
+
+    void sendAccountConfirmationEmail(String to, String additionText);
+
+    void sendDeclineEmail(String to, String additionText);
+
+    void sendForgotPassword(String email, String tempPassword);
+
+    void sendInvoiceEmail(String to, Invoice invoice, double total) throws InvalidInputException;
+
+    void sendSubscriptionEmail(String to, String additionText);
+
+    boolean verifyEmail(String email) throws InvalidInputException;
 }
