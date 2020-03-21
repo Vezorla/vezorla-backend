@@ -259,7 +259,7 @@ public class CustomerRestController {
      * @author: matthewjflee
      */
     @PostMapping("subscribe")
-    public boolean subscribeEmail(@RequestBody String email) {
+    public boolean subscribeEmail(@RequestBody String email) throws InvalidInputException {
         String replaceEmail = email.replaceAll("\"", "");
         emailServices.verifyEmail(replaceEmail);
         Account account = userServices.findAccountByEmail(replaceEmail).orElse(new Account(replaceEmail));
