@@ -186,14 +186,7 @@ public class UserServicesImp implements UserServices {
         int lineItemIndex = checkProductLineItem(product.get().getProdId(), cart);
         if (lineItemIndex == -1) {
             //Create line item
-            lineItem = new LineItem();
-            lineItem.setQuantity(quantity);
-            lineItem.setCurrentName(product.get().getName());
-            lineItem.setCurrentPrice(product.get().getPrice());
-            lineItem.setCart(cart);
-            lineItem.setProduct(product.get());
-
-            //Add to list
+            lineItem = new LineItem(quantity, product.get().getName(), product.get().getPrice(), cart, product.get());
             lineItems = (ArrayList<LineItem>) cart.getLineItems();
             lineItems.add(lineItem);
         } else {
