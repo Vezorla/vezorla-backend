@@ -5,6 +5,7 @@ import java.util.List;
 import ca.sait.vezorla.model.Account;
 import ca.sait.vezorla.model.Invoice;
 import com.fasterxml.jackson.databind.node.ArrayNode;
+import com.fasterxml.jackson.databind.node.ObjectNode;
 
 public interface AccountServices {
 
@@ -13,5 +14,5 @@ public interface AccountServices {
 	    public List<Invoice> getOrder(Long id);
 	    public boolean saveAccount(Account account);
 	    public boolean validatePaymentInfo();
-		public Invoice viewInvoice(Long invoiceNum);
+	public ObjectNode viewInvoice(Long invoiceNum);
 }

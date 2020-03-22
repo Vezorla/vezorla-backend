@@ -5,6 +5,8 @@ import ca.sait.vezorla.model.Account;
 import ca.sait.vezorla.model.Invoice;
 import ca.sait.vezorla.service.AccountServices;
 import ca.sait.vezorla.service.UserServices;
+import com.fasterxml.jackson.core.JsonProcessingException;
+import com.fasterxml.jackson.databind.ObjectMapper;
 import lombok.AllArgsConstructor;
 import org.springframework.web.bind.annotation.*;
 
@@ -57,8 +59,9 @@ public class ClientRestController {
      * @return the invoice to front-end
      */
     @GetMapping("invoice/{id}")
-    public Invoice viewInvoice(@PathVariable Long id){
-        return accountServices.viewInvoice(id);
+    public String viewInvoice(@PathVariable Long id) throws JsonProcessingException {
+        ObjectMapper mapper =new ObjectMapper();
+        return mapper.writerWithDefaultPrettyPrinter().writeValueAsString(accountServices.viewInvoice(id));
     }
 
 }

@@ -1,5 +1,6 @@
 package ca.sait.vezorla.service;
 
+import ca.sait.vezorla.controller.util.CustomerClientUtil;
 import ca.sait.vezorla.model.Account;
 import ca.sait.vezorla.model.Invoice;
 import ca.sait.vezorla.repository.InvoiceRepo;
@@ -45,7 +46,7 @@ public class AccountServicesImp implements AccountServices{
      * @return the invoice to view
      * @author jjrr1717
      */
-    public Invoice viewInvoice(Long invoiceNum) {
+    public ObjectNode viewInvoice(Long invoiceNum) {
         //obtain the invoice by id
         Optional<Invoice> invoice = invoiceRepo.findById(invoiceNum);
 
@@ -57,11 +58,30 @@ public class AccountServicesImp implements AccountServices{
 
         node.put("invoiceNum", invoice.get().getInvoiceNum());
         node.put("date", date);
+        node.put("lineItems", getLineItemsForInvoice(invoice.get(), node));
 
-        ArrayNode lineItemsNodes = mapper.createArrayNode();
-        node.put("lineItems", lineItemsNodes);
 
-        return invoice.get();
+
+        return node;
+    }
+
+    public ArrayNode getLineItemsForInvoice(Invoice invoice, ObjectNode node){
+
+        ArrayNode lineItemNodes = node.arrayNode();
+        CustomerClientUtil ccu = new CustomerClientUtil();
+        //loop through line items
+        for(int i = 0; i < invoice.getLineItemList().size(); i++){
+            ObjectNode lineItem = lineItemNodes.objectNode();
+            lineItem.put("name", invoice.getLineItemList().get(i).getCurrentName());
+            lineItem.put("price", ccu.formatAmount(invoice.getLineItemList().get(i).getCurrentPrice()));
+
+            //extended price
+            long extendedPrice = invoice.getLineItemList().get(i).getQuantity() * invoice.getLineItemList().get(i).getCurrentPrice();
+            lineItem.put("extendedPrice", ccu.formatAmount(extendedPrice));
+            lineItemNodes.add(lineItem);
+        }
+
+        return lineItemNodes;
     }
 
 }
