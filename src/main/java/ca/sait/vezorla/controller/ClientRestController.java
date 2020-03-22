@@ -61,7 +61,19 @@ public class ClientRestController {
     @GetMapping("invoice/{id}")
     public String viewInvoice(@PathVariable Long id) throws JsonProcessingException {
         ObjectMapper mapper =new ObjectMapper();
-        return mapper.writerWithDefaultPrettyPrinter().writeValueAsString(accountServices.viewInvoice(id));
+        return mapper.writerWithDefaultPrettyPrinter().writeValueAsString(accountServices.viewInvoice(id, mapper));
+    }
+
+    /**
+     * Method to view the order history from
+     * a client's account
+     * @param email of the account
+     * @return the invoices to front-end
+     */
+    @GetMapping("order_history/{email}")
+    public String viewOrderHistory(@PathVariable String email) throws JsonProcessingException {
+        ObjectMapper mapper = new ObjectMapper();
+        return mapper.writerWithDefaultPrettyPrinter().writeValueAsString(accountServices.viewOrderHistory(email, mapper));
     }
 
 }
