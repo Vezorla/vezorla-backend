@@ -8,10 +8,14 @@ import org.springframework.data.jpa.repository.Modifying;
 import org.springframework.data.jpa.repository.Query;
 
 import ca.sait.vezorla.model.Invoice;
+import org.springframework.data.repository.query.Param;
 import org.springframework.stereotype.Repository;
 
 @Repository
 public interface InvoiceRepo extends JpaRepository<Invoice, Long>{
+
+    @Query("FROM Invoice i WHERE i.account.email = :email")
+    public List<Invoice> findAllByAccount_Email(@Param("email") String email);
 
 //	/**
 //     * Change the state of the invoice

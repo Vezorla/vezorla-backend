@@ -10,6 +10,8 @@ import com.fasterxml.jackson.databind.node.ObjectNode;
 import lombok.AllArgsConstructor;
 import org.springframework.stereotype.Service;
 
+import java.util.ArrayList;
+import java.util.Calendar;
 import java.util.List;
 import java.util.Optional;
 
@@ -46,13 +48,12 @@ public class AccountServicesImp implements AccountServices{
      * @return the ObjectNode containing invoice information
      * @author jjrr1717
      */
-    public ObjectNode viewInvoice(Long invoiceNum) {
+    public ObjectNode viewInvoice(Long invoiceNum, ObjectMapper mapper) {
         CustomerClientUtil ccu = new CustomerClientUtil();
         //obtain the invoice by id
         Optional<Invoice> invoice = invoiceRepo.findById(invoiceNum);
 
         //create custom json
-        ObjectMapper mapper = new ObjectMapper();
         ObjectNode node = mapper.createObjectNode();
 
         String date = invoice.get().getDate() + "";
@@ -96,6 +97,39 @@ public class AccountServicesImp implements AccountServices{
         }
 
         return lineItemNodes;
+    }
+
+    /**
+     * Method to view the order history on a client's
+     * account.
+     * @param email of the client's account.
+     * @param mapper to make the custom json
+     * @return ObjectNode containing nodes for custom json
+     * @author jjrr1717
+     */
+    public ObjectNode viewOrderHistory(String email, ObjectMapper mapper){
+        CustomerClientUtil ccu = new CustomerClientUtil();
+
+        //obtain all the invoices for account
+        ArrayList<Invoice> invoices = (ArrayList<Invoice>) invoiceRepo.findAllByAccount_Email(email);
+
+        //create custom json
+        ObjectNode node = mapper.createObjectNode();
+        ArrayNode invoiceNodes = node.arrayNode();
+
+        //loop through invoices to get invoice details
+        for(int i = 0; i < invoices.size(); i++){
+            ObjectNode invoiceNode = invoiceNodes.objectNode();
+            invoiceNode.put("invoiceNum", invoices.get(i).getInvoiceNum());
+            invoiceNode.put("total", ccu.formatAmount(invoices.get(i).getTotal()));
+            String date = invoices.get(i).getDate() + "";
+            invoiceNode.put("date", date);
+            invoiceNodes.add(invoiceNode);
+        }
+
+        node.put("invoices", invoiceNodes);
+
+        return node;
     }
 
 }
