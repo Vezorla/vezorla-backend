@@ -43,10 +43,11 @@ public class AccountServicesImp implements AccountServices{
      * Method to view an individual invoice
      * from a client's account
      * @param invoiceNum to view
-     * @return the invoice to view
+     * @return the ObjectNode containing invoice information
      * @author jjrr1717
      */
     public ObjectNode viewInvoice(Long invoiceNum) {
+        CustomerClientUtil ccu = new CustomerClientUtil();
         //obtain the invoice by id
         Optional<Invoice> invoice = invoiceRepo.findById(invoiceNum);
 
@@ -56,17 +57,30 @@ public class AccountServicesImp implements AccountServices{
 
         String date = invoice.get().getDate() + "";
 
+        //create json for invoice
         node.put("invoiceNum", invoice.get().getInvoiceNum());
         node.put("date", date);
         node.put("lineItems", getLineItemsForInvoice(invoice.get(), node));
-
+        node.put("discount", ccu.formatAmount(invoice.get().getDiscount()));
+        node.put("subtotal", ccu.formatAmount(invoice.get().getSubtotal()));
+        node.put("taxes", ccu.formatAmount(invoice.get().getTaxes()));
+        node.put("total", ccu.formatAmount(invoice.get().getTotal()));
 
 
         return node;
     }
 
+    /**
+     * Method to get all the line items in an invoice into
+     * an ArrayNode. Will be used in viewInvoice() to
+     * create the json.
+     *
+     * @param invoice to access the line items
+     * @param node used to store the ArrayNode of line items.
+     * @return ArrayNode to be used in viewInvoice()
+     * @author jjrr1717
+     */
     public ArrayNode getLineItemsForInvoice(Invoice invoice, ObjectNode node){
-
         ArrayNode lineItemNodes = node.arrayNode();
         CustomerClientUtil ccu = new CustomerClientUtil();
         //loop through line items
