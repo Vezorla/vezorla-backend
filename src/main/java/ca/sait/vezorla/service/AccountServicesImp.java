@@ -2,12 +2,21 @@ package ca.sait.vezorla.service;
 
 import ca.sait.vezorla.model.Account;
 import ca.sait.vezorla.model.Invoice;
+import ca.sait.vezorla.repository.InvoiceRepo;
+import com.fasterxml.jackson.databind.ObjectMapper;
+import com.fasterxml.jackson.databind.node.ArrayNode;
+import com.fasterxml.jackson.databind.node.ObjectNode;
+import lombok.AllArgsConstructor;
 import org.springframework.stereotype.Service;
 
 import java.util.List;
+import java.util.Optional;
 
 @Service
+@AllArgsConstructor
 public class AccountServicesImp implements AccountServices{
+
+    private InvoiceRepo invoiceRepo;
 
     public boolean confirmAccount(Long id) {
         return false;
@@ -27,6 +36,32 @@ public class AccountServicesImp implements AccountServices{
 
     public boolean validatePaymentInfo() {
         return false;
+    }
+
+    /**
+     * Method to view an individual invoice
+     * from a client's account
+     * @param invoiceNum to view
+     * @return the invoice to view
+     * @author jjrr1717
+     */
+    public Invoice viewInvoice(Long invoiceNum) {
+        //obtain the invoice by id
+        Optional<Invoice> invoice = invoiceRepo.findById(invoiceNum);
+
+        //create custom json
+        ObjectMapper mapper = new ObjectMapper();
+        ObjectNode node = mapper.createObjectNode();
+
+        String date = invoice.get().getDate() + "";
+
+        node.put("invoiceNum", invoice.get().getInvoiceNum());
+        node.put("date", date);
+
+        ArrayNode lineItemsNodes = mapper.createArrayNode();
+        node.put("lineItems", lineItemsNodes);
+
+        return invoice.get();
     }
 
 }

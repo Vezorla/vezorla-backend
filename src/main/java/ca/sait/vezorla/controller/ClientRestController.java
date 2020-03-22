@@ -3,6 +3,7 @@ package ca.sait.vezorla.controller;
 import ca.sait.vezorla.exception.UnableToSaveException;
 import ca.sait.vezorla.model.Account;
 import ca.sait.vezorla.model.Invoice;
+import ca.sait.vezorla.service.AccountServices;
 import ca.sait.vezorla.service.UserServices;
 import lombok.AllArgsConstructor;
 import org.springframework.web.bind.annotation.*;
@@ -20,6 +21,7 @@ public class ClientRestController {
     protected static final String URL = "/api/client/";
 
     private UserServices userServices;
+    private AccountServices accountServices;
 
     @GetMapping("find/{id}")
     public void findById(@PathVariable Long id) {
@@ -46,6 +48,17 @@ public class ClientRestController {
     @GetMapping("order/{id}")
     public List<Invoice> getOrder(@PathVariable Long id) {
         return null;
+    }
+
+    /**
+     * Method to view an invoice from a
+     * client's account.
+     * @param id of the invoice to view.
+     * @return the invoice to front-end
+     */
+    @GetMapping("invoice/{id}")
+    public Invoice viewInvoice(@PathVariable Long id){
+        return accountServices.viewInvoice(id);
     }
 
 }
