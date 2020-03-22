@@ -115,6 +115,7 @@ public class UserServicesImp implements UserServices {
      * @param id the product's id to check.
      * @return the quantity
      * @author matthewjflee, jjrr1717
+     * @author matthewjflee, jjrr1717
      */
     public int getProductQuantity(Long id) {
         int quantity = productRepo.findTotalQuantity(id);
@@ -183,21 +184,22 @@ public class UserServicesImp implements UserServices {
      */
     public LineItem createLineItemSession(Optional<Product> product, String sentQuantity, HttpServletRequest request) {
         //check if product already exists
-        boolean exists = checkProductLineItem(product.get().getProdId(), request);
+        int linItemIndex = checkProductLineItem(product.get().getProdId(), request);
+        LineItem lineItem;
 
-        LineItem lineItem = null;
-        if (!exists) {
+        Cart cart = (Cart) request.getSession().getAttribute("CART");
+        sentQuantity = sentQuantity.replaceAll("\"", "");
+        int quantity = Integer.parseInt(sentQuantity);
+
+        if (linItemIndex == -1) {
             lineItem = new LineItem();
-            sentQuantity = sentQuantity.replaceAll("\"", ""); //Sending a string so replace \
-            int quantity = Integer.parseInt(sentQuantity);
-
             lineItem.setQuantity(quantity);
             lineItem.setCurrentName(product.get().getName());
             lineItem.setCurrentPrice(product.get().getPrice());
-            lineItem.setCart((Cart) request.getSession().getAttribute("CART"));
+            lineItem.setCart(cart);
             lineItem.setProduct(product.get());
         } else {
-            updateLineItemAdd(product.get(), sentQuantity, request);
+            lineItem = updateLineItemAdd(quantity, cart, linItemIndex);
         }
 
         return lineItem;
@@ -205,53 +207,47 @@ public class UserServicesImp implements UserServices {
 
     /**
      * Method to search for the existence of the
-     * line item.
+     * line item in the cart.
+     *
+     * Will return the index of the line item in the cart
+     * If the line item does not exist, -1 is returned
      *
      * @param id of the product
      * @param request for the session
-     * @return boolean true if it exits in cart already.
-     * @author jjrr1717
+     * @return index of line item in cart
+     * @author jjrr1717, matthewjflee
      */
-    private boolean checkProductLineItem(Long id, HttpServletRequest request) {
-        boolean result = false;
+    private int checkProductLineItem(Long id, HttpServletRequest request) {
         HttpSession session = request.getSession();
         Cart cart = getSessionCart(session);
 
-        for (int i = 0; i < cart.getLineItems().size() && result == false; i++) {
+        for (int i = 0; i < cart.getLineItems().size(); i++) {
             if (cart.getLineItems().get(i).getProduct().getProdId().equals(id)) {
-                result = true;
+                return i;
             }
         }
-        return result;
+
+        return -1;
     }
 
 
     /**
      * Method to update a line item that already exits in the cart.
      * It will add the quantity to the existing quantity.
-     * @param product the product already in the cart
-     * @param sentQuantity the quantity to add to the line item
-     * @param request for the session
-     * @author jjrr1717
+     * @param quantity the quantity to add to the line item
+     * @param cart user's cart
+     * @param index of line item
+     * @author jjrr1717, matthewjflee
      */
-    private void updateLineItemAdd(Product product, String sentQuantity, HttpServletRequest request) {
-        HttpSession session = request.getSession();
-
+    private LineItem updateLineItemAdd(int quantity, Cart cart, int index) {
         //get cart with line items
-        Cart cart = (Cart) session.getAttribute("CART");
         ArrayList<LineItem> lineItems = (ArrayList<LineItem>) cart.getLineItems();
-        sentQuantity = sentQuantity.replaceAll("\"", "");
-        int quantity = Integer.parseInt(sentQuantity);
 
-        //loop through to find line item to add additional quantity
-        for(int i = 0; i < lineItems.size(); i++) {
-            if(lineItems.get(i).getProduct().getProdId().equals(product.getProdId())) {
-                lineItems.get(i).setQuantity(lineItems.get(i).getQuantity() + quantity);
-            }
-        }
+        //Set quantity
+        int currentQuantity = lineItems.get(index).getQuantity();
+        lineItems.get(index).setQuantity(currentQuantity + quantity);
 
-        cart.setLineItems(lineItems);
-        session.setAttribute("CART", cart);
+        return lineItems.get(index);
     }
 
     /**
