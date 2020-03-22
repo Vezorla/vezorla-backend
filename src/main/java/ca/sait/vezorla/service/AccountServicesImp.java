@@ -1,13 +1,23 @@
 package ca.sait.vezorla.service;
 
+import ca.sait.vezorla.controller.util.CustomerClientUtil;
 import ca.sait.vezorla.model.Account;
 import ca.sait.vezorla.model.Invoice;
+import ca.sait.vezorla.repository.InvoiceRepo;
+import com.fasterxml.jackson.databind.ObjectMapper;
+import com.fasterxml.jackson.databind.node.ArrayNode;
+import com.fasterxml.jackson.databind.node.ObjectNode;
+import lombok.AllArgsConstructor;
 import org.springframework.stereotype.Service;
 
 import java.util.List;
+import java.util.Optional;
 
 @Service
+@AllArgsConstructor
 public class AccountServicesImp implements AccountServices{
+
+    private InvoiceRepo invoiceRepo;
 
     public boolean confirmAccount(Long id) {
         return false;
@@ -27,6 +37,65 @@ public class AccountServicesImp implements AccountServices{
 
     public boolean validatePaymentInfo() {
         return false;
+    }
+
+    /**
+     * Method to view an individual invoice
+     * from a client's account
+     * @param invoiceNum to view
+     * @return the ObjectNode containing invoice information
+     * @author jjrr1717
+     */
+    public ObjectNode viewInvoice(Long invoiceNum) {
+        CustomerClientUtil ccu = new CustomerClientUtil();
+        //obtain the invoice by id
+        Optional<Invoice> invoice = invoiceRepo.findById(invoiceNum);
+
+        //create custom json
+        ObjectMapper mapper = new ObjectMapper();
+        ObjectNode node = mapper.createObjectNode();
+
+        String date = invoice.get().getDate() + "";
+
+        //create json for invoice
+        node.put("invoiceNum", invoice.get().getInvoiceNum());
+        node.put("date", date);
+        node.put("lineItems", getLineItemsForInvoice(invoice.get(), node));
+        node.put("discount", ccu.formatAmount(invoice.get().getDiscount()));
+        node.put("subtotal", ccu.formatAmount(invoice.get().getSubtotal()));
+        node.put("taxes", ccu.formatAmount(invoice.get().getTaxes()));
+        node.put("total", ccu.formatAmount(invoice.get().getTotal()));
+
+
+        return node;
+    }
+
+    /**
+     * Method to get all the line items in an invoice into
+     * an ArrayNode. Will be used in viewInvoice() to
+     * create the json.
+     *
+     * @param invoice to access the line items
+     * @param node used to store the ArrayNode of line items.
+     * @return ArrayNode to be used in viewInvoice()
+     * @author jjrr1717
+     */
+    public ArrayNode getLineItemsForInvoice(Invoice invoice, ObjectNode node){
+        ArrayNode lineItemNodes = node.arrayNode();
+        CustomerClientUtil ccu = new CustomerClientUtil();
+        //loop through line items
+        for(int i = 0; i < invoice.getLineItemList().size(); i++){
+            ObjectNode lineItem = lineItemNodes.objectNode();
+            lineItem.put("name", invoice.getLineItemList().get(i).getCurrentName());
+            lineItem.put("price", ccu.formatAmount(invoice.getLineItemList().get(i).getCurrentPrice()));
+
+            //extended price
+            long extendedPrice = invoice.getLineItemList().get(i).getQuantity() * invoice.getLineItemList().get(i).getCurrentPrice();
+            lineItem.put("extendedPrice", ccu.formatAmount(extendedPrice));
+            lineItemNodes.add(lineItem);
+        }
+
+        return lineItemNodes;
     }
 
 }
