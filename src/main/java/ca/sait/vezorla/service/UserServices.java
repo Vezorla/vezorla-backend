@@ -38,7 +38,7 @@ public interface UserServices {
 
     Cart getSessionCart(HttpSession session);
 
-    Cart updateSessionCart(LineItem lineItem, HttpServletRequest request);
+    Cart updateSessionCart(ArrayList<LineItem> lineItems, Cart cart, HttpServletRequest request);
 
     int getProductQuantity(Long id);
 
@@ -46,7 +46,7 @@ public interface UserServices {
 
     int validateOrderedQuantity(String orderedQuantitySent, int inStockQuantity);
 
-    LineItem createLineItemSession(Optional<Product> product, String quantity, HttpServletRequest request);
+    ArrayList<LineItem> createLineItemSession(Optional<Product> product, String quantity, Cart cart);
 
     boolean saveAccount(Account account);
 
