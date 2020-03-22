@@ -91,7 +91,6 @@ public class CustomerRestController {
      */
     @RequestMapping(value = "cart/add/{id}", method = RequestMethod.PUT, produces = {"application/json"})
     public boolean createLineItemSession(@PathVariable Long id, @RequestBody String quantity, HttpServletRequest request) {
-        boolean result = false;
         ArrayList<LineItem> lineItems;
         HttpSession session = request.getSession();
         Cart cart = userServices.getSessionCart(session);
@@ -103,13 +102,13 @@ public class CustomerRestController {
         if (checkProductStock >= 0) {
             lineItems = userServices.createLineItemSession(product, quantity, cart);
 
-            if(!lineItems.isEmpty())
+            if(!lineItems.isEmpty()) {
                 userServices.updateSessionCart(lineItems, cart, request);
-            else
-                result = true;
+                return true;
+            }
         }
 
-        return result;
+        return false;
     }
 
     /**
