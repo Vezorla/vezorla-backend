@@ -84,6 +84,7 @@ public class Account implements Serializable {
     @OneToMany(mappedBy = "account")
     private List<Cart> carts;
 
+    @JsonIgnore
     @Column(name = "invoice")
     @OneToMany(mappedBy ="account")
     private List<Invoice> invoices;
