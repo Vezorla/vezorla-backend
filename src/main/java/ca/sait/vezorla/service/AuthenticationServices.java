@@ -12,6 +12,8 @@ import java.util.Optional;
  */
 public interface AuthenticationServices {
 
+    String generatePassword();
+
     void forgotPassword(String email);
 
     Optional<Account> login(String email, String password, HttpSession session);

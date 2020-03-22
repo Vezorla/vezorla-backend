@@ -7,6 +7,7 @@ import lombok.AllArgsConstructor;
 import org.springframework.stereotype.Service;
 
 import javax.servlet.http.HttpSession;
+import java.util.Calendar;
 import java.util.Optional;
 
 @AllArgsConstructor
@@ -15,7 +16,21 @@ public class AuthenticationServicesImp implements AuthenticationServices {
 
     private AccountRepo accountRepo;
 
+    private UserServices userServices;
+
+    public String generatePassword() {
+        return "Vezorla" + Calendar.getInstance().get(Calendar.DAY_OF_YEAR);
+    }
+
     public void forgotPassword(String email) {
+
+        Optional<Account> account = userServices.findAccountByEmail(email);
+
+        if(account.isPresent()) {
+            String password = generatePassword();
+            // Persist in DB, get account for this
+            // send email
+        }
 
     }
 

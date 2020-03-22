@@ -2,8 +2,8 @@ package ca.sait.vezorla.controller;
 
 import ca.sait.vezorla.model.Account;
 import ca.sait.vezorla.model.LineItem;
-import ca.sait.vezorla.service.UserServices;
-import org.springframework.beans.factory.annotation.Autowired;
+import ca.sait.vezorla.service.AuthenticationServices;
+import lombok.AllArgsConstructor;
 import org.springframework.stereotype.Controller;
 import org.springframework.ui.Model;
 import org.springframework.validation.BindingResult;
@@ -11,12 +11,12 @@ import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.RequestMapping;
 
+@AllArgsConstructor
 @Controller
 @RequestMapping(CustomerController.URL)
 public class CustomerController {
 
-    @Autowired
-    private UserServices userServices;
+    private AuthenticationServices authenticationServices;
 
     protected static final String URL = "/customer/";
 
@@ -52,7 +52,10 @@ public class CustomerController {
 
     @GetMapping("account/forgotpassword")
     public String forgotPassword(String email, Model model) {
+
+        authenticationServices.forgotPassword(email);
         return null;
+
     }
 
     @GetMapping("order/place")
