@@ -102,8 +102,11 @@ public class CustomerRestController {
 
         if (checkProductStock >= 0) {
             lineItems = userServices.createLineItemSession(product, quantity, cart);
-            userServices.updateSessionCart(lineItems, cart, request);
-            result = true;
+
+            if(!lineItems.isEmpty())
+                userServices.updateSessionCart(lineItems, cart, request);
+            else
+                result = true;
         }
 
         return result;

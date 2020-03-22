@@ -169,7 +169,7 @@ public class UserServicesImp implements UserServices {
      *
      * @param product for the line item
      * @param sentQuantity quantity for the line item
-     * @param request for the session
+     * @param cart user's cart
      * @return line item to be added to the session
      * @author matthewjflee, jjrr1717
      */
@@ -211,7 +211,7 @@ public class UserServicesImp implements UserServices {
      * If the line item does not exist, -1 is returned
      *
      * @param id of the product
-     * @param session user session
+     * @param cart user's cart
      * @return index of line item in cart
      * @author jjrr1717, matthewjflee
      */
