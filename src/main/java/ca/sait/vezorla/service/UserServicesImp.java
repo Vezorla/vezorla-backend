@@ -78,6 +78,7 @@ public class UserServicesImp implements UserServices {
      * @param request for the session
      * @return the cart with new line item added
      * @author matthewjflee, jjrr1717
+     *
      */
     public Cart updateSessionCart(LineItem lineItem, HttpServletRequest request) {
         Cart cart = (Cart) request.getSession().getAttribute("CART");

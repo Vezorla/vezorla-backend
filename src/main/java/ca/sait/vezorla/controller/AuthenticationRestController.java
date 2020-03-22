@@ -61,16 +61,22 @@ public class AuthenticationRestController {
     /**
      * Check the current role of the authenticated user
      * @author: matthewjflee
-     * @param session
-     * @return
+     * @param request: HTTP request
+     * @return role
      * @throws JsonProcessingException
      */
-    @GetMapping("checkRole")
-    public ResponseEntity<String> checkRole(HttpSession session) throws JsonProcessingException {
-        Account account = (Account) session.getAttribute("ACCOUNT");
+    @GetMapping("check-role")
+    public ResponseEntity<String> checkRole(HttpServletRequest request) throws JsonProcessingException {
+        HttpSession session = request.getSession();
         ObjectMapper mapper = new ObjectMapper();
         ObjectNode node = mapper.createObjectNode();
-        node.put("admin", account.isAccountAdmin());
+
+        //Grab account
+        Account account = (Account) session.getAttribute("ACCOUNT");
+        if(account != null)
+            node.put("admin", account.isAccountAdmin());
+        else
+            node.put("admin", "false");
         String output = mapper.writerWithDefaultPrettyPrinter().writeValueAsString(node);
 
         return ResponseEntity.ok().body(output);
