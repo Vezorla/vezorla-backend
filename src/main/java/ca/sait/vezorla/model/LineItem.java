@@ -55,4 +55,12 @@ public class LineItem implements Serializable {
     @JoinColumn(name = "prod_num")
     private Product product;
 
+    public LineItem(int quantity, String currentName, long currentPrice, Cart cart, Product product) {
+        this.quantity = quantity;
+        this.currentName = currentName;
+        this.currentPrice = currentPrice;
+        this.cart = cart;
+        this.product = product;
+    }
+
 }
