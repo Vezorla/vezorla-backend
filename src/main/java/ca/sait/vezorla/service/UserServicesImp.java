@@ -158,7 +158,6 @@ public class UserServicesImp implements UserServices {
                 outOfStockNode.put("by", checkQuantity);
                 outOfStockItems.add(outOfStockNode);
             }
-
         }
 
         return outOfStockItems;

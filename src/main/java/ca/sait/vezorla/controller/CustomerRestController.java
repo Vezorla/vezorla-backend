@@ -14,6 +14,7 @@ import ca.sait.vezorla.service.UserServices;
 import com.fasterxml.jackson.core.JsonProcessingException;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import com.fasterxml.jackson.databind.node.ArrayNode;
+import com.fasterxml.jackson.databind.node.ObjectNode;
 import lombok.AllArgsConstructor;
 import org.json.simple.JSONObject;
 import org.json.simple.parser.JSONParser;
@@ -90,10 +91,12 @@ public class CustomerRestController {
      * @author matthewjflee, jjrr1717
      */
     @RequestMapping(value = "cart/add/{id}", method = RequestMethod.PUT, produces = {"application/json"})
-    public boolean createLineItemSession(@PathVariable Long id, @RequestBody String quantity, HttpServletRequest request) {
+    public String createLineItemSession(@PathVariable Long id, @RequestBody String quantity, HttpServletRequest request) throws JsonProcessingException {
         ArrayList<LineItem> lineItems;
         HttpSession session = request.getSession();
         Cart cart = userServices.getSessionCart(session);
+        ObjectMapper mapper = new ObjectMapper();
+        ObjectNode node = mapper.createObjectNode();
 
         Optional<Product> product = userServices.getProduct(id);
         int productInStock = userServices.getProductQuantity(id);
@@ -104,11 +107,14 @@ public class CustomerRestController {
 
             if(!lineItems.isEmpty()) {
                 userServices.updateSessionCart(lineItems, cart, request);
-                return true;
+                node.put("added", true);
             }
+        } else {
+            node.put("added", false);
+            node.put("currentStock", productInStock);
         }
 
-        return false;
+        return mapper.writerWithDefaultPrettyPrinter().writeValueAsString(node);
     }
 
     /**
