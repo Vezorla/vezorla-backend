@@ -1,5 +1,6 @@
 package ca.sait.vezorla.controller;
 
+import ca.sait.vezorla.exception.InvalidInputException;
 import ca.sait.vezorla.model.Account;
 import ca.sait.vezorla.model.LineItem;
 import ca.sait.vezorla.service.AuthenticationServices;
@@ -51,10 +52,10 @@ public class CustomerController {
     }
 
     @GetMapping("account/forgotpassword")
-    public String forgotPassword(String email, Model model) {
+    public String forgotPassword(String email, Model model) throws InvalidInputException {
 
         authenticationServices.forgotPassword(email);
-        return null;
+        return "login";
 
     }
 

@@ -1,6 +1,7 @@
 package ca.sait.vezorla.service;
 
 import ca.sait.vezorla.exception.AccountNotFoundException;
+import ca.sait.vezorla.exception.InvalidInputException;
 import ca.sait.vezorla.model.Account;
 import ca.sait.vezorla.repository.AccountRepo;
 import lombok.AllArgsConstructor;
@@ -18,19 +19,33 @@ public class AuthenticationServicesImp implements AuthenticationServices {
 
     private UserServices userServices;
 
+    private EmailServices emailServices;
+
     public String generatePassword() {
         return "Vezorla" + Calendar.getInstance().get(Calendar.DAY_OF_YEAR);
     }
 
-    public void forgotPassword(String email) {
+    public boolean forgotPassword(String email) throws InvalidInputException {
 
-        Optional<Account> account = userServices.findAccountByEmail(email);
+        boolean resetPassword = false;
 
-        if(account.isPresent()) {
+        Optional<Account> accountOptional = userServices.findAccountByEmail(email);
+
+        if(accountOptional.isPresent()) {
+
             String password = generatePassword();
-            // Persist in DB, get account for this
-            // send email
+            Account account = accountOptional.get();
+
+            account.setPassword(password);
+
+            accountRepo.save(account);
+            emailServices.sendForgotPassword(email, password);
+
+            resetPassword = true;
+
         }
+
+        return resetPassword;
 
     }
 
