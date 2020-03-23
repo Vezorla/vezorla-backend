@@ -28,9 +28,9 @@ public class EmailServicesImp implements EmailServices {
     /**
      * Send contact us email to vezorla.test@gmail.com
      *
-     * @param senderEmail
-     * @param message
-     * @throws MailException
+     * @param senderEmail user's email
+     * @param message message to send
+     * @throws MailException thrown when the email is not sent
      * @author: matthewjflee
      */
     public void sendContactUsEmail(String name, String senderEmail, String message) throws MailException,
@@ -62,6 +62,14 @@ public class EmailServicesImp implements EmailServices {
 
     }
 
+    /**
+     * Send invoice to user
+     * @param to user's email
+     * @param invoice user's invoice/receipt
+     * @param total total cost
+     * @throws MailException thrown if email is not sent
+     * @throws InvalidInputException thrown if email is not valid
+     */
     public void sendInvoiceEmail(String to, Invoice invoice, double total) throws MailException,
                                                                 InvalidInputException {
         verifyEmail(to);
@@ -129,10 +137,10 @@ public class EmailServicesImp implements EmailServices {
     /**
      * Verify email
      *
+     * @param email email to verify
+     * @return if email is valid
+     * @throws InvalidInputException if email is not valid
      * @author: matthewjflee
-     * @param email
-     * @return
-     * @throws InvalidInputException
      */
     public boolean verifyEmail(String email) throws InvalidInputException {
         CustomerClientUtil ccu = new CustomerClientUtil();
