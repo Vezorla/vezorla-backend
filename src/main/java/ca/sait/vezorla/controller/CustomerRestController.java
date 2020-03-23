@@ -200,16 +200,14 @@ public class CustomerRestController {
     public ResponseEntity<String> getShippingInfo(@RequestBody Account account,
                                                   HttpServletRequest request)
             throws JsonProcessingException, InvalidInputException, UnauthorizedException {
-
-        String output = null;
-
+        String output;
         HttpSession session = request.getSession();
-        if (request.getSession().getAttribute("CART") != null) {
-            output = userServices.getShippingInfo(request, account);
 
-        } else {
+        if (session.getAttribute("CART") != null)
+            output = userServices.getShippingInfo(session, account);
+        else
             throw new UnauthorizedException();
-        }
+
         return ResponseEntity.ok().body(output);
     }
 
