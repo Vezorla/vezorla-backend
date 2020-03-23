@@ -55,6 +55,7 @@ public class CustomerController {
     public String forgotPassword(String email, Model model) throws InvalidInputException {
 
         authenticationServices.forgotPassword(email);
+
         return "login";
 
     }
