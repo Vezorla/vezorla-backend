@@ -109,8 +109,7 @@ public class UserServicesImp implements UserServices {
      * @author matthewjflee, jjrr1717
      */
     public int getProductQuantity(Long id) {
-        int quantity = productRepo.findTotalQuantity(id);
-        return quantity;
+        return productRepo.findTotalQuantity(id);
     }
 
     /**
@@ -292,16 +291,12 @@ public class UserServicesImp implements UserServices {
      * Create and persist an account in the Accounts table
      *
      * @param account to persist in database
-     * @return boolean true if it was succesfully added, otherwise false
+     * @return boolean true if it was successfully added, otherwise false
      * @author matthewjflee, jjrr1717
      */
     public boolean saveAccount(Account account) {
-        boolean result = false;
         Account saved = accountRepo.save(account);
-        if (saved != null)
-            result = true;
-
-        return result;
+        return true;
     }
 
     public Optional<Account> findAccountByEmail(String email) {
@@ -311,7 +306,7 @@ public class UserServicesImp implements UserServices {
     /**
      * Return all products in the Products table
      *
-     * @return
+     * @return list of all products
      * @author kwistech
      */
     public List<Product> getAllProducts() {
@@ -330,8 +325,8 @@ public class UserServicesImp implements UserServices {
     /**
      * Return a specified product
      *
-     * @param id
-     * @return
+     * @param id product ID
+     * @return product
      * @author matthewjflee, jjrr1717
      */
     public Optional<Product> getProduct(Long id) { //It wanted Optionals
@@ -372,7 +367,6 @@ public class UserServicesImp implements UserServices {
             discounts.add(discount);
         }
         return discounts;
-//        return null;
     }
 
     /**
@@ -386,7 +380,7 @@ public class UserServicesImp implements UserServices {
      */
     public ArrayNode buildValidDiscounts(HttpSession session, ArrayNode arrayNode) {
         Account currentAccount = (Account) session.getAttribute("ACCOUNT");
-        ArrayList<Discount> discounts = (ArrayList<Discount>) getValidDiscounts(currentAccount.getEmail());
+        ArrayList<Discount> discounts = getValidDiscounts(currentAccount.getEmail());
         for (int i = 0; i < discounts.size(); i++) {
             ObjectNode node = mapper.createObjectNode();
             node.put("code", discounts.get(i).getCode());
@@ -431,7 +425,7 @@ public class UserServicesImp implements UserServices {
      * @param request the session
      * @param cart to view
      * @return ArrayNode containing the information for the cart to view
-     * @throws JsonProcessingException
+     * @throws JsonProcessingException error when parsing JSON
      * @author jjrr1717, matthewjflee
      */
     public ArrayNode viewSessionCart(HttpServletRequest request, Cart cart) throws JsonProcessingException {
