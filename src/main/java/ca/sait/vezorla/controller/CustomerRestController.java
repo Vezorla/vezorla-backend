@@ -84,10 +84,10 @@ public class CustomerRestController {
     /**
      * Create a line item in the cart for a customer
      *
-     * @param id
-     * @param quantity
-     * @param request
-     * @return
+     * @param id product id to add to a cart
+     * @param quantity quantity to add
+     * @param request user's request
+     * @return line item created
      * @author matthewjflee, jjrr1717
      */
     @RequestMapping(value = "cart/add/{id}", method = RequestMethod.PUT, produces = {"application/json"})
@@ -120,9 +120,9 @@ public class CustomerRestController {
     /**
      * View cart for a customer
      *
-     * @param request
-     * @return
-     * @throws JsonProcessingException
+     * @param request user's request
+     * @return user's cart
+     * @throws JsonProcessingException error when parsing the JSON
      * @author matthewjflee, jjrr1717
      */
     @GetMapping("cart/view")
@@ -139,8 +139,8 @@ public class CustomerRestController {
     /**
      * Get the total number of products in the cart for a customer
      *
-     * @param session
-     * @return
+     * @param session user's session
+     * @return JSON of user's cart
      * @author matthewjflee, jjrr1717
      */
     @RequestMapping(value = "cart/get", method = RequestMethod.GET,
@@ -153,38 +153,35 @@ public class CustomerRestController {
     /**
      * Update a line item in the cart for a customer
      *
-     * @param id
-     * @param quantity
-     * @param request
-     * @return
-     * @throws JsonProcessingException
+     * @param id Line item ID
+     * @param quantity quantity to change
+     * @param request user's request
+     * @return boolean if it was changed or not
+     * @throws JsonProcessingException thrown when there is an error parsing JSON
      * @author matthewjflee, jjrr1717
      */
     @PutMapping("cart/update/{id}/{quantity}")
     public boolean updateLineItemSession(@PathVariable Long id, @PathVariable int quantity, HttpServletRequest request) throws JsonProcessingException {
         HttpSession session = request.getSession();
         Cart cart = userServices.getSessionCart(session);
-        boolean result = userServices.updateLineItemSession(id, quantity, cart, request);
 
-        return result;
+        return userServices.updateLineItemSession(id, quantity, cart, request);
     }
 
     /**
      * Remove a line item for a customer
      *
-     * @param id
-     * @param request
-     * @return
-     * @throws JsonProcessingException
+     * @param id line item to delete
+     * @param request user's request
+     * @return if line item was deleted or not
      * @author matthewjflee, jjrr1717
      */
     @PutMapping("cart/remove/{id}")
-    public boolean removeLineItemSession(@PathVariable Long id, HttpServletRequest request) throws JsonProcessingException {
+    public boolean removeLineItemSession(@PathVariable Long id, HttpServletRequest request) {
         HttpSession session = request.getSession();
         Cart cart = userServices.getSessionCart(session);
-        boolean result = userServices.removeLineItemSession(id, cart, request);
 
-        return result;
+        return userServices.removeLineItemSession(id, cart, request);
     }
 
     /**
@@ -219,7 +216,6 @@ public class CustomerRestController {
      */
     @PostMapping("create-account")
     public boolean createAccount(@RequestBody String body, HttpServletRequest request) {
-        boolean created = false;
         String email = null;
         String password = null;
         String rePassword = null;
@@ -242,24 +238,23 @@ public class CustomerRestController {
         //Check if account exists
         Optional<Account> newAccount = userServices.findAccountByEmail(email);
         if (newAccount.isPresent()) //Account exists.
-            return created;
+            return false;
         else {
             newAccount = Optional.of(new Account(email, password));
-            created = userServices.saveAccount(newAccount.get());
-            if (!created)
+            if (!userServices.saveAccount(newAccount.get()))
                 throw new UnableToSaveException();
             else
                 session.setAttribute("ACCOUNT", newAccount.get());
         }
 
-        return created;
+        return true;
     }
 
     /**
      * Subscribe user to the mailing list
      * If the user's account does not exist, create a new account and save to the Accounts table
      *
-     * @param email
+     * @param email user's email to subscribe
      * @author: matthewjflee
      */
     @PostMapping("subscribe")
@@ -279,7 +274,7 @@ public class CustomerRestController {
      * Return all valid discounts associated with the customer/client
      * This method will query the database for all valid discounts for the account
      *
-     * @return
+     * @return user's valid discounts
      * @author matthewjflee, jjrr1717
      */
     @GetMapping("discounts/get")
@@ -315,9 +310,9 @@ public class CustomerRestController {
      * Show details of order on the
      * review page
      *
-     * @param request
-     * @return
-     * @throws JsonProcessingException
+     * @param request user request
+     * @return user's order
+     * @throws JsonProcessingException parsing error
      */
     @GetMapping("cart/review")
     public String reviewOrder(HttpServletRequest request) throws JsonProcessingException, UnauthorizedException {
@@ -325,7 +320,7 @@ public class CustomerRestController {
         ObjectMapper mapper = new ObjectMapper();
         Cart cart = (Cart) session.getAttribute("CART");
         ArrayNode mainArrayNode = mapper.createArrayNode();
-        ArrayNode outOfStockItems = mapper.createArrayNode();
+        ArrayNode outOfStockItems;
         if (session.getAttribute("ACCOUNT_DISCOUNT") != null) {
             outOfStockItems = userServices.checkItemsOrderedOutOfStock(cart, request);
             mainArrayNode = userServices.reviewOrder(session, mainArrayNode, cart);
@@ -342,7 +337,7 @@ public class CustomerRestController {
      * Returns <code>true</code> if email is sent
      * <code>false</code> if email fails to send
      *
-     * @param body
+     * @param body user's email to vezorla
      * @author: matthewjflee
      */
     @PostMapping("contact-us")
