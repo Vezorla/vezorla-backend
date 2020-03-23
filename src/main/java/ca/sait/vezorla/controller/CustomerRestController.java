@@ -52,8 +52,9 @@ public class CustomerRestController {
      * @author kwistech
      */
     @GetMapping("inventory/products/all")
-    public List<Product> getAllProducts() {
-        return userServices.getAllProducts();
+    public String getAllProducts() throws JsonProcessingException {
+        ObjectMapper mapper = new ObjectMapper();
+        return mapper.writerWithDefaultPrettyPrinter().writeValueAsString(userServices.getAllProducts(mapper));
     }
 
     /**
@@ -64,9 +65,10 @@ public class CustomerRestController {
      * @author matthewjflee, jjrr1717
      */
     @GetMapping("inventory/product/{id}")
-    public ResponseEntity<Product> getProductPage(@PathVariable Long id) {
-        Optional<Product> product = userServices.getProduct(id);
-        return product.map(response -> ResponseEntity.ok().body(response)).orElse(new ResponseEntity<>(HttpStatus.NOT_FOUND));
+    public String getProductPage(@PathVariable Long id) throws JsonProcessingException {
+        ObjectMapper mapper = new ObjectMapper();
+        return mapper.writerWithDefaultPrettyPrinter().writeValueAsString(userServices.getProduct(id, mapper));
+
     }
 
     /**
@@ -130,10 +132,26 @@ public class CustomerRestController {
         HttpSession session = request.getSession();
         ObjectMapper mapper = new ObjectMapper();
         Cart cart = (Cart) session.getAttribute("CART");
-        ArrayNode outOfStockItems = userServices.checkItemsOrderedOutOfStock(cart, request);
         ArrayNode arrayNode = userServices.viewSessionCart(request, cart);
-        arrayNode.add(outOfStockItems);
         return mapper.writerWithDefaultPrettyPrinter().writeValueAsString(arrayNode);
+    }
+
+    /**
+     * Method to obtain items out of stock that
+     * is on an order.
+     * Must be requested before viewing the order
+     * and payment.
+     * @param request
+     * @return
+     * @throws JsonProcessingException
+     */
+    @GetMapping("cart/view/out_of_stock")
+    public String viewItemsOutOfStock(HttpServletRequest request) throws JsonProcessingException {
+        HttpSession session = request.getSession();
+        ObjectMapper mapper = new ObjectMapper();
+        Cart cart = (Cart) session.getAttribute("CART");
+        ArrayNode outOfStockItems = userServices.checkItemsOrderedOutOfStock(cart, request);
+        return mapper.writerWithDefaultPrettyPrinter().writeValueAsString(outOfStockItems);
     }
 
     /**
@@ -327,9 +345,9 @@ public class CustomerRestController {
         ArrayNode mainArrayNode = mapper.createArrayNode();
         ArrayNode outOfStockItems = mapper.createArrayNode();
         if (session.getAttribute("ACCOUNT_DISCOUNT") != null) {
-            outOfStockItems = userServices.checkItemsOrderedOutOfStock(cart, request);
+            //outOfStockItems = userServices.checkItemsOrderedOutOfStock(cart, request);
             mainArrayNode = userServices.reviewOrder(session, mainArrayNode, cart);
-            mainArrayNode.add(outOfStockItems);
+            //mainArrayNode.add(outOfStockItems);
         } else {
             throw new UnauthorizedException();
         }

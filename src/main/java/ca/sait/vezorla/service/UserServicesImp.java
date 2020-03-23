@@ -292,7 +292,7 @@ public class UserServicesImp implements UserServices {
      * Create and persist an account in the Accounts table
      *
      * @param account to persist in database
-     * @return boolean true if it was succesfully added, otherwise false
+     * @return boolean true if it was successfully added, otherwise false
      * @author matthewjflee, jjrr1717
      */
     public boolean saveAccount(Account account) {
@@ -312,11 +312,37 @@ public class UserServicesImp implements UserServices {
      * Return all products in the Products table
      *
      * @return
-     * @author kwistech
+     * @author jjrr1717
      */
-    public List<Product> getAllProducts() {
+    public ArrayNode getAllProducts(ObjectMapper mapper) {
+        CustomerClientUtil ccu = new CustomerClientUtil();
 
-        return new ArrayList<>(productRepo.findAll());
+        //obtain all the products
+        ArrayList<Product> products = (ArrayList<Product>) productRepo.findAll();
+
+        //create custom json
+        ArrayNode productsNode = mapper.createArrayNode();
+
+        //loop through products
+        for(int i = 0; i < products.size(); i++){
+            ObjectNode node = productsNode.objectNode();
+            node.put("prodId", products.get(i).getProdId());
+            node.put("name", products.get(i).getName());
+            node.put("description", products.get(i).getDescription());
+            node.put("subdescription", products.get(i).getSubdescription());
+            node.put("harvestTime:", products.get(i).getHarvestTime());
+            node.put("imageMain", products.get(i).getImageMain());
+            node.put("imageOne", products.get(i).getImageOne());
+            node.put("imageTwo", products.get(i).getImageTwo());
+            node.put("imageThree", products.get(i).getImageThree());
+            node.put("active", products.get(i).isActive());
+            node.put("threshold", products.get(i).getThreshhold());
+            node.put("price", ccu.formatAmount(products.get(i).getPrice()));
+            node.put("oldPrice", ccu.formatAmount(products.get(i).getOldPrice()));
+            productsNode.add(node);
+        }
+
+        return productsNode;
     }
 
     public Cart getCart() {
@@ -325,6 +351,43 @@ public class UserServicesImp implements UserServices {
 
     public List<Lot> getLots(Long id) {
         return null;
+    }
+
+    /**
+     * Return a specified product
+     *
+     * @param id
+     * @return
+     * @author matthewjflee, jjrr1717
+     */
+    public ArrayNode getProduct(Long id, ObjectMapper mapper) {
+
+        CustomerClientUtil ccu = new CustomerClientUtil();
+
+        //obtain all the products
+        Optional<Product> product = productRepo.findById(id);
+
+        //create custom json
+        ArrayNode productsNode = mapper.createArrayNode();
+
+        ObjectNode node = productsNode.objectNode();
+        node.put("prodId", product.get().getProdId());
+        node.put("name", product.get().getName());
+        node.put("description", product.get().getDescription());
+        node.put("subdescription", product.get().getSubdescription());
+        node.put("harvestTime:", product.get().getHarvestTime());
+        node.put("imageMain", product.get().getImageMain());
+        node.put("imageOne", product.get().getImageOne());
+        node.put("imageTwo", product.get().getImageTwo());
+        node.put("imageThree", product.get().getImageThree());
+        node.put("active", product.get().isActive());
+        node.put("threshold", product.get().getThreshhold());
+        node.put("price", ccu.formatAmount(product.get().getPrice()));
+        node.put("oldPrice", ccu.formatAmount(product.get().getOldPrice()));
+        productsNode.add(node);
+
+
+        return productsNode;
     }
 
     /**

@@ -3,6 +3,7 @@ package ca.sait.vezorla.service;
 import ca.sait.vezorla.exception.InvalidInputException;
 import ca.sait.vezorla.model.*;
 import com.fasterxml.jackson.core.JsonProcessingException;
+import com.fasterxml.jackson.databind.ObjectMapper;
 import com.fasterxml.jackson.databind.node.ArrayNode;
 
 import javax.servlet.http.HttpServletRequest;
@@ -18,11 +19,13 @@ public interface UserServices {
 
     void applyDiscount(HttpServletRequest request);
 
-    List<Product> getAllProducts();
+    ArrayNode getAllProducts(ObjectMapper mapper);
 
     Cart getCart();
 
     List<Lot> getLots(Long id);
+
+    ArrayNode getProduct(Long id, ObjectMapper mapper);
 
     Optional<Product> getProduct(Long id);
 
