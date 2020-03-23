@@ -56,7 +56,7 @@ public interface UserServices {
 
     ArrayNode viewSessionCart(HttpServletRequest request, Cart cart) throws JsonProcessingException;
 
-    String getShippingInfo(HttpServletRequest request, Account account) throws InvalidInputException, JsonProcessingException;
+    String getShippingInfo(HttpSession session, Account account) throws InvalidInputException, JsonProcessingException;
 
     ArrayNode buildValidDiscounts(HttpSession session, ArrayNode arrayNode);
 

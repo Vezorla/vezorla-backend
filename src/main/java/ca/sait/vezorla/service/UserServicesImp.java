@@ -455,15 +455,15 @@ public class UserServicesImp implements UserServices {
      * Method to parse the json sent from
      * the front end for the shipping information
      *
-     * @param request the session
+     * @author: matthewjflee, jjrr1717
+     * @param session user session
      * @return String boolean if account is created successfully for shipping info
-     * @throws InvalidInputException
-     * @throws JsonProcessingException
+     * @throws InvalidInputException return 503
+     * @throws JsonProcessingException exception when parsing json
      */
-    public String getShippingInfo(HttpServletRequest request, Account account) throws InvalidInputException, JsonProcessingException {
+    public String getShippingInfo(HttpSession session, Account account) throws InvalidInputException, JsonProcessingException {
         CustomerClientUtil customerClientUtil = new CustomerClientUtil();
-        HttpSession session = request.getSession();
-        boolean created = false;
+
         if (account.getEmail() == null || account.getFirstName() == null || account.getLastName() == null ||
                 account.getPostalCode() == null || account.getPhoneNum() == null) {
             throw new InvalidInputException();
@@ -471,10 +471,11 @@ public class UserServicesImp implements UserServices {
 
         customerClientUtil.validatePhoneNumber(account.getPhoneNum());
         customerClientUtil.validatePostalCode(account.getPostalCode());
+        account.setAccountType('C');
 
         session.setAttribute("ACCOUNT", account);
-        session.setAttribute("PICKUP", account.getPickup());
-        created = saveAccount(account);
+        session.setAttribute("PICKUP", account.isPickup());
+        boolean created = saveAccount(account);
 
         return mapper.writerWithDefaultPrettyPrinter().writeValueAsString(created);
     }
@@ -544,7 +545,7 @@ public class UserServicesImp implements UserServices {
         node.put("taxes", customerClientUtil.formatAmount(taxes));
 
         //is order pickup or shipped
-        if (session.getAttribute("PICKUP").equals("true")) {
+        if ((boolean) session.getAttribute("PICKUP")) {
             shippingRate = 0;
             node.put("shipping", shippingRate);
         } else {
@@ -659,7 +660,7 @@ public class UserServicesImp implements UserServices {
         Account account = (Account) session.getAttribute("ACCOUNT");
 
         //get pickup status
-        String pickup = (String) session.getAttribute("PICKUP");
+        boolean pickup = (boolean) session.getAttribute("PICKUP");
 
         //add the above to the newInvoice
         newInvoice.setDate(sqlDate);
