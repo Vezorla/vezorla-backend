@@ -326,7 +326,7 @@ public class UserServicesImp implements UserServices {
         //loop through products
         for(int i = 0; i < products.size(); i++){
             ObjectNode node = productsNode.objectNode();
-            node.put("prodID", products.get(i).getProdId());
+            node.put("prodId", products.get(i).getProdId());
             node.put("name", products.get(i).getName());
             node.put("description", products.get(i).getDescription());
             node.put("subdescription", products.get(i).getSubdescription());
@@ -371,7 +371,7 @@ public class UserServicesImp implements UserServices {
         ArrayNode productsNode = mapper.createArrayNode();
 
         ObjectNode node = productsNode.objectNode();
-        node.put("prodID", product.get().getProdId());
+        node.put("prodId", product.get().getProdId());
         node.put("name", product.get().getName());
         node.put("description", product.get().getDescription());
         node.put("subdescription", product.get().getSubdescription());
