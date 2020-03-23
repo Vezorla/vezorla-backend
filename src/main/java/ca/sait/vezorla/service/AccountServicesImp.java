@@ -2,7 +2,10 @@ package ca.sait.vezorla.service;
 
 import ca.sait.vezorla.controller.util.CustomerClientUtil;
 import ca.sait.vezorla.model.Account;
+import ca.sait.vezorla.model.Cart;
 import ca.sait.vezorla.model.Invoice;
+import ca.sait.vezorla.repository.AccountRepo;
+import ca.sait.vezorla.repository.CartRepo;
 import ca.sait.vezorla.repository.InvoiceRepo;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import com.fasterxml.jackson.databind.node.ArrayNode;
@@ -20,6 +23,8 @@ import java.util.Optional;
 public class AccountServicesImp implements AccountServices{
 
     private InvoiceRepo invoiceRepo;
+    private AccountRepo accountRepo;
+    private CartRepo cartRepo;
 
     public boolean confirmAccount(Long id) {
         return false;
@@ -34,7 +39,13 @@ public class AccountServicesImp implements AccountServices{
     }
 
     public boolean saveAccount(Account account) {
-        return false;
+        Account saved = accountRepo.save(account);
+        return true;
+    }
+
+    public boolean saveCart(Cart cart) {
+        cartRepo.save(cart);
+        return true;
     }
 
     public boolean validatePaymentInfo() {

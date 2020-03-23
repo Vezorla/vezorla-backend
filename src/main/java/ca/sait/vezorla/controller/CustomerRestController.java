@@ -9,6 +9,7 @@ import ca.sait.vezorla.model.Account;
 import ca.sait.vezorla.model.Cart;
 import ca.sait.vezorla.model.LineItem;
 import ca.sait.vezorla.model.Product;
+import ca.sait.vezorla.service.AccountServices;
 import ca.sait.vezorla.service.EmailServices;
 import ca.sait.vezorla.service.UserServices;
 import com.fasterxml.jackson.core.JsonProcessingException;
@@ -19,6 +20,7 @@ import lombok.AllArgsConstructor;
 import org.json.simple.JSONObject;
 import org.json.simple.parser.JSONParser;
 import org.json.simple.parser.ParseException;
+import org.springframework.http.HttpRequest;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.mail.MailException;
@@ -44,6 +46,7 @@ public class CustomerRestController {
     protected static final String URL = "/api/customer/";
     private UserServices userServices;
     private EmailServices emailServices;
+    private AccountServices accountServices;
 
     /**
      * Get all products
@@ -84,20 +87,30 @@ public class CustomerRestController {
     /**
      * Create a line item in the cart for a customer
      *
-     * @param id product id to add to a cart
+     * @param id       product id to add to a cart
      * @param quantity quantity to add
-     * @param request user's request
+     * @param request  user's request
      * @return line item created
      * @author matthewjflee, jjrr1717
      */
     @RequestMapping(value = "cart/add/{id}", method = RequestMethod.PUT, produces = {"application/json"})
     public String createLineItemSession(@PathVariable Long id, @RequestBody String quantity, HttpServletRequest request) throws JsonProcessingException {
         ArrayList<LineItem> lineItems;
+        Cart cart;
         HttpSession session = request.getSession();
-        Cart cart = userServices.getSessionCart(session);
         ObjectMapper mapper = new ObjectMapper();
         ObjectNode node = mapper.createObjectNode();
 
+        //Grab the cart
+        Account account = (Account) session.getAttribute("ACCOUNT");
+        if (account == null || !account.isUserCreated())
+            cart = userServices.getSessionCart(session);
+        else {
+            int cartSize = account.getCarts().size();
+            cart = account.getCarts().get(cartSize - 1); //Get the latest cart
+        }
+
+        //Validate product quantity
         Optional<Product> product = userServices.getProduct(id);
         int productInStock = userServices.getProductQuantity(id);
         int checkProductStock = userServices.validateOrderedQuantity(quantity, productInStock);
@@ -105,8 +118,13 @@ public class CustomerRestController {
         if (checkProductStock >= 0) {
             lineItems = userServices.createLineItemSession(product, quantity, cart);
 
-            if(!lineItems.isEmpty()) {
+            if (!lineItems.isEmpty()) {
                 userServices.updateSessionCart(lineItems, cart, request);
+
+                if (account != null) {
+                    accountServices.saveAccount(account);
+                }
+
                 node.put("added", true);
             }
         } else {
@@ -115,6 +133,23 @@ public class CustomerRestController {
         }
 
         return mapper.writerWithDefaultPrettyPrinter().writeValueAsString(node);
+    }
+
+    @GetMapping("cart/create")
+    public void createMe(HttpServletRequest request) {
+        HttpSession session = request.getSession();
+        Account account = (Account) session.getAttribute("ACCOUNT");
+        System.out.println("account " + account.getEmail());
+
+        assert account != null;
+        if (account.isUserCreated()) {
+            ArrayList<Cart> carts = (ArrayList<Cart>) account.getCarts();
+            Cart cart = new Cart(account);
+            carts.add(cart);
+            accountServices.saveCart(cart);
+        }
+
+        userServices.saveAccount(account);
     }
 
     /**
@@ -153,9 +188,9 @@ public class CustomerRestController {
     /**
      * Update a line item in the cart for a customer
      *
-     * @param id Line item ID
+     * @param id       Line item ID
      * @param quantity quantity to change
-     * @param request user's request
+     * @param request  user's request
      * @return boolean if it was changed or not
      * @throws JsonProcessingException thrown when there is an error parsing JSON
      * @author matthewjflee, jjrr1717
@@ -171,7 +206,7 @@ public class CustomerRestController {
     /**
      * Remove a line item for a customer
      *
-     * @param id line item to delete
+     * @param id      line item to delete
      * @param request user's request
      * @return if line item was deleted or not
      * @author matthewjflee, jjrr1717
