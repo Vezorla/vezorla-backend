@@ -58,7 +58,20 @@ public class EmailServicesImp implements EmailServices {
 
     }
 
-    public void sendForgotPassword(String email, String tempPassword) {
+    public void sendForgotPassword(String email, String tempPassword) throws InvalidInputException {
+
+        //Validate email
+        verifyEmail(email);
+
+        SimpleMailMessage mail = new SimpleMailMessage();
+        mail.setTo("vezorla.test@gmail.com");
+        mail.setFrom("vezorla.test@gmail.com");
+        mail.setSubject("Vezorla - Password Reset");
+        mail.setText("You have requested a password reset." + "\n\n" +
+                "Your new password: " + tempPassword + "\n\n" +
+                "Please use the above password to log into your Vezorla account.");
+
+        mailSender.send(mail);
 
     }
 
