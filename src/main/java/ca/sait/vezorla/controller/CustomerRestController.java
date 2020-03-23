@@ -52,8 +52,9 @@ public class CustomerRestController {
      * @author kwistech
      */
     @GetMapping("inventory/products/all")
-    public List<Product> getAllProducts() {
-        return userServices.getAllProducts();
+    public String getAllProducts() throws JsonProcessingException {
+        ObjectMapper mapper = new ObjectMapper();
+        return mapper.writerWithDefaultPrettyPrinter().writeValueAsString(userServices.getAllProducts(mapper));
     }
 
     /**
@@ -64,9 +65,10 @@ public class CustomerRestController {
      * @author matthewjflee, jjrr1717
      */
     @GetMapping("inventory/product/{id}")
-    public ResponseEntity<Product> getProductPage(@PathVariable Long id) {
-        Optional<Product> product = userServices.getProduct(id);
-        return product.map(response -> ResponseEntity.ok().body(response)).orElse(new ResponseEntity<>(HttpStatus.NOT_FOUND));
+    public String getProductPage(@PathVariable Long id) throws JsonProcessingException {
+        ObjectMapper mapper = new ObjectMapper();
+        return mapper.writerWithDefaultPrettyPrinter().writeValueAsString(userServices.getProduct(id, mapper));
+
     }
 
     /**
