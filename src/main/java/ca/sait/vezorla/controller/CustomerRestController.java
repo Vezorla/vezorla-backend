@@ -59,8 +59,8 @@ public class CustomerRestController {
     /**
      * Return the product from Products repo
      *
-     * @param id
-     * @return
+     * @param id ID of product
+     * @return product
      * @author matthewjflee, jjrr1717
      */
     @GetMapping("inventory/product/{id}")
@@ -72,8 +72,8 @@ public class CustomerRestController {
     /**
      * Return the quantity for the specified product
      *
-     * @param id
-     * @return
+     * @param id product ID
+     * @return product's quantity
      * @author jjrr1717, matthewjflee
      */
     @RequestMapping(value = "inventory/product/quantity/{id}", method = RequestMethod.GET, produces = {"application/json"})
