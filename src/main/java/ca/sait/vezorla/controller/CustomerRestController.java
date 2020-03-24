@@ -133,21 +133,6 @@ public class CustomerRestController {
         return mapper.writerWithDefaultPrettyPrinter().writeValueAsString(node);
     }
 
-    @GetMapping("cart/create")
-    public void createMe(HttpServletRequest request) {
-        HttpSession session = request.getSession();
-        Account account = (Account) session.getAttribute("ACCOUNT");
-        System.out.println("account " + account.getEmail());
-
-        assert account != null;
-        if (account.isUserCreated()) {
-            Cart cart = new Cart(account);
-            accountServices.saveCart(cart);
-        }
-
-        userServices.saveAccount(account);
-    }
-
     /**
      * View cart for a customer
      *
