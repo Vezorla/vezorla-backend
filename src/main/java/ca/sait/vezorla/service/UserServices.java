@@ -34,7 +34,7 @@ public interface UserServices {
 
     List<Lot> obtainSufficientQtyLots(int qty, Product product);
 
-    boolean removeLineItemSession(Long id, Cart cart, HttpServletRequest request);
+    boolean removeLineItemSession(long id, Cart cart, HttpServletRequest request);
 
     boolean updateLineItemSession(Long id, int quantity, Cart cart, HttpServletRequest request);
 
