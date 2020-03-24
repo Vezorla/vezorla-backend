@@ -230,7 +230,14 @@ public class CustomerRestController {
     @DeleteMapping("cart/remove/{id}")
     public boolean removeLineItemSession(@PathVariable Long id, HttpServletRequest request) {
         HttpSession session = request.getSession();
-        Cart cart = userServices.getSessionCart(session);
+        Account account = (Account) session.getAttribute("ACCOUNT");
+        Cart cart;
+
+        if (account == null || !account.isUserCreated())
+            cart = userServices.getSessionCart(session);
+        else {
+            cart = accountServices.findRecentCart(account);
+        }
 
         return userServices.removeLineItemSession(id, cart, request);
     }
