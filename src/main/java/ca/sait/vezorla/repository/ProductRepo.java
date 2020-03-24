@@ -11,6 +11,5 @@ import org.springframework.stereotype.Repository;
 public interface ProductRepo extends JpaRepository<Product, Long>{
 
     @Query(value = "SELECT SUM(l.quantity) FROM Lot l WHERE l.product.prodId = :prod_num")
-    public int findTotalQuantity(@Param("prod_num") Long prod_num);
-
+    int findTotalQuantity(@Param("prod_num") Long prod_num);
 }

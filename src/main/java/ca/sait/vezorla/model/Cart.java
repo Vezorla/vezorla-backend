@@ -45,4 +45,10 @@ public class Cart implements Serializable {
     public Cart() {
         this.lineItems = new ArrayList<>();
     }
+
+    public Cart(Account account) {
+        this.account = account;
+        this.fromAccount = true;
+        this.lineItems = new ArrayList<>();
+    }
 }
