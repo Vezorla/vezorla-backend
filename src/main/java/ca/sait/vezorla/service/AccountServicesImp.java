@@ -46,11 +46,8 @@ public class AccountServicesImp implements AccountServices{
     }
 
     public boolean saveCart(Cart cart) {
-        if(cart.getLineItems().size() > 0) {
-            for(LineItem li : cart.getLineItems()) {
-                lineItemRepo.save(li);
-            }
-        }
+        if(cart.getLineItems().size() > 0)
+            saveLineItems(cart.getLineItems());
 
         cartRepo.save(cart);
         return true;
