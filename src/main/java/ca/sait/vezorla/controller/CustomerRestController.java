@@ -9,9 +9,9 @@ import ca.sait.vezorla.model.Account;
 import ca.sait.vezorla.model.Cart;
 import ca.sait.vezorla.model.LineItem;
 import ca.sait.vezorla.model.Product;
-import ca.sait.vezorla.service.UserServices;
-import ca.sait.vezorla.model.Product;
+import ca.sait.vezorla.service.AuthenticationServices;
 import ca.sait.vezorla.service.EmailServices;
+import ca.sait.vezorla.service.UserServices;
 import com.fasterxml.jackson.core.JsonProcessingException;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import com.fasterxml.jackson.databind.node.ArrayNode;
@@ -20,8 +20,8 @@ import org.json.simple.JSONObject;
 import org.json.simple.parser.JSONParser;
 import org.json.simple.parser.ParseException;
 import org.springframework.http.HttpStatus;
-import org.springframework.mail.MailException;
 import org.springframework.http.ResponseEntity;
+import org.springframework.mail.MailException;
 import org.springframework.web.bind.annotation.*;
 
 import javax.servlet.http.HttpServletRequest;
@@ -42,8 +42,10 @@ import java.util.Optional;
 public class CustomerRestController {
 
     protected static final String URL = "/api/customer/";
+
     private UserServices userServices;
     private EmailServices emailServices;
+    private AuthenticationServices authenticationServices;
 
     /**
      * Get all products
@@ -384,7 +386,9 @@ public class CustomerRestController {
     }
 
     @GetMapping("account/forgotpassword/{email}")
-    public void forgotPassword(@PathVariable String email) {
+    public boolean forgotPassword(@PathVariable String email) throws InvalidInputException {
+
+        return authenticationServices.forgotPassword(email);
 
     }
 

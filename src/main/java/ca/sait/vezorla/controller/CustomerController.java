@@ -3,7 +3,6 @@ package ca.sait.vezorla.controller;
 import ca.sait.vezorla.exception.InvalidInputException;
 import ca.sait.vezorla.model.Account;
 import ca.sait.vezorla.model.LineItem;
-import ca.sait.vezorla.service.AuthenticationServices;
 import lombok.AllArgsConstructor;
 import org.springframework.stereotype.Controller;
 import org.springframework.ui.Model;
@@ -16,8 +15,6 @@ import org.springframework.web.bind.annotation.RequestMapping;
 @Controller
 @RequestMapping(CustomerController.URL)
 public class CustomerController {
-
-    private AuthenticationServices authenticationServices;
 
     protected static final String URL = "/customer/";
 
@@ -47,23 +44,13 @@ public class CustomerController {
     }
 
     @GetMapping("account/create")
-    public String createAccount(Account account, Model model, BindingResult bindingResult) {
-        return null;
-    }
+    public String createAccount(Account account, Model model, BindingResult bindingResult) { return null; }
 
     @GetMapping("account/forgotpassword")
-    public String forgotPassword(String email, Model model) throws InvalidInputException {
-
-        authenticationServices.forgotPassword(email);
-
-        return "login";
-
-    }
+    public String forgotPassword(String email, Model model) throws InvalidInputException { return null; }
 
     @GetMapping("order/place")
-    public void placeOrder() {
-
-    }
+    public void placeOrder() { }
 
     @GetMapping("inventory/product/")
     public String getProductPage(@PathVariable Long id, Model model) {
