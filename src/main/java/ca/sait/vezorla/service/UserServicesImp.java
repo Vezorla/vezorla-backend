@@ -35,6 +35,7 @@ public class UserServicesImp implements UserServices {
     private LineItemRepo lineItemRepo;
     private CartRepo cartRepo;
     private AccountDiscountRepo accountDiscountRepo;
+    private AccountServices accountServices;
     private ObjectMapper mapper;
 
     /**
@@ -272,11 +273,11 @@ public class UserServicesImp implements UserServices {
      *
      * @param id      of product to remove
      * @param cart    to remove product from
-     * @param request the session
+     * @param session the session
      * @return a boolean true if successfully removed, otherwise false.
      * @author matthewjflee, jjrr1717
      */
-    public boolean removeLineItemSession(long id, Cart cart, HttpServletRequest request) {
+    public boolean removeLineItemSession(long id, boolean fromAccount, Cart cart, HttpSession session) {
         boolean result = false;
         List<LineItem> lineItems = cart.getLineItems();
         for (int i = 0; i < lineItems.size(); i++) {
@@ -286,7 +287,11 @@ public class UserServicesImp implements UserServices {
             }
         }
         cart.setLineItems(lineItems);
-        request.getSession().setAttribute("CART", cart);
+
+        if(fromAccount)
+            accountServices.saveCart(cart);
+        else
+            session.setAttribute("CART", cart);
 
         return result;
     }
@@ -323,7 +328,7 @@ public class UserServicesImp implements UserServices {
         ArrayNode productsNode = mapper.createArrayNode();
 
         //loop through products
-        for(int i = 0; i < products.size(); i++){
+        for (int i = 0; i < products.size(); i++) {
             ObjectNode node = productsNode.objectNode();
             node.put("prodId", products.get(i).getProdId());
             node.put("name", products.get(i).getName());

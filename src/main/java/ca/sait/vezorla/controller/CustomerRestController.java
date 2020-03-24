@@ -231,15 +231,19 @@ public class CustomerRestController {
     public boolean removeLineItemSession(@PathVariable Long id, HttpServletRequest request) {
         HttpSession session = request.getSession();
         Account account = (Account) session.getAttribute("ACCOUNT");
+        boolean fromAccount;
         Cart cart;
 
-        if (account == null || !account.isUserCreated())
+        if (account == null || !account.isUserCreated()) {
             cart = userServices.getSessionCart(session);
+            fromAccount = false;
+        }
         else {
             cart = accountServices.findRecentCart(account);
+            fromAccount = true;
         }
 
-        return userServices.removeLineItemSession(id, cart, request);
+        return userServices.removeLineItemSession(id, fromAccount, cart, session);
     }
 
     /**
