@@ -190,7 +190,14 @@ public class CustomerRestController {
     @RequestMapping(value = "cart/get", method = RequestMethod.GET,
             produces = {"application/json"})
     public String getSessionCartQuantity(HttpSession session) {
-        Cart cart = userServices.getSessionCart(session);
+        Account account = (Account) session.getAttribute("ACCOUNT");
+        Cart cart;
+
+        if (account == null || !account.isUserCreated())
+            cart = userServices.getSessionCart(session);
+        else {
+            cart = accountServices.findRecentCart(account);
+        }
         return userServices.getTotalCartQuantity(cart.getLineItems());
     }
 
@@ -220,7 +227,7 @@ public class CustomerRestController {
      * @return if line item was deleted or not
      * @author matthewjflee, jjrr1717
      */
-    @PutMapping("cart/remove/{id}")
+    @DeleteMapping("cart/remove/{id}")
     public boolean removeLineItemSession(@PathVariable Long id, HttpServletRequest request) {
         HttpSession session = request.getSession();
         Cart cart = userServices.getSessionCart(session);
