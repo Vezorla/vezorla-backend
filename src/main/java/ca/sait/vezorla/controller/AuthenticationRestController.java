@@ -1,5 +1,6 @@
 package ca.sait.vezorla.controller;
 
+import ca.sait.vezorla.exception.AccountNotFoundException;
 import ca.sait.vezorla.model.Account;
 import ca.sait.vezorla.service.AuthenticationServices;
 import com.fasterxml.jackson.core.JsonProcessingException;
@@ -76,7 +77,7 @@ public class AuthenticationRestController {
         if(account != null)
             node.put("admin", account.isAccountAdmin());
         else
-            node.put("admin", "false");
+            throw new AccountNotFoundException();
         String output = mapper.writerWithDefaultPrettyPrinter().writeValueAsString(node);
 
         return ResponseEntity.ok().body(output);
