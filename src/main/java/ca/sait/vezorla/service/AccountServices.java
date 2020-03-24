@@ -20,7 +20,7 @@ public interface AccountServices {
 
     boolean saveCart(Cart cart);
 
-    Cart findRecentCart(String email);
+    Cart findRecentCart(Account account);
 
     Optional<Cart> findCartById(long id);
 

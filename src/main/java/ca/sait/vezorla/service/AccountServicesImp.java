@@ -46,16 +46,24 @@ public class AccountServicesImp implements AccountServices{
     }
 
     public boolean saveCart(Cart cart) {
-        for(LineItem li : cart.getLineItems()) {
-            lineItemRepo.save(li);
+
+        if(cart.getLineItems().size() > 0) {
+            for(LineItem li : cart.getLineItems()) {
+                lineItemRepo.save(li);
+            }
         }
 
         cartRepo.save(cart);
         return true;
     }
 
-    public Cart findRecentCart(String email) {
-        return cartRepo.findCartByAccount_Email(email);
+    public Cart findRecentCart(Account account) {
+        Cart cart =  cartRepo.findCartByAccount_Email(account.getEmail());
+        if(cart == null)
+            cart = new Cart(account);
+
+        return cart;
+//        return cartRepo.findCartByAccount_Email(email);
     }
 
     public Optional<Cart> findCartById(long id) {

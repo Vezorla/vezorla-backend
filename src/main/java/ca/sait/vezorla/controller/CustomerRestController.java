@@ -106,7 +106,7 @@ public class CustomerRestController {
         if (account == null || !account.isUserCreated())
             cart = userServices.getSessionCart(session);
         else {
-            cart = accountServices.findRecentCart(account.getEmail());
+            cart = accountServices.findRecentCart(account);
         }
 
         //Validate product quantity
@@ -154,7 +154,7 @@ public class CustomerRestController {
         if (account == null || !account.isUserCreated())
             cart = userServices.getSessionCart(session);
         else {
-            cart = accountServices.findRecentCart(account.getEmail());
+            cart = accountServices.findRecentCart(account);
         }
 
         ArrayNode outOfStockItems = userServices.checkItemsOrderedOutOfStock(cart, request);
@@ -287,6 +287,12 @@ public class CustomerRestController {
             newAccount = Optional.of(new Account(email, password));
             if (!userServices.saveAccount(newAccount.get()))
                 throw new UnableToSaveException();
+            else {
+                //Create cart and persist cart
+                Cart cart = new Cart(newAccount.get());
+                newAccount.get().getCarts().add(cart);
+                accountServices.saveCart(cart);
+            }
         }
 
         return true;
