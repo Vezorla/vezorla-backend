@@ -170,9 +170,6 @@ public class CustomerRestController {
             cart = accountServices.findRecentCart(account.getEmail());
         }
 
-        System.out.println("cart " + cart.getOrderNum());
-
-//        Cart cart = (Cart) session.getAttribute("CART");
         ArrayNode outOfStockItems = userServices.checkItemsOrderedOutOfStock(cart, request);
         ArrayNode arrayNode = userServices.viewSessionCart(request, cart);
         arrayNode.add(outOfStockItems);
