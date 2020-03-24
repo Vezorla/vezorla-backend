@@ -4,9 +4,11 @@ import ca.sait.vezorla.controller.util.CustomerClientUtil;
 import ca.sait.vezorla.model.Account;
 import ca.sait.vezorla.model.Cart;
 import ca.sait.vezorla.model.Invoice;
+import ca.sait.vezorla.model.LineItem;
 import ca.sait.vezorla.repository.AccountRepo;
 import ca.sait.vezorla.repository.CartRepo;
 import ca.sait.vezorla.repository.InvoiceRepo;
+import ca.sait.vezorla.repository.LineItemRepo;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import com.fasterxml.jackson.databind.node.ArrayNode;
 import com.fasterxml.jackson.databind.node.ObjectNode;
@@ -24,6 +26,7 @@ public class AccountServicesImp implements AccountServices{
     private InvoiceRepo invoiceRepo;
     private AccountRepo accountRepo;
     private CartRepo cartRepo;
+    private LineItemRepo lineItemRepo;
 
     public boolean confirmAccount(Long id) {
         return false;
@@ -43,6 +46,10 @@ public class AccountServicesImp implements AccountServices{
     }
 
     public boolean saveCart(Cart cart) {
+        for(LineItem li : cart.getLineItems()) {
+            lineItemRepo.save(li);
+        }
+
         cartRepo.save(cart);
         return true;
     }
