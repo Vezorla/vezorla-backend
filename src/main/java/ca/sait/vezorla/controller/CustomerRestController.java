@@ -104,9 +104,7 @@ public class CustomerRestController {
         if (account == null || !account.isUserCreated())
             cart = userServices.getSessionCart(session);
         else {
-            long cartID = accountServices.findRecentCartID(account.getEmail());
-            Optional<Cart> cartMe = accountServices.findCartById(cartID);
-            cart = cartMe.get();
+            cart = accountServices.findRecentCart(account.getEmail());
         }
 
         //Validate product quantity
@@ -170,9 +168,6 @@ public class CustomerRestController {
             cart = userServices.getSessionCart(session);
         else {
             cart = accountServices.findRecentCart(account.getEmail());
-//            long cartID = accountServices.findRecentCartID(account.getEmail());
-//            Optional<Cart> cartMe = accountServices.findCartById(cartID);
-//            cart = cartMe.get();
         }
 
         System.out.println("cart " + cart.getOrderNum());

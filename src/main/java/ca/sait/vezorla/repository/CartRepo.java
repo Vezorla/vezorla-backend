@@ -13,12 +13,8 @@ import static org.hibernate.loader.Loader.SELECT;
 @Repository
 public interface CartRepo extends JpaRepository<Cart, Long> {
 
-    @Query("FROM Cart c WHERE c.account.email = :email AND c.orderNum = (SELECT MAX(cc.orderNum) FROM Cart cc WHERE cc.account.email = :email)")
+    @Query("FROM Cart c WHERE c.account.email = :email " +
+            "AND c.orderNum = (SELECT MAX(cc.orderNum) " +
+            "FROM Cart cc WHERE cc.account.email = :email)")
     Cart findCartByAccount_Email(@Param("email") String email);
-
-
-    @Query("select MAX(c.orderNum) from Cart c where c.account.email = :email")
-    long findCartIdByAccount_Email(@Param("email") String email);
 }
-
-//FROM Cart c WHERE c.orderNum IN(SELECT MAX(c.orderNum) FROM Cart c group by accountNum

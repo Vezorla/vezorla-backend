@@ -58,10 +58,6 @@ public class AccountServicesImp implements AccountServices{
         return cartRepo.findCartByAccount_Email(email);
     }
 
-    public long findRecentCartID(String email) {
-        return cartRepo.findCartIdByAccount_Email(email);
-    }
-
     public Optional<Cart> findCartById(long id) {
         return cartRepo.findById(id);
     }

@@ -22,8 +22,6 @@ public interface AccountServices {
 
     Cart findRecentCart(String email);
 
-    long findRecentCartID(String email);
-
     Optional<Cart> findCartById(long id);
 
     boolean validatePaymentInfo();
