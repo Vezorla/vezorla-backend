@@ -106,7 +106,7 @@ public class CustomerRestController {
         if (account == null || !account.isUserCreated())
             cart = userServices.getSessionCart(session);
         else {
-            cart = accountServices.findRecentCart(account.getEmail());
+            cart = accountServices.findRecentCart(account);
         }
 
         //Validate product quantity
@@ -154,7 +154,7 @@ public class CustomerRestController {
         if (account == null || !account.isUserCreated())
             cart = userServices.getSessionCart(session);
         else {
-            cart = accountServices.findRecentCart(account.getEmail());
+            cart = accountServices.findRecentCart(account);
         }
 
         ArrayNode outOfStockItems = userServices.checkItemsOrderedOutOfStock(cart, request);
@@ -190,7 +190,14 @@ public class CustomerRestController {
     @RequestMapping(value = "cart/get", method = RequestMethod.GET,
             produces = {"application/json"})
     public String getSessionCartQuantity(HttpSession session) {
-        Cart cart = userServices.getSessionCart(session);
+        Account account = (Account) session.getAttribute("ACCOUNT");
+        Cart cart;
+
+        if (account == null || !account.isUserCreated())
+            cart = userServices.getSessionCart(session);
+        else {
+            cart = accountServices.findRecentCart(account);
+        }
         return userServices.getTotalCartQuantity(cart.getLineItems());
     }
 
@@ -220,10 +227,17 @@ public class CustomerRestController {
      * @return if line item was deleted or not
      * @author matthewjflee, jjrr1717
      */
-    @PutMapping("cart/remove/{id}")
+    @DeleteMapping("cart/remove/{id}")
     public boolean removeLineItemSession(@PathVariable Long id, HttpServletRequest request) {
         HttpSession session = request.getSession();
-        Cart cart = userServices.getSessionCart(session);
+        Account account = (Account) session.getAttribute("ACCOUNT");
+        Cart cart;
+
+        if (account == null || !account.isUserCreated())
+            cart = userServices.getSessionCart(session);
+        else {
+            cart = accountServices.findRecentCart(account);
+        }
 
         return userServices.removeLineItemSession(id, cart, request);
     }
@@ -287,6 +301,12 @@ public class CustomerRestController {
             newAccount = Optional.of(new Account(email, password));
             if (!userServices.saveAccount(newAccount.get()))
                 throw new UnableToSaveException();
+            else {
+                //Create cart and persist cart
+                Cart cart = new Cart(newAccount.get());
+                newAccount.get().getCarts().add(cart);
+                accountServices.saveCart(cart);
+            }
         }
 
         return true;
