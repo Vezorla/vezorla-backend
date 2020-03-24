@@ -6,7 +6,9 @@ import ca.sait.vezorla.model.Invoice;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import com.fasterxml.jackson.databind.node.ObjectNode;
 
+import java.util.ArrayList;
 import java.util.List;
+import java.util.Optional;
 
 public interface AccountServices {
 
@@ -17,6 +19,12 @@ public interface AccountServices {
     boolean saveAccount(Account account);
 
     boolean saveCart(Cart cart);
+
+    Cart findRecentCart(String email);
+
+    long findRecentCartID(String email);
+
+    Optional<Cart> findCartById(long id);
 
     boolean validatePaymentInfo();
 

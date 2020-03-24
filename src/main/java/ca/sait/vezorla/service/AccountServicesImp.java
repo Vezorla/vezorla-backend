@@ -14,7 +14,6 @@ import lombok.AllArgsConstructor;
 import org.springframework.stereotype.Service;
 
 import java.util.ArrayList;
-import java.util.Calendar;
 import java.util.List;
 import java.util.Optional;
 
@@ -46,6 +45,18 @@ public class AccountServicesImp implements AccountServices{
     public boolean saveCart(Cart cart) {
         cartRepo.save(cart);
         return true;
+    }
+
+    public Cart findRecentCart(String email) {
+        return cartRepo.findCartByAccount_Email(email);
+    }
+
+    public long findRecentCartID(String email) {
+        return cartRepo.findCartIdByAccount_Email(email);
+    }
+
+    public Optional<Cart> findCartById(long id) {
+        return cartRepo.findById(id);
     }
 
     public boolean validatePaymentInfo() {

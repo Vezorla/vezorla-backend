@@ -52,7 +52,6 @@ public class UserServicesImp implements UserServices {
         if (!accountDiscount.getCode().getCode().equals("NotSelected")) {
             accountDiscountRepo.insertWithQuery(accountDiscount);
         }
-
     }
 
     /**
@@ -80,7 +79,7 @@ public class UserServicesImp implements UserServices {
      * @return the cart with new line item added
      * @author matthewjflee, jjrr1717
      */
-    public Cart updateSessionCart(ArrayList<LineItem> lineItems, Cart cart, HttpServletRequest request) {
+    public Cart updateSessionCart(List<LineItem> lineItems, Cart cart, HttpServletRequest request) {
         cart.setLineItems(lineItems);
         request.getSession().setAttribute("CART", cart);
 
@@ -94,7 +93,7 @@ public class UserServicesImp implements UserServices {
      * @return the quantity as a String
      * @author matthewjflee, jjrr1717
      */
-    public String getTotalCartQuantity(ArrayList<LineItem> lineItems) {
+    public String getTotalCartQuantity(List<LineItem> lineItems) {
         //loop through lineItems to get total quantity on order
         int counter = lineItems.stream().mapToInt(LineItem::getQuantity).sum();
         return counter + "";
@@ -172,10 +171,12 @@ public class UserServicesImp implements UserServices {
      * @return line item to be added to the session
      * @author matthewjflee, jjrr1717
      */
-    public ArrayList<LineItem> createLineItemSession(Optional<Product> product, String sentQuantity, Cart cart) {
+//    public ArrayList<LineItem> createLineItemSession(Optional<Product> product, String sentQuantity, Cart cart) {
+    public List<LineItem> createLineItemSession(Optional<Product> product, String sentQuantity, Cart cart) {
         //Get cart
         LineItem lineItem;
-        ArrayList<LineItem> lineItems;
+//        ArrayList<LineItem> lineItems;
+        List<LineItem> lineItems;
 
         //Parse quantity
         sentQuantity = sentQuantity.replaceAll("\"", "");
@@ -186,7 +187,8 @@ public class UserServicesImp implements UserServices {
         if (lineItemIndex == -1) {
             //Create line item
             lineItem = new LineItem(quantity, product.get().getName(), product.get().getPrice(), cart, product.get());
-            lineItems = (ArrayList<LineItem>) cart.getLineItems();
+//            lineItems = (ArrayList<LineItem>) cart.getLineItems();
+            lineItems = cart.getLineItems();
             lineItems.add(lineItem);
         } else {
             lineItems = updateLineItemAdd(quantity, cart, lineItemIndex);
@@ -227,9 +229,9 @@ public class UserServicesImp implements UserServices {
      * @return list of line items
      * @author jjrr1717, matthewjflee
      */
-    private ArrayList<LineItem> updateLineItemAdd(int quantity, Cart cart, int index) {
+    private List<LineItem> updateLineItemAdd(int quantity, Cart cart, int index) {
         //get cart with line items
-        ArrayList<LineItem> lineItems = (ArrayList<LineItem>) cart.getLineItems();
+        List<LineItem> lineItems = cart.getLineItems();
 
         //Set quantity
         int currentQuantity = lineItems.get(index).getQuantity();
@@ -251,7 +253,7 @@ public class UserServicesImp implements UserServices {
      */
     public boolean updateLineItemSession(Long id, int quantity, Cart cart, HttpServletRequest request) {
         boolean result = false;
-        ArrayList<LineItem> lineItems = (ArrayList) cart.getLineItems();
+        List<LineItem> lineItems = cart.getLineItems();
         for (int i = 0; i < lineItems.size(); i++) {
             if (lineItems.get(i).getProduct().getProdId().equals(id)) {
                 lineItems.get(i).setQuantity(quantity);
@@ -276,7 +278,7 @@ public class UserServicesImp implements UserServices {
      */
     public boolean removeLineItemSession(Long id, Cart cart, HttpServletRequest request) {
         boolean result = false;
-        ArrayList<LineItem> lineItems = (ArrayList) cart.getLineItems();
+        List<LineItem> lineItems = cart.getLineItems();
         for (int i = 0; i < lineItems.size(); i++) {
             if (lineItems.get(i).getProduct().getProdId().equals(id)) {
                 lineItems.remove(lineItems.get(i));
@@ -312,8 +314,7 @@ public class UserServicesImp implements UserServices {
      * @author kwistech
      */
     public List<Product> getAllProducts() {
-
-        return new ArrayList<>(productRepo.findAll());
+        return productRepo.findAll();
     }
 
     public Cart getCart() {
@@ -350,15 +351,15 @@ public class UserServicesImp implements UserServices {
      * applied to the order.
      * @author matthewjflee, jjrr1717
      */
-    public ArrayList<Discount> getValidDiscounts(String email) {
+    public List<Discount> getValidDiscounts(String email) {
         //get current date for comparison
         Date currentDate = new Date();
         java.sql.Date sqlDate = new java.sql.Date(currentDate.getTime());
 
         //get all discounts within that time range
-        ArrayList<String> stringDiscounts = (ArrayList<String>) discountRepo.findValidDiscounts(sqlDate, email);
+        List<String> stringDiscounts = discountRepo.findValidDiscounts(sqlDate, email);
         //list of Discounts
-        ArrayList<Discount> discounts = new ArrayList<>();
+        List<Discount> discounts = new ArrayList<>();
 
         //parse the comma delimited string returned from query
         for (String s : stringDiscounts) {
@@ -382,7 +383,7 @@ public class UserServicesImp implements UserServices {
      */
     public ArrayNode buildValidDiscounts(HttpSession session, ArrayNode arrayNode) {
         Account currentAccount = (Account) session.getAttribute("ACCOUNT");
-        ArrayList<Discount> discounts = getValidDiscounts(currentAccount.getEmail());
+        List<Discount> discounts = getValidDiscounts(currentAccount.getEmail());
         for (int i = 0; i < discounts.size(); i++) {
             ObjectNode node = mapper.createObjectNode();
             node.put("code", discounts.get(i).getCode());
@@ -579,11 +580,11 @@ public class UserServicesImp implements UserServices {
         //get line items to determine what was sold
         HttpSession session = request.getSession();
         Cart cart = (Cart) session.getAttribute("CART");
-        ArrayList<LineItem> lineItems = (ArrayList<LineItem>) cart.getLineItems();
+        List<LineItem> lineItems = cart.getLineItems();
 
         //loop through the items in the order
         for (int i = 0; i < lineItems.size(); i++) {
-            ArrayList<Lot> lotsToUse = (ArrayList<Lot>) obtainSufficientQtyLots(lineItems.get(i).getQuantity(), lineItems.get(i).getProduct());
+            List<Lot> lotsToUse = obtainSufficientQtyLots(lineItems.get(i).getQuantity(), lineItems.get(i).getProduct());
 
             int orderedQty = lineItems.get(i).getQuantity();
             for (int j = 0; j < lotsToUse.size() && orderedQty > 0; j++) {
@@ -615,8 +616,8 @@ public class UserServicesImp implements UserServices {
      */
     public List<Lot> obtainSufficientQtyLots(int qty, Product product) {
         //grab lots from database
-        ArrayList<Lot> lots = (ArrayList<Lot>) lotRepo.findAllLotsWithQuantity(product);
-        ArrayList<Lot> lotsToUse = new ArrayList<>();
+        List<Lot> lots = lotRepo.findAllLotsWithQuantity(product);
+        List<Lot> lotsToUse = new ArrayList<>();
 
         //get the lots to be used for the order
         for (int i = 0; i < lots.size() && qty > 0; i++) {
@@ -667,7 +668,6 @@ public class UserServicesImp implements UserServices {
 
         //save to database
         return invoiceRepo.save(newInvoice);
-
     }
 
     /**
@@ -682,7 +682,7 @@ public class UserServicesImp implements UserServices {
 
         //grab the cart to get the line items
         Cart cart = (Cart) session.getAttribute("CART");
-        ArrayList<LineItem> lineItems = (ArrayList<LineItem>) cart.getLineItems();
+        List<LineItem> lineItems = cart.getLineItems();
 
         //persist cart because it is a parent
         cartRepo.save(cart);
@@ -705,10 +705,9 @@ public class UserServicesImp implements UserServices {
      */
     public void applyLineItemsToInvoice(Invoice invoice) {
         //obtain the line items from database
-        ArrayList<LineItem> lineItems = (ArrayList<LineItem>) lineItemRepo.findLineItemByInvoice(invoice);
+        List<LineItem> lineItems = lineItemRepo.findLineItemByInvoice(invoice);
 
         //add these to the invoice
         invoice.setLineItemList(lineItems);
     }
 }
-

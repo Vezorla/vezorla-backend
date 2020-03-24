@@ -20,7 +20,6 @@ import lombok.AllArgsConstructor;
 import org.json.simple.JSONObject;
 import org.json.simple.parser.JSONParser;
 import org.json.simple.parser.ParseException;
-import org.springframework.http.HttpRequest;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.mail.MailException;
@@ -28,7 +27,6 @@ import org.springframework.web.bind.annotation.*;
 
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpSession;
-import java.util.ArrayList;
 import java.util.List;
 import java.util.Optional;
 
@@ -95,7 +93,7 @@ public class CustomerRestController {
      */
     @RequestMapping(value = "cart/add/{id}", method = RequestMethod.PUT, produces = {"application/json"})
     public String createLineItemSession(@PathVariable Long id, @RequestBody String quantity, HttpServletRequest request) throws JsonProcessingException {
-        ArrayList<LineItem> lineItems;
+        List<LineItem> lineItems;
         Cart cart;
         HttpSession session = request.getSession();
         ObjectMapper mapper = new ObjectMapper();
@@ -106,8 +104,9 @@ public class CustomerRestController {
         if (account == null || !account.isUserCreated())
             cart = userServices.getSessionCart(session);
         else {
-            int cartSize = account.getCarts().size();
-            cart = account.getCarts().get(cartSize - 1); //Get the latest cart
+            long cartID = accountServices.findRecentCartID(account.getEmail());
+            Optional<Cart> cartMe = accountServices.findCartById(cartID);
+            cart = cartMe.get();
         }
 
         //Validate product quantity
@@ -123,6 +122,7 @@ public class CustomerRestController {
 
                 if (account != null) {
                     accountServices.saveAccount(account);
+                    accountServices.saveCart(cart);
                 }
 
                 node.put("added", true);
@@ -143,9 +143,7 @@ public class CustomerRestController {
 
         assert account != null;
         if (account.isUserCreated()) {
-            ArrayList<Cart> carts = (ArrayList<Cart>) account.getCarts();
             Cart cart = new Cart(account);
-            carts.add(cart);
             accountServices.saveCart(cart);
         }
 
@@ -164,7 +162,22 @@ public class CustomerRestController {
     public String viewSessionCart(HttpServletRequest request) throws JsonProcessingException {
         HttpSession session = request.getSession();
         ObjectMapper mapper = new ObjectMapper();
-        Cart cart = (Cart) session.getAttribute("CART");
+        Cart cart;
+
+        //Grab the cart
+        Account account = (Account) session.getAttribute("ACCOUNT");
+        if (account == null || !account.isUserCreated())
+            cart = userServices.getSessionCart(session);
+        else {
+//            cart = accountServices.findRecentCart(account.getEmail());
+            long cartID = accountServices.findRecentCartID(account.getEmail());
+            Optional<Cart> cartMe = accountServices.findCartById(cartID);
+            cart = cartMe.get();
+        }
+
+        System.out.println("cart " + cart.getOrderNum());
+
+//        Cart cart = (Cart) session.getAttribute("CART");
         ArrayNode outOfStockItems = userServices.checkItemsOrderedOutOfStock(cart, request);
         ArrayNode arrayNode = userServices.viewSessionCart(request, cart);
         arrayNode.add(outOfStockItems);
@@ -182,7 +195,7 @@ public class CustomerRestController {
             produces = {"application/json"})
     public String getSessionCartQuantity(HttpSession session) {
         Cart cart = userServices.getSessionCart(session);
-        return userServices.getTotalCartQuantity((ArrayList<LineItem>) cart.getLineItems());
+        return userServices.getTotalCartQuantity(cart.getLineItems());
     }
 
     /**
@@ -430,10 +443,5 @@ public class CustomerRestController {
     @GetMapping("cart/update/{id}")
     public void updateCart(@PathVariable Long id) {
 
-    }
-
-    @GetMapping("account/find/{id}")
-    public Account findAccountById(@PathVariable Long id) {
-        return null;
     }
 }

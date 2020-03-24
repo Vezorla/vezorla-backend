@@ -7,7 +7,6 @@ import com.fasterxml.jackson.databind.node.ArrayNode;
 
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpSession;
-import java.util.ArrayList;
 import java.util.List;
 import java.util.Optional;
 
@@ -38,15 +37,16 @@ public interface UserServices {
 
     Cart getSessionCart(HttpSession session);
 
-    Cart updateSessionCart(ArrayList<LineItem> lineItems, Cart cart, HttpServletRequest request);
+    Cart updateSessionCart(List<LineItem> lineItems, Cart cart, HttpServletRequest request);
 
     int getProductQuantity(Long id);
 
-    String getTotalCartQuantity(ArrayList<LineItem> lineItems);
+    String getTotalCartQuantity(List<LineItem> lineItems);
 
     int validateOrderedQuantity(String orderedQuantitySent, int inStockQuantity);
 
-    ArrayList<LineItem> createLineItemSession(Optional<Product> product, String quantity, Cart cart);
+    List<LineItem> createLineItemSession(Optional<Product> product, String quantity, Cart cart);
+//    List<LineItem> createLineItemSession(Optional<Product> product, String quantity, Cart cart);
 
     boolean saveAccount(Account account);
 
