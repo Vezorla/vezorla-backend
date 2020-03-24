@@ -45,7 +45,6 @@ public class CustomerRestController {
 
     private UserServices userServices;
     private EmailServices emailServices;
-    private AuthenticationServices authenticationServices;
 
     /**
      * Get all products
@@ -383,13 +382,6 @@ public class CustomerRestController {
     public boolean applyDiscount() {
 
         return false;
-    }
-
-    @GetMapping("account/forgotpassword/{email}")
-    public boolean forgotPassword(@PathVariable String email) throws InvalidInputException {
-
-        return authenticationServices.forgotPassword(email);
-
     }
 
     @GetMapping("contact")
