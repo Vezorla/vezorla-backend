@@ -64,7 +64,7 @@ public class EmailServicesImp implements EmailServices {
         verifyEmail(email);
 
         SimpleMailMessage mail = new SimpleMailMessage();
-        mail.setTo("vezorla.test@gmail.com");
+        mail.setTo(email);
         mail.setFrom("vezorla.test@gmail.com");
         mail.setSubject("Vezorla - Password Reset");
         mail.setText("You have requested a password reset." + "\n\n" +
