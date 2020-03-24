@@ -287,8 +287,6 @@ public class CustomerRestController {
             newAccount = Optional.of(new Account(email, password));
             if (!userServices.saveAccount(newAccount.get()))
                 throw new UnableToSaveException();
-            else
-                session.setAttribute("ACCOUNT", newAccount.get());
         }
 
         return true;
