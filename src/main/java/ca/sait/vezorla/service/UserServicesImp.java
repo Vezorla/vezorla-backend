@@ -288,8 +288,10 @@ public class UserServicesImp implements UserServices {
         }
         cart.setLineItems(lineItems);
 
-        if(fromAccount)
+        if(fromAccount) {
+            accountServices.saveLineItems(lineItems);
             accountServices.saveCart(cart);
+        }
         else
             session.setAttribute("CART", cart);
 

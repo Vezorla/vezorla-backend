@@ -69,6 +69,12 @@ public class AccountServicesImp implements AccountServices{
 //        return cartRepo.findCartByAccount_Email(email);
     }
 
+    public void saveLineItems(List<LineItem> lineItems) {
+        for(LineItem li : lineItems) {
+            lineItemRepo.save(li);
+        }
+    }
+
     public Optional<Cart> findCartById(long id) {
         return cartRepo.findById(id);
     }
