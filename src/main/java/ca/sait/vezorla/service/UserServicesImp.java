@@ -285,7 +285,7 @@ public class UserServicesImp implements UserServices {
                 result = true;
             }
         }
-
+        cart.setLineItems(lineItems);
         request.getSession().setAttribute("CART", cart);
 
         return result;
