@@ -286,14 +286,14 @@ public class UserServicesImp implements UserServices {
      * @return a boolean true if successfully removed, otherwise false.
      * @author matthewjflee, jjrr1717
      */
-    public boolean removeLineItemSession(long id, boolean fromAccount, Cart cart, HttpSession session) {
+    public boolean removeLineItemSession(long id, Cart cart, HttpSession session) {
         boolean result = false;
         long deleteLineNum = -1;
         List<LineItem> lineItems = cart.getLineItems();
 
         for (int i = 0; i < lineItems.size() && !result; i++) {
             if (lineItems.get(i).getProduct().getProdId() == id) {
-                if (!fromAccount)
+                if (!cart.isFromAccount())
                     lineItems.remove(lineItems.get(i));
                 else
                     deleteLineNum = lineItems.get(i).getLineNum();
@@ -301,7 +301,7 @@ public class UserServicesImp implements UserServices {
             }
         }
 
-        if (fromAccount) {
+        if (cart.isFromAccount()) {
             accountServices.deleteLineItem(deleteLineNum, cart.getOrderNum());
             result = accountServices.saveLineItems(lineItems);
             accountServices.saveCart(cart);

@@ -240,16 +240,12 @@ public class CustomerRestController {
         boolean fromAccount;
         Cart cart;
 
-        if (account == null || !account.isUserCreated()) {
+        if (account == null || !account.isUserCreated())
             cart = userServices.getSessionCart(session);
-            fromAccount = false;
-        }
-        else {
+        else
             cart = accountServices.findRecentCart(account);
-            fromAccount = true;
-        }
 
-        return userServices.removeLineItemSession(id, fromAccount, cart, session);
+        return userServices.removeLineItemSession(id, cart, session);
     }
 
     /**
