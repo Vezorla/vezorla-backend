@@ -41,11 +41,23 @@ public class AccountServicesImp implements AccountServices {
         return null;
     }
 
+    /**
+     * Save the account in the database
+     * @param account account to save
+     * @return if it was saved
+     * @author: matthewjflee
+     */
     public boolean saveAccount(Account account) {
         Account saved = accountRepo.save(account);
         return true;
     }
 
+    /**
+     * Persist the user's cart in the database
+     * @param cart cart to persist
+     * @return if it was persisted
+     * @author: matthewjflee
+     */
     public boolean saveCart(Cart cart) {
         if (cart.getLineItems().size() > 0)
             saveLineItems(cart.getLineItems());
@@ -54,6 +66,12 @@ public class AccountServicesImp implements AccountServices {
         return true;
     }
 
+    /**
+     * Find the most recent cart from the account
+     * @param account account to find the cart from
+     * @return cart
+     * @author: matthewjflee
+     */
     public Cart findRecentCart(Account account) {
         Cart cart = cartRepo.findCartByAccount_Email(account.getEmail());
         if (cart == null) {
@@ -81,6 +99,12 @@ public class AccountServicesImp implements AccountServices {
         return true;
     }
 
+    /**
+     * Delete the line item from the database
+     * @param lineNum line item to remove
+     * @param cartID cart to delete line item from
+     * @author: matthewjflee
+     */
     @Transactional
     public void deleteLineItem(Long lineNum, Long cartID) {
         if (lineNum > 0) {
