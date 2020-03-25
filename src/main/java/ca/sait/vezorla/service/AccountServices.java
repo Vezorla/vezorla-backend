@@ -3,6 +3,7 @@ package ca.sait.vezorla.service;
 import ca.sait.vezorla.model.Account;
 import ca.sait.vezorla.model.Cart;
 import ca.sait.vezorla.model.Invoice;
+import ca.sait.vezorla.model.LineItem;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import com.fasterxml.jackson.databind.node.ObjectNode;
 
@@ -21,6 +22,10 @@ public interface AccountServices {
     boolean saveCart(Cart cart);
 
     Cart findRecentCart(Account account);
+
+    boolean saveLineItems(List<LineItem> lineItems);
+
+    void deleteLineItem(Long lineNum, Long cartID);
 
     Optional<Cart> findCartById(long id);
 

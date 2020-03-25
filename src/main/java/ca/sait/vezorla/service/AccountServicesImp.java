@@ -15,13 +15,14 @@ import com.fasterxml.jackson.databind.node.ObjectNode;
 import lombok.AllArgsConstructor;
 import org.springframework.stereotype.Service;
 
+import javax.transaction.Transactional;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Optional;
 
 @Service
 @AllArgsConstructor
-public class AccountServicesImp implements AccountServices{
+public class AccountServicesImp implements AccountServices {
 
     private InvoiceRepo invoiceRepo;
     private AccountRepo accountRepo;
@@ -46,20 +47,16 @@ public class AccountServicesImp implements AccountServices{
     }
 
     public boolean saveCart(Cart cart) {
-
-        if(cart.getLineItems().size() > 0) {
-            for(LineItem li : cart.getLineItems()) {
-                lineItemRepo.save(li);
-            }
-        }
+        if (cart.getLineItems().size() > 0)
+            saveLineItems(cart.getLineItems());
 
         cartRepo.save(cart);
         return true;
     }
 
     public Cart findRecentCart(Account account) {
-        Cart cart =  cartRepo.findCartByAccount_Email(account.getEmail());
-        if(cart == null) {
+        Cart cart = cartRepo.findCartByAccount_Email(account.getEmail());
+        if (cart == null) {
             cart = new Cart(account);
             List<Cart> carts = cartRepo.findCartsByAccount_Email(account.getEmail());
             carts.add(cart);
@@ -68,6 +65,27 @@ public class AccountServicesImp implements AccountServices{
 
         return cart;
 //        return cartRepo.findCartByAccount_Email(email);
+    }
+
+    /**
+     * Persist line items in the database
+     * @param lineItems line items to save
+     * @return if it was saved
+     * @author: matthewjflee
+     */
+    public boolean saveLineItems(List<LineItem> lineItems) {
+        for (LineItem li : lineItems) {
+            lineItemRepo.save(li);
+        }
+
+        return true;
+    }
+
+    @Transactional
+    public void deleteLineItem(Long lineNum, Long cartID) {
+        if (lineNum > 0) {
+            lineItemRepo.deleteLineItemByLineNumAndCart_OrderNum(lineNum, cartID);
+        }
     }
 
     public Optional<Cart> findCartById(long id) {
@@ -81,6 +99,7 @@ public class AccountServicesImp implements AccountServices{
     /**
      * Method to view an individual invoice
      * from a client's account
+     *
      * @param invoiceNum to view
      * @return the ObjectNode containing invoice information
      * @author jjrr1717
@@ -114,15 +133,15 @@ public class AccountServicesImp implements AccountServices{
      * create the json.
      *
      * @param invoice to access the line items
-     * @param node used to store the ArrayNode of line items.
+     * @param node    used to store the ArrayNode of line items.
      * @return ArrayNode to be used in viewInvoice()
      * @author jjrr1717
      */
-    public ArrayNode getLineItemsForInvoice(Invoice invoice, ObjectNode node){
+    public ArrayNode getLineItemsForInvoice(Invoice invoice, ObjectNode node) {
         ArrayNode lineItemNodes = node.arrayNode();
         CustomerClientUtil ccu = new CustomerClientUtil();
         //loop through line items
-        for(int i = 0; i < invoice.getLineItemList().size(); i++){
+        for (int i = 0; i < invoice.getLineItemList().size(); i++) {
             ObjectNode lineItem = lineItemNodes.objectNode();
             lineItem.put("name", invoice.getLineItemList().get(i).getCurrentName());
             lineItem.put("price", ccu.formatAmount(invoice.getLineItemList().get(i).getCurrentPrice()));
@@ -139,12 +158,13 @@ public class AccountServicesImp implements AccountServices{
     /**
      * Method to view the order history on a client's
      * account.
-     * @param email of the client's account.
+     *
+     * @param email  of the client's account.
      * @param mapper to make the custom json
      * @return ObjectNode containing nodes for custom json
      * @author jjrr1717
      */
-    public ObjectNode viewOrderHistory(String email, ObjectMapper mapper){
+    public ObjectNode viewOrderHistory(String email, ObjectMapper mapper) {
         CustomerClientUtil ccu = new CustomerClientUtil();
 
         //obtain all the invoices for account
@@ -155,7 +175,7 @@ public class AccountServicesImp implements AccountServices{
         ArrayNode invoiceNodes = node.arrayNode();
 
         //loop through invoices to get invoice details
-        for(int i = 0; i < invoices.size(); i++){
+        for (int i = 0; i < invoices.size(); i++) {
             ObjectNode invoiceNode = invoiceNodes.objectNode();
             invoiceNode.put("invoiceNum", invoices.get(i).getInvoiceNum());
             invoiceNode.put("total", ccu.formatAmount(invoices.get(i).getTotal()));
