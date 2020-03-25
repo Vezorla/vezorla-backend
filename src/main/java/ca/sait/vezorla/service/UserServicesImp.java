@@ -259,7 +259,6 @@ public class UserServicesImp implements UserServices {
         System.out.println("from account " + cart.isFromAccount());
 
         for (int i = 0; i < lineItems.size() && !result; i++) {
-            System.out.println("Minh is a judger");
             if (lineItems.get(i).getProduct().getProdId() == id) {
                 lineItem = lineItems.get(i);
                 lineItem.setQuantity(quantity);
