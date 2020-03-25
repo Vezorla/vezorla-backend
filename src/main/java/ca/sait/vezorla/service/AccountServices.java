@@ -23,7 +23,9 @@ public interface AccountServices {
 
     Cart findRecentCart(Account account);
 
-    void saveLineItems(List<LineItem> lineItems);
+    boolean saveLineItems(List<LineItem> lineItems, int lineItemIndex);
+
+    void deleteLineItem(Long lineNum, Long cartID);
 
     Optional<Cart> findCartById(long id);
 
