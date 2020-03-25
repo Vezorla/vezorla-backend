@@ -67,19 +67,16 @@ public class AccountServicesImp implements AccountServices {
 //        return cartRepo.findCartByAccount_Email(email);
     }
 
+    /**
+     * Persist line items in the database
+     * @param lineItems line items to save
+     * @return if it was saved
+     * @author: matthewjflee
+     */
     public boolean saveLineItems(List<LineItem> lineItems) {
-//        System.out.println("line item size " + lineItems.size());
-//        System.out.println("index " + lineItemIndex);
-//        if(lineItemIndex == -1) { //Persist line items
         for (LineItem li : lineItems) {
             lineItemRepo.save(li);
         }
-//        } else {
-//            if(lineItemIndex > 0)
-//                lineItemRepo.deleteLineItemByProduct_ProdId();
-//            else
-//                return false;
-//        }
 
         return true;
     }
