@@ -99,6 +99,10 @@ public class AccountServicesImp implements AccountServices {
         return true;
     }
 
+    public void saveLineItem(LineItem li) {
+        lineItemRepo.save(li);
+    }
+
     /**
      * Delete the line item from the database
      * @param lineNum line item to remove

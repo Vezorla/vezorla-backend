@@ -36,7 +36,7 @@ public interface UserServices {
 
     boolean removeLineItemSession(long id, boolean fromAccount, Cart cart, HttpSession session);
 
-    boolean updateLineItemSession(Long id, int quantity, Cart cart, HttpServletRequest request);
+    boolean updateLineItemSession(long id, int quantity, Cart cart, HttpServletRequest request);
 
     Cart getSessionCart(HttpSession session);
 

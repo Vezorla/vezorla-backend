@@ -252,19 +252,29 @@ public class UserServicesImp implements UserServices {
      * @param cart     to add updated line item
      * @author matthewjflee, jjrr1717
      */
-    public boolean updateLineItemSession(Long id, int quantity, Cart cart, HttpServletRequest request) {
+    public boolean updateLineItemSession(long id, int quantity, Cart cart, HttpServletRequest request) {
         boolean result = false;
         List<LineItem> lineItems = cart.getLineItems();
-        for (int i = 0; i < lineItems.size(); i++) {
-            if (lineItems.get(i).getProduct().getProdId().equals(id)) {
-                lineItems.get(i).setQuantity(quantity);
+        LineItem lineItem = null;
+        System.out.println("from account " + cart.isFromAccount());
+
+        for (int i = 0; i < lineItems.size() && !result; i++) {
+            System.out.println("Minh is a judger");
+            if (lineItems.get(i).getProduct().getProdId() == id) {
+                lineItem = lineItems.get(i);
+                lineItem.setQuantity(quantity);
                 result = true;
             }
         }
-        request.getSession().setAttribute("CART", cart);
+
+        if(cart.isFromAccount()) {
+            if(lineItem != null)
+                accountServices.saveLineItem(lineItem);
+        }
+        else
+            request.getSession().setAttribute("CART", cart);
 
         return result;
-
     }
 
 
@@ -281,7 +291,6 @@ public class UserServicesImp implements UserServices {
         boolean result = false;
         long deleteLineNum = -1;
         List<LineItem> lineItems = cart.getLineItems();
-        System.out.println("line item list size " + lineItems.size());
 
         for (int i = 0; i < lineItems.size() && !result; i++) {
             if (lineItems.get(i).getProduct().getProdId() == id) {
@@ -294,7 +303,6 @@ public class UserServicesImp implements UserServices {
         }
 
         if (fromAccount) {
-//            result = accountServices.saveLineItems(lineItems, lineItemIndex);
             accountServices.deleteLineItem(deleteLineNum, cart.getOrderNum());
             result = accountServices.saveLineItems(lineItems);
             accountServices.saveCart(cart);

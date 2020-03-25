@@ -25,6 +25,8 @@ public interface AccountServices {
 
     boolean saveLineItems(List<LineItem> lineItems);
 
+    void saveLineItem(LineItem li);
+
     void deleteLineItem(Long lineNum, Long cartID);
 
     Optional<Cart> findCartById(long id);
