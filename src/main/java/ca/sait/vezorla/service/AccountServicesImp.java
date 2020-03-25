@@ -48,7 +48,7 @@ public class AccountServicesImp implements AccountServices {
 
     public boolean saveCart(Cart cart) {
         if (cart.getLineItems().size() > 0)
-            saveLineItems(cart.getLineItems(), -1);
+            saveLineItems(cart.getLineItems());
 
         cartRepo.save(cart);
         return true;
@@ -67,7 +67,7 @@ public class AccountServicesImp implements AccountServices {
 //        return cartRepo.findCartByAccount_Email(email);
     }
 
-    public boolean saveLineItems(List<LineItem> lineItems, int lineItemIndex) {
+    public boolean saveLineItems(List<LineItem> lineItems) {
 //        System.out.println("line item size " + lineItems.size());
 //        System.out.println("index " + lineItemIndex);
 //        if(lineItemIndex == -1) { //Persist line items

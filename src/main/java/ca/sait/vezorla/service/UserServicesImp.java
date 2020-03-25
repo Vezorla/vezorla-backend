@@ -279,31 +279,26 @@ public class UserServicesImp implements UserServices {
      */
     public boolean removeLineItemSession(long id, boolean fromAccount, Cart cart, HttpSession session) {
         boolean result = false;
-        int lineItemIndex = -1;
         long deleteLineNum = -1;
         List<LineItem> lineItems = cart.getLineItems();
         System.out.println("line item list size " + lineItems.size());
 
         for (int i = 0; i < lineItems.size() && !result; i++) {
             if (lineItems.get(i).getProduct().getProdId() == id) {
-                if(!fromAccount)
+                if (!fromAccount)
                     lineItems.remove(lineItems.get(i));
-
-                deleteLineNum = lineItems.get(i).getLineNum();
-                lineItemIndex = i;
+                else
+                    deleteLineNum = lineItems.get(i).getLineNum();
                 result = true;
             }
         }
 
-        System.out.println("line item index " + lineItemIndex);
-
-        if(fromAccount) {
+        if (fromAccount) {
 //            result = accountServices.saveLineItems(lineItems, lineItemIndex);
             accountServices.deleteLineItem(deleteLineNum, cart.getOrderNum());
-            result = accountServices.saveLineItems(lineItems, lineItemIndex);
+            result = accountServices.saveLineItems(lineItems);
             accountServices.saveCart(cart);
-        }
-        else {
+        } else {
             cart.setLineItems(lineItems);
             session.setAttribute("CART", cart);
         }
