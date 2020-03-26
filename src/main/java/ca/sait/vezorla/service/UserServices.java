@@ -3,11 +3,11 @@ package ca.sait.vezorla.service;
 import ca.sait.vezorla.exception.InvalidInputException;
 import ca.sait.vezorla.model.*;
 import com.fasterxml.jackson.core.JsonProcessingException;
+import com.fasterxml.jackson.databind.ObjectMapper;
 import com.fasterxml.jackson.databind.node.ArrayNode;
 
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpSession;
-import java.util.ArrayList;
 import java.util.List;
 import java.util.Optional;
 
@@ -18,11 +18,13 @@ public interface UserServices {
 
     void applyDiscount(HttpServletRequest request);
 
-    List<Product> getAllProducts();
+    ArrayNode getAllProducts(ObjectMapper mapper);
 
     Cart getCart();
 
     List<Lot> getLots(Long id);
+
+    ArrayNode getProduct(Long id, ObjectMapper mapper);
 
     Optional<Product> getProduct(Long id);
 
@@ -32,21 +34,22 @@ public interface UserServices {
 
     List<Lot> obtainSufficientQtyLots(int qty, Product product);
 
-    boolean removeLineItemSession(Long id, Cart cart, HttpServletRequest request);
+    boolean removeLineItemSession(long id, Cart cart, HttpSession session);
 
-    boolean updateLineItemSession(Long id, int quantity, Cart cart, HttpServletRequest request);
+    boolean updateLineItemSession(long id, int quantity, Cart cart, HttpServletRequest request);
 
     Cart getSessionCart(HttpSession session);
 
-    Cart updateSessionCart(LineItem lineItem, HttpServletRequest request);
+    Cart updateSessionCart(List<LineItem> lineItems, Cart cart, HttpServletRequest request);
 
     int getProductQuantity(Long id);
 
-    String getTotalCartQuantity(ArrayList<LineItem> lineItems);
+    String getTotalCartQuantity(List<LineItem> lineItems);
 
     int validateOrderedQuantity(String orderedQuantitySent, int inStockQuantity);
 
-    LineItem createLineItemSession(Optional<Product> product, String quantity, HttpServletRequest request);
+    List<LineItem> createLineItemSession(Optional<Product> product, String quantity, Cart cart);
+//    List<LineItem> createLineItemSession(Optional<Product> product, String quantity, Cart cart);
 
     boolean saveAccount(Account account);
 
@@ -56,7 +59,7 @@ public interface UserServices {
 
     ArrayNode viewSessionCart(HttpServletRequest request, Cart cart) throws JsonProcessingException;
 
-    String getShippingInfo(HttpServletRequest request, Account account) throws InvalidInputException, JsonProcessingException;
+    String getShippingInfo(HttpSession session, Account account) throws InvalidInputException, JsonProcessingException;
 
     ArrayNode buildValidDiscounts(HttpSession session, ArrayNode arrayNode);
 

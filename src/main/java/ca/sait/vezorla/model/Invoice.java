@@ -37,7 +37,7 @@ public class Invoice implements Serializable {
 	private Account account;
 	
 	@OneToMany(mappedBy = "invoice")
-	private List<LineItem> lineItemList = new ArrayList<LineItem>();
+	private List<LineItem> lineItemList;
 	
 	@NotNull
 	@Column(name = "date")
@@ -53,7 +53,7 @@ public class Invoice implements Serializable {
 
 	@NotNull
 	@Column(name = "pickup")
-	private String pickup;
+	private boolean pickup;
 
 	@NotNull
 	@Column(name = "shipping_cost")

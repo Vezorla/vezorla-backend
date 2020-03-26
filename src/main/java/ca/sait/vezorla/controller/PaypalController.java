@@ -3,6 +3,8 @@ package ca.sait.vezorla.controller;
 import ca.sait.vezorla.controller.util.CustomerClientUtil;
 import ca.sait.vezorla.exception.InvalidInputException;
 import ca.sait.vezorla.exception.UnauthorizedException;
+import ca.sait.vezorla.model.Account;
+import ca.sait.vezorla.model.Cart;
 import ca.sait.vezorla.model.Invoice;
 import ca.sait.vezorla.service.EmailServices;
 import ca.sait.vezorla.service.PaypalServices;
@@ -19,6 +21,7 @@ import org.springframework.web.bind.annotation.RequestParam;
 
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpSession;
+import java.util.ArrayList;
 
 /**
  * Controller for paypal payments
@@ -69,10 +72,21 @@ public class PaypalController {
         //Move later
         emailServices.sendInvoiceEmail(invoice.getAccount().getEmail(), invoice, totalAsDouble);
 
+        //Create new cart if the user is a client
+//        Account account = (Account) session.getAttribute("ACCOUNT");
+//        assert account != null;
+//        if (account.isUserCreated()) {
+//            ArrayList<Cart> carts = (ArrayList<Cart>) account.getCarts();
+//            carts.add(new Cart());
+//        }
+
+        //divide by 100 for total
+        double finalTotal = (double) newInvoice.getTotal() /100;
+
         try {
-            Payment payment = paypalServices.createPayment(10.0, "CAD", "paypal",
-                    "sale", "Place Order", "http://localhost:8080/" + CANCEL_URL,
-                    "http://localhost:8080/" + SUCCESS_URL);
+            Payment payment = paypalServices.createPayment(finalTotal, "CAD", "paypal",
+                    "sale", "Place Order", "http://localhost:3000/" + CANCEL_URL,
+                    "http://localhost:3000/" + SUCCESS_URL);
             for (Links link : payment.getLinks()) {
                 if (link.getRel().equals("approval_url")) {
                     return "redirect:" + link.getHref();

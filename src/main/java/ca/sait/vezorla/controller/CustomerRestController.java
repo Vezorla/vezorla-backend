@@ -10,11 +10,13 @@ import ca.sait.vezorla.model.Cart;
 import ca.sait.vezorla.model.LineItem;
 import ca.sait.vezorla.model.Product;
 import ca.sait.vezorla.service.AuthenticationServices;
+import ca.sait.vezorla.service.AccountServices;
 import ca.sait.vezorla.service.EmailServices;
 import ca.sait.vezorla.service.UserServices;
 import com.fasterxml.jackson.core.JsonProcessingException;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import com.fasterxml.jackson.databind.node.ArrayNode;
+import com.fasterxml.jackson.databind.node.ObjectNode;
 import lombok.AllArgsConstructor;
 import org.json.simple.JSONObject;
 import org.json.simple.parser.JSONParser;
@@ -26,7 +28,6 @@ import org.springframework.web.bind.annotation.*;
 
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpSession;
-import java.util.ArrayList;
 import java.util.List;
 import java.util.Optional;
 
@@ -45,6 +46,7 @@ public class CustomerRestController {
 
     private UserServices userServices;
     private EmailServices emailServices;
+    private AccountServices accountServices;
 
     /**
      * Get all products
@@ -53,28 +55,30 @@ public class CustomerRestController {
      * @author kwistech
      */
     @GetMapping("inventory/products/all")
-    public List<Product> getAllProducts() {
-        return userServices.getAllProducts();
+    public String getAllProducts() throws JsonProcessingException {
+        ObjectMapper mapper = new ObjectMapper();
+        return mapper.writerWithDefaultPrettyPrinter().writeValueAsString(userServices.getAllProducts(mapper));
     }
 
     /**
      * Return the product from Products repo
      *
-     * @param id
-     * @return
+     * @param id ID of product
+     * @return product
      * @author matthewjflee, jjrr1717
      */
     @GetMapping("inventory/product/{id}")
-    public ResponseEntity<Product> getProductPage(@PathVariable Long id) {
-        Optional<Product> product = userServices.getProduct(id);
-        return product.map(response -> ResponseEntity.ok().body(response)).orElse(new ResponseEntity<>(HttpStatus.NOT_FOUND));
+    public String getProductPage(@PathVariable Long id) throws JsonProcessingException {
+        ObjectMapper mapper = new ObjectMapper();
+        return mapper.writerWithDefaultPrettyPrinter().writeValueAsString(userServices.getProduct(id, mapper));
+
     }
 
     /**
      * Return the quantity for the specified product
      *
-     * @param id
-     * @return
+     * @param id product ID
+     * @return product's quantity
      * @author jjrr1717, matthewjflee
      */
     @RequestMapping(value = "inventory/product/quantity/{id}", method = RequestMethod.GET, produces = {"application/json"})
@@ -85,101 +89,165 @@ public class CustomerRestController {
     /**
      * Create a line item in the cart for a customer
      *
-     * @param id
-     * @param quantity
-     * @param request
-     * @return
+     * @param id       product id to add to a cart
+     * @param quantity quantity to add
+     * @param request  user's request
+     * @return line item created
      * @author matthewjflee, jjrr1717
      */
     @RequestMapping(value = "cart/add/{id}", method = RequestMethod.PUT, produces = {"application/json"})
-    public boolean createLineItemSession(@PathVariable Long id, @RequestBody String quantity, HttpServletRequest request) {
-        LineItem lineItem = null;
-        boolean result = false;
+    public String createLineItemSession(@PathVariable Long id, @RequestBody String quantity, HttpServletRequest request) throws JsonProcessingException {
+        List<LineItem> lineItems;
+        Cart cart;
+        HttpSession session = request.getSession();
+        ObjectMapper mapper = new ObjectMapper();
+        ObjectNode node = mapper.createObjectNode();
+
+        //Grab the cart
+        Account account = (Account) session.getAttribute("ACCOUNT");
+        if (account == null || !account.isUserCreated())
+            cart = userServices.getSessionCart(session);
+        else {
+            cart = accountServices.findRecentCart(account);
+        }
+
+        //Validate product quantity
         Optional<Product> product = userServices.getProduct(id);
         int productInStock = userServices.getProductQuantity(id);
         int checkProductStock = userServices.validateOrderedQuantity(quantity, productInStock);
 
         if (checkProductStock >= 0) {
-            lineItem = userServices.createLineItemSession(product, quantity, request);
-            result = true;
+            lineItems = userServices.createLineItemSession(product, quantity, cart);
+
+            if (!lineItems.isEmpty()) {
+                userServices.updateSessionCart(lineItems, cart, request);
+
+                if (account != null) {
+                    accountServices.saveAccount(account);
+                    accountServices.saveCart(cart);
+                }
+
+                node.put("added", true);
+            }
+        } else {
+            node.put("added", false);
+            node.put("currentStock", productInStock);
         }
 
-        if (lineItem != null) {
-            userServices.updateSessionCart(lineItem, request);
-            result = true;
-        }
-
-        return result;
+        return mapper.writerWithDefaultPrettyPrinter().writeValueAsString(node);
     }
 
     /**
      * View cart for a customer
      *
-     * @param request
-     * @return
-     * @throws JsonProcessingException
+     * @param request user's request
+     * @return user's cart
+     * @throws JsonProcessingException error when parsing the JSON
      * @author matthewjflee, jjrr1717
      */
     @GetMapping("cart/view")
     public String viewSessionCart(HttpServletRequest request) throws JsonProcessingException {
         HttpSession session = request.getSession();
         ObjectMapper mapper = new ObjectMapper();
-        Cart cart = (Cart) session.getAttribute("CART");
+        Cart cart;
+
+        //Grab the cart
+        Account account = (Account) session.getAttribute("ACCOUNT");
+        if (account == null || !account.isUserCreated())
+            cart = userServices.getSessionCart(session);
+        else {
+            cart = accountServices.findRecentCart(account);
+        }
+
         ArrayNode outOfStockItems = userServices.checkItemsOrderedOutOfStock(cart, request);
         ArrayNode arrayNode = userServices.viewSessionCart(request, cart);
-        arrayNode.add(outOfStockItems);
         return mapper.writerWithDefaultPrettyPrinter().writeValueAsString(arrayNode);
+    }
+
+    /**
+     * Method to obtain items out of stock that
+     * is on an order.
+     * Must be requested before viewing the order
+     * and payment.
+     * @param request
+     * @return
+     * @throws JsonProcessingException
+     */
+    @GetMapping("cart/view/out_of_stock")
+    public String viewItemsOutOfStock(HttpServletRequest request) throws JsonProcessingException {
+        HttpSession session = request.getSession();
+        ObjectMapper mapper = new ObjectMapper();
+        Cart cart = (Cart) session.getAttribute("CART");
+        ArrayNode outOfStockItems = userServices.checkItemsOrderedOutOfStock(cart, request);
+        return mapper.writerWithDefaultPrettyPrinter().writeValueAsString(outOfStockItems);
     }
 
     /**
      * Get the total number of products in the cart for a customer
      *
-     * @param session
-     * @return
+     * @param session user's session
+     * @return JSON of user's cart
      * @author matthewjflee, jjrr1717
      */
     @RequestMapping(value = "cart/get", method = RequestMethod.GET,
             produces = {"application/json"})
     public String getSessionCartQuantity(HttpSession session) {
-        Cart cart = userServices.getSessionCart(session);
-        return userServices.getTotalCartQuantity((ArrayList<LineItem>) cart.getLineItems());
+        Account account = (Account) session.getAttribute("ACCOUNT");
+        Cart cart;
+
+        if (account == null || !account.isUserCreated())
+            cart = userServices.getSessionCart(session);
+        else {
+            cart = accountServices.findRecentCart(account);
+        }
+        return userServices.getTotalCartQuantity(cart.getLineItems());
     }
 
     /**
      * Update a line item in the cart for a customer
      *
-     * @param id
-     * @param quantity
-     * @param request
-     * @return
-     * @throws JsonProcessingException
+     * @param id       Line item ID
+     * @param quantity quantity to change
+     * @param request  user's request
+     * @return boolean if it was changed or not
+     * @throws JsonProcessingException thrown when there is an error parsing JSON
      * @author matthewjflee, jjrr1717
      */
     @PutMapping("cart/update/{id}/{quantity}")
     public boolean updateLineItemSession(@PathVariable Long id, @PathVariable int quantity, HttpServletRequest request) throws JsonProcessingException {
         HttpSession session = request.getSession();
-        Cart cart = userServices.getSessionCart(session);
-        boolean result = userServices.updateLineItemSession(id, quantity, cart, request);
+        Account account = (Account) session.getAttribute("ACCOUNT");
+        Cart cart;
 
-        return result;
+        if (account == null || !account.isUserCreated())
+            cart = userServices.getSessionCart(session);
+        else
+            cart = accountServices.findRecentCart(account);
+
+        return userServices.updateLineItemSession(id, quantity, cart, request);
     }
 
     /**
      * Remove a line item for a customer
      *
-     * @param id
-     * @param request
-     * @return
-     * @throws JsonProcessingException
+     * @param id      line item to delete
+     * @param request user's request
+     * @return if line item was deleted or not
      * @author matthewjflee, jjrr1717
      */
-    @PutMapping("cart/remove/{id}")
-    public boolean removeLineItemSession(@PathVariable Long id, HttpServletRequest request) throws JsonProcessingException {
+    @DeleteMapping("cart/remove/{id}")
+    public boolean removeLineItemSession(@PathVariable Long id, HttpServletRequest request) {
         HttpSession session = request.getSession();
-        Cart cart = userServices.getSessionCart(session);
-        boolean result = userServices.removeLineItemSession(id, cart, request);
+        Account account = (Account) session.getAttribute("ACCOUNT");
+        boolean fromAccount;
+        Cart cart;
 
-        return result;
+        if (account == null || !account.isUserCreated())
+            cart = userServices.getSessionCart(session);
+        else
+            cart = accountServices.findRecentCart(account);
+
+        return userServices.removeLineItemSession(id, cart, session);
     }
 
     /**
@@ -195,17 +263,20 @@ public class CustomerRestController {
     public ResponseEntity<String> getShippingInfo(@RequestBody Account account,
                                                   HttpServletRequest request)
             throws JsonProcessingException, InvalidInputException, UnauthorizedException {
-
-        String output = null;
-
+        String output;
         HttpSession session = request.getSession();
-        if (request.getSession().getAttribute("CART") != null) {
-            output = userServices.getShippingInfo(request, account);
 
-        } else {
+        if (session.getAttribute("CART") != null)
+            output = userServices.getShippingInfo(session, account);
+        else
             throw new UnauthorizedException();
-        }
+
         return ResponseEntity.ok().body(output);
+    }
+
+    @GetMapping(value = "/info")
+    public String getAccountInfo(HttpServletRequest request){
+        return null;
     }
 
     /**
@@ -216,7 +287,6 @@ public class CustomerRestController {
      */
     @PostMapping("create-account")
     public boolean createAccount(@RequestBody String body, HttpServletRequest request) {
-        boolean created = false;
         String email = null;
         String password = null;
         String rePassword = null;
@@ -239,24 +309,27 @@ public class CustomerRestController {
         //Check if account exists
         Optional<Account> newAccount = userServices.findAccountByEmail(email);
         if (newAccount.isPresent()) //Account exists.
-            return created;
+            return false;
         else {
             newAccount = Optional.of(new Account(email, password));
-            created = userServices.saveAccount(newAccount.get());
-            if (!created)
+            if (!userServices.saveAccount(newAccount.get()))
                 throw new UnableToSaveException();
-            else
-                session.setAttribute("ACCOUNT", newAccount.get());
+            else {
+                //Create cart and persist cart
+                Cart cart = new Cart(newAccount.get());
+                newAccount.get().getCarts().add(cart);
+                accountServices.saveCart(cart);
+            }
         }
 
-        return created;
+        return true;
     }
 
     /**
      * Subscribe user to the mailing list
      * If the user's account does not exist, create a new account and save to the Accounts table
      *
-     * @param email
+     * @param email user's email to subscribe
      * @author: matthewjflee
      */
     @PostMapping("subscribe")
@@ -276,7 +349,7 @@ public class CustomerRestController {
      * Return all valid discounts associated with the customer/client
      * This method will query the database for all valid discounts for the account
      *
-     * @return
+     * @return user's valid discounts
      * @author matthewjflee, jjrr1717
      */
     @GetMapping("discounts/get")
@@ -302,7 +375,7 @@ public class CustomerRestController {
      * @param code    discount code the user selected
      * @param request for the session
      */
-    @GetMapping("selected_discount/get")
+    @PutMapping("selected_discount/get")
     public void getSelectedDiscount(@RequestBody String code, HttpServletRequest request) throws UnauthorizedException {
         HttpSession session = request.getSession();
         userServices.getSelectedDiscount(code, request, session);
@@ -312,9 +385,9 @@ public class CustomerRestController {
      * Show details of order on the
      * review page
      *
-     * @param request
-     * @return
-     * @throws JsonProcessingException
+     * @param request user request
+     * @return user's order
+     * @throws JsonProcessingException parsing error
      */
     @GetMapping("cart/review")
     public String reviewOrder(HttpServletRequest request) throws JsonProcessingException, UnauthorizedException {
@@ -322,11 +395,11 @@ public class CustomerRestController {
         ObjectMapper mapper = new ObjectMapper();
         Cart cart = (Cart) session.getAttribute("CART");
         ArrayNode mainArrayNode = mapper.createArrayNode();
-        ArrayNode outOfStockItems = mapper.createArrayNode();
+        ArrayNode outOfStockItems;
         if (session.getAttribute("ACCOUNT_DISCOUNT") != null) {
-            outOfStockItems = userServices.checkItemsOrderedOutOfStock(cart, request);
+            //outOfStockItems = userServices.checkItemsOrderedOutOfStock(cart, request);
             mainArrayNode = userServices.reviewOrder(session, mainArrayNode, cart);
-            mainArrayNode.add(outOfStockItems);
+            //mainArrayNode.add(outOfStockItems);
         } else {
             throw new UnauthorizedException();
         }
@@ -339,7 +412,7 @@ public class CustomerRestController {
      * Returns <code>true</code> if email is sent
      * <code>false</code> if email fails to send
      *
-     * @param body
+     * @param body user's email to vezorla
      * @author: matthewjflee
      */
     @PostMapping("contact-us")
@@ -392,10 +465,5 @@ public class CustomerRestController {
     @GetMapping("cart/update/{id}")
     public void updateCart(@PathVariable Long id) {
 
-    }
-
-    @GetMapping("account/find/{id}")
-    public Account findAccountById(@PathVariable Long id) {
-        return null;
     }
 }

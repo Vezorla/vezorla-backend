@@ -8,6 +8,7 @@
  */
 package ca.sait.vezorla.model;
 
+import com.fasterxml.jackson.annotation.JsonIgnore;
 import lombok.AllArgsConstructor;
 import lombok.Data;
 import lombok.NoArgsConstructor;
@@ -53,5 +54,13 @@ public class LineItem implements Serializable {
     @ManyToOne
     @JoinColumn(name = "prod_num")
     private Product product;
+
+    public LineItem(int quantity, String currentName, long currentPrice, Cart cart, Product product) {
+        this.quantity = quantity;
+        this.currentName = currentName;
+        this.currentPrice = currentPrice;
+        this.cart = cart;
+        this.product = product;
+    }
 
 }
