@@ -26,27 +26,20 @@ public class AuthenticationServicesImp implements AuthenticationServices {
     }
 
     public boolean forgotPassword(String email) throws InvalidInputException {
-
-        boolean resetPassword = false;
-
         Optional<Account> accountOptional = userServices.findAccountByEmail(email);
 
         if(accountOptional.isPresent()) {
-
             String password = generatePassword();
             Account account = accountOptional.get();
-
             account.setPassword(password);
 
             accountRepo.save(account);
             emailServices.sendForgotPassword(email, password);
 
-            resetPassword = true;
-
+            return true;
         }
 
-        return resetPassword;
-
+        return false;
     }
 
     /**
@@ -69,9 +62,4 @@ public class AuthenticationServicesImp implements AuthenticationServices {
 
         return account;
     }
-
-    public void logout() {
-
-    }
-
 }
