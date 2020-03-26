@@ -608,7 +608,7 @@ public class UserServicesImp implements UserServices {
         //get discount
         long discountAmount;
         AccountDiscount discountType = (AccountDiscount) session.getAttribute("ACCOUNT_DISCOUNT");
-        if (discountType.getCode().getCode().equals("NotSelected")) {
+        if (discountType.getCode().getCode().equals("NS")) {
             discountAmount = 0;
         } else if (discountType != null) {
             float discountPercent = Float.parseFloat(discountRepo.findDiscountPercent(discountType.getCode().getCode()));
