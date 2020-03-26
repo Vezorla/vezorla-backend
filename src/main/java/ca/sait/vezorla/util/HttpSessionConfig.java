@@ -47,12 +47,11 @@ public class HttpSessionConfig implements WebMvcConfigurer {
             @Override
             public void addCorsMappings(CorsRegistry registry) {
                 registry.addMapping("/api/**")
-                        .allowedOrigins("http://localhost:3000")
+                        .allowedOrigins("http://localhost:3000", "https://www.sandbox.paypal.com/cgi-bin/webscr?cmd=_express-checkout&token=EC-4MF55111DS943764F")
                         .allowedMethods("PUT", "POST", "GET", "DELETE")
                         .allowedHeaders("*")
                         .exposedHeaders("Content-Type", "Expires")
-                        .allowCredentials(true).maxAge(3600)
-                        .allowedOrigins("https://www.sandbox.paypal.com/cgi-bin/webscr?cmd=_express-checkout&token=EC-4MF55111DS943764F");
+                        .allowCredentials(true).maxAge(3600);
             }
         };
     }
