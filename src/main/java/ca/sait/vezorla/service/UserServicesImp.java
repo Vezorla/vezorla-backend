@@ -809,6 +809,7 @@ public class UserServicesImp implements UserServices {
         node.put("province", account.getProvince());
         node.put("postalCode", account.getPostalCode());
         node.put("country", account.getCountry());
+        node.put("subscription", account.isSubscript());
 
         return node;
     }
