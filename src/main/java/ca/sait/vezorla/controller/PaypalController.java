@@ -82,8 +82,8 @@ public class PaypalController {
 
         try {
             Payment payment = paypalServices.createPayment(10.0, "CAD", "paypal",
-                    "sale", "Place Order", "http://localhost:8080/" + CANCEL_URL,
-                    "http://localhost:8080/" + SUCCESS_URL);
+                    "sale", "Place Order", "http://localhost:3000/" + CANCEL_URL,
+                    "http://localhost:3000/" + SUCCESS_URL);
             for (Links link : payment.getLinks()) {
                 if (link.getRel().equals("approval_url")) {
                     return "redirect:" + link.getHref();
