@@ -81,7 +81,7 @@ public class PaypalController {
 //        }
 
         try {
-            Payment payment = paypalServices.createPayment(10.0, "CAD", "paypal",
+            Payment payment = paypalServices.createPayment((double)newInvoice.getTotal(), "CAD", "paypal",
                     "sale", "Place Order", "http://localhost:3000/" + CANCEL_URL,
                     "http://localhost:3000/" + SUCCESS_URL);
             for (Links link : payment.getLinks()) {
