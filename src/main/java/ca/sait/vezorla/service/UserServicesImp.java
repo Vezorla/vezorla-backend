@@ -810,7 +810,21 @@ public class UserServicesImp implements UserServices {
         node.put("postalCode", account.getPostalCode());
         node.put("country", account.getCountry());
 
-        return null;
+        return node;
+    }
+
+    public boolean checkLineItemStock(Cart cart){
+        boolean inStock = false;
+
+        for(LineItem lineItem : cart.getLineItems()){
+            int quantity = getProductQuantity(lineItem.getProduct().getProdId());
+
+            if(quantity > 0){
+                inStock = true;
+            }
+        }
+
+        return inStock;
     }
 
 }

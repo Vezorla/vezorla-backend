@@ -1,10 +1,7 @@
 
 package ca.sait.vezorla.controller;
 
-import ca.sait.vezorla.exception.InvalidInputException;
-import ca.sait.vezorla.exception.PasswordMismatchException;
-import ca.sait.vezorla.exception.UnableToSaveException;
-import ca.sait.vezorla.exception.UnauthorizedException;
+import ca.sait.vezorla.exception.*;
 import ca.sait.vezorla.model.Account;
 import ca.sait.vezorla.model.Cart;
 import ca.sait.vezorla.model.LineItem;
@@ -281,7 +278,8 @@ public class CustomerRestController {
     }
 
     @GetMapping(value = "info")
-    public String getUserInfo(HttpServletRequest request) {
+    public String getUserInfo(HttpServletRequest request) throws JsonProcessingException, OutOfStockException {
+        ObjectMapper mapper = new ObjectMapper();
         HttpSession session = request.getSession();
         Account account = (Account) session.getAttribute("ACCOUNT");
         Cart cart;
@@ -291,9 +289,11 @@ public class CustomerRestController {
         else
             cart = accountServices.findRecentCart(account);
 
+        if(!userServices.checkLineItemStock(cart)){
+            throw new OutOfStockException();
+        }
 
-
-        return null;
+        return mapper.writerWithDefaultPrettyPrinter().writeValueAsString(userServices.getUserInfo(account, mapper));
     }
 
     /**
