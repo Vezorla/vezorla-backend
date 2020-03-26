@@ -51,7 +51,8 @@ public class HttpSessionConfig implements WebMvcConfigurer {
                         .allowedMethods("PUT", "POST", "GET", "DELETE")
                         .allowedHeaders("*")
                         .exposedHeaders("Content-Type", "Expires")
-                        .allowCredentials(true).maxAge(3600);
+                        .allowCredentials(true).maxAge(3600)
+                        .allowedOrigins("https://www.sandbox.paypal.com");
             }
         };
     }

@@ -272,6 +272,11 @@ public class CustomerRestController {
         return ResponseEntity.ok().body(output);
     }
 
+    @GetMapping(value = "/info")
+    public String getAccountInfo(HttpServletRequest request){
+        return null;
+    }
+
     /**
      * Create a new account
      *
