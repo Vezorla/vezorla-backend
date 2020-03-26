@@ -52,7 +52,7 @@ public class HttpSessionConfig implements WebMvcConfigurer {
                         .allowedHeaders("*")
                         .exposedHeaders("Content-Type", "Expires")
                         .allowCredentials(true).maxAge(3600)
-                        .allowedOrigins("https://www.sandbox.paypal.com");
+                        .allowedOrigins("https://www.sandbox.paypal.com/cgi-bin/webscr?cmd=_express-checkout&token=EC-4MF55111DS943764F");
             }
         };
     }
