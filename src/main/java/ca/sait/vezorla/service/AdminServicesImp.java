@@ -7,6 +7,7 @@ import com.fasterxml.jackson.databind.ObjectMapper;
 import com.fasterxml.jackson.databind.node.ArrayNode;
 import com.fasterxml.jackson.databind.node.ObjectNode;
 import lombok.AllArgsConstructor;
+import org.json.JSONObject;
 import org.springframework.stereotype.Service;
 
 import java.util.Date;
@@ -104,8 +105,14 @@ public class AdminServicesImp implements AdminServices {
         return null;
     }
 
-    public boolean savePurchaseOrder(PurchaseOrder purchaseOrder) {
-        return false;
+    public boolean savePurchaseOrder(String body) {
+
+        JSONObject obj = new JSONObject(body);
+        String received = obj.getJSONObject(("po")).getString("recieved");
+
+
+
+        return true;
     }
 
     public void restoreBackup(Long id) {

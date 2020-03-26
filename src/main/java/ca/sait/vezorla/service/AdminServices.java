@@ -29,7 +29,7 @@ public interface AdminServices {
     List<Invoice> getOrder(Long id);
     List<Invoice> getPendingBusinessOrder();
     Invoice getPendingBusinessOrderById(Long id);
-    boolean savePurchaseOrder(PurchaseOrder purchaseOrder);
+    boolean savePurchaseOrder(String body);
     void restoreBackup(Long id);
     boolean saveProduct(Product product);
     boolean saveWarehouse(Warehouse warehouse);
