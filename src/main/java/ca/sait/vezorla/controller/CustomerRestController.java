@@ -368,7 +368,7 @@ public class CustomerRestController {
      * @param code    discount code the user selected
      * @param request for the session
      */
-    @GetMapping("selected_discount/get")
+    @PutMapping("selected_discount/get")
     public void getSelectedDiscount(@RequestBody String code, HttpServletRequest request) throws UnauthorizedException {
         HttpSession session = request.getSession();
         userServices.getSelectedDiscount(code, request, session);
