@@ -797,5 +797,34 @@ public class UserServicesImp implements UserServices {
         invoice.setLineItemList(lineItems);
     }
 
+    public ObjectNode getUserInfo(Account account, ObjectMapper mapper){
+        //create custom json
+        ObjectNode node = mapper.createObjectNode();
+        node.put("firstName", account.getFirstName());
+        node.put("lastName", account.getLastName());
+        node.put("email", account.getEmail());
+        node.put("phoneNum", account.getPhoneNum());
+        node.put("address", account.getAddress());
+        node.put("city", account.getCity());
+        node.put("province", account.getProvince());
+        node.put("postalCode", account.getPostalCode());
+        node.put("country", account.getCountry());
+
+        return node;
+    }
+
+    public boolean checkLineItemStock(Cart cart){
+        boolean inStock = false;
+
+        for(LineItem lineItem : cart.getLineItems()){
+            int quantity = getProductQuantity(lineItem.getProduct().getProdId());
+
+            if(quantity > 0){
+                inStock = true;
+            }
+        }
+
+        return inStock;
+    }
 
 }

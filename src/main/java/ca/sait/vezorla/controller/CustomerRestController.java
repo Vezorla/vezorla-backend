@@ -1,10 +1,7 @@
 
 package ca.sait.vezorla.controller;
 
-import ca.sait.vezorla.exception.InvalidInputException;
-import ca.sait.vezorla.exception.PasswordMismatchException;
-import ca.sait.vezorla.exception.UnableToSaveException;
-import ca.sait.vezorla.exception.UnauthorizedException;
+import ca.sait.vezorla.exception.*;
 import ca.sait.vezorla.model.Account;
 import ca.sait.vezorla.model.Cart;
 import ca.sait.vezorla.model.LineItem;
@@ -21,7 +18,6 @@ import lombok.AllArgsConstructor;
 import org.json.simple.JSONObject;
 import org.json.simple.parser.JSONParser;
 import org.json.simple.parser.ParseException;
-import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.mail.MailException;
 import org.springframework.web.bind.annotation.*;
@@ -169,6 +165,7 @@ public class CustomerRestController {
      * is on an order.
      * Must be requested before viewing the order
      * and payment.
+     *
      * @param request
      * @return
      * @throws JsonProcessingException
@@ -239,7 +236,6 @@ public class CustomerRestController {
     public boolean removeLineItemSession(@PathVariable Long id, HttpServletRequest request) {
         HttpSession session = request.getSession();
         Account account = (Account) session.getAttribute("ACCOUNT");
-        boolean fromAccount;
         Cart cart;
 
         if (account == null || !account.isUserCreated())
@@ -265,18 +261,41 @@ public class CustomerRestController {
             throws JsonProcessingException, InvalidInputException, UnauthorizedException {
         String output;
         HttpSession session = request.getSession();
+        Cart cart;
 
-        if (session.getAttribute("CART") != null)
+        //Grab the cart
+        if (account == null || !account.isUserCreated())
+            cart = userServices.getSessionCart(session);
+        else
+            cart = accountServices.findRecentCart(account);
+
+        //Check
+        if(cart.getLineItems().size() > 0)
             output = userServices.getShippingInfo(session, account);
         else
             throw new UnauthorizedException();
 
+
         return ResponseEntity.ok().body(output);
     }
 
-    @GetMapping(value = "/info")
-    public String getAccountInfo(HttpServletRequest request){
-        return null;
+    @GetMapping(value = "info")
+    public String getUserInfo(HttpServletRequest request) throws JsonProcessingException, OutOfStockException {
+        ObjectMapper mapper = new ObjectMapper();
+        HttpSession session = request.getSession();
+        Account account = (Account) session.getAttribute("ACCOUNT");
+        Cart cart;
+
+        if (!account.isUserCreated())
+            cart = userServices.getSessionCart(session);
+        else
+            cart = accountServices.findRecentCart(account);
+
+        if(!userServices.checkLineItemStock(cart)){
+            throw new OutOfStockException();
+        }
+
+        return mapper.writerWithDefaultPrettyPrinter().writeValueAsString(userServices.getUserInfo(account, mapper));
     }
 
     /**
@@ -397,9 +416,9 @@ public class CustomerRestController {
         ArrayNode mainArrayNode = mapper.createArrayNode();
         ArrayNode outOfStockItems;
         if (session.getAttribute("ACCOUNT_DISCOUNT") != null) {
-            //outOfStockItems = userServices.checkItemsOrderedOutOfStock(cart, request);
+
             mainArrayNode = userServices.reviewOrder(session, mainArrayNode, cart);
-            //mainArrayNode.add(outOfStockItems);
+
         } else {
             throw new UnauthorizedException();
         }

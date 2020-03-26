@@ -5,6 +5,7 @@ import ca.sait.vezorla.model.*;
 import com.fasterxml.jackson.core.JsonProcessingException;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import com.fasterxml.jackson.databind.node.ArrayNode;
+import com.fasterxml.jackson.databind.node.ObjectNode;
 
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpSession;
@@ -74,4 +75,8 @@ public interface UserServices {
     void saveLineItems(HttpServletRequest request, Invoice invoice);
 
     void applyLineItemsToInvoice(Invoice invoice);
+
+    ObjectNode getUserInfo(Account account, ObjectMapper mapper);
+
+    boolean checkLineItemStock(Cart cart);
 }
