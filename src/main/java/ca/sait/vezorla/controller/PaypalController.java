@@ -80,8 +80,11 @@ public class PaypalController {
 //            carts.add(new Cart());
 //        }
 
+        //divide by 100 for total
+        double finalTotal = (double) newInvoice.getTotal() /100;
+
         try {
-            Payment payment = paypalServices.createPayment((double)newInvoice.getTotal(), "CAD", "paypal",
+            Payment payment = paypalServices.createPayment(finalTotal, "CAD", "paypal",
                     "sale", "Place Order", "http://localhost:3000/" + CANCEL_URL,
                     "http://localhost:3000/" + SUCCESS_URL);
             for (Links link : payment.getLinks()) {
