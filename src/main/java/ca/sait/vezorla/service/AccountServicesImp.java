@@ -196,7 +196,7 @@ public class AccountServicesImp implements AccountServices {
         CustomerClientUtil ccu = new CustomerClientUtil();
 
         //obtain all the invoices for account
-        ArrayList<Invoice> invoices = (ArrayList<Invoice>) invoiceRepo.findAllByAccount_Email(email);
+        List<Invoice> invoices = invoiceRepo.findAllByAccount_Email(email);
 
         //create custom json
         ObjectNode node = mapper.createObjectNode();
