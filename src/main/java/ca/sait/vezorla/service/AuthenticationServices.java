@@ -18,6 +18,4 @@ public interface AuthenticationServices {
     boolean forgotPassword(String email) throws InvalidInputException;
 
     Optional<Account> login(String email, String password, HttpSession session);
-
-    public void logout();
 }

@@ -50,11 +50,10 @@ public class ClientRestController {
     }
 
 
-    @PutMapping("account/forgotpassword")
+    @PutMapping("account/forgot-password")
     public boolean forgotPassword(@RequestBody String email) throws InvalidInputException {
-
+        email = email.replaceAll("\"", "");
         return authenticationServices.forgotPassword(email);
-
     }
 
     @GetMapping("order/{id}")
@@ -85,5 +84,4 @@ public class ClientRestController {
         ObjectMapper mapper = new ObjectMapper();
         return mapper.writerWithDefaultPrettyPrinter().writeValueAsString(accountServices.viewOrderHistory(email, mapper));
     }
-
 }
