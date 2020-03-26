@@ -802,7 +802,7 @@ public class UserServicesImp implements UserServices {
         ObjectNode node = mapper.createObjectNode();
         node.put("firstName", account.getFirstName());
         node.put("lastName", account.getLastName());
-        node.put("emal", account.getEmail());
+        node.put("email", account.getEmail());
         node.put("phoneNum", account.getPhoneNum());
         node.put("address", account.getAddress());
         node.put("city", account.getCity());
