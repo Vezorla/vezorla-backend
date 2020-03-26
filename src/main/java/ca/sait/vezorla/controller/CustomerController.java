@@ -1,9 +1,9 @@
 package ca.sait.vezorla.controller;
 
+import ca.sait.vezorla.exception.InvalidInputException;
 import ca.sait.vezorla.model.Account;
 import ca.sait.vezorla.model.LineItem;
-import ca.sait.vezorla.service.UserServices;
-import org.springframework.beans.factory.annotation.Autowired;
+import lombok.AllArgsConstructor;
 import org.springframework.stereotype.Controller;
 import org.springframework.ui.Model;
 import org.springframework.validation.BindingResult;
@@ -11,12 +11,10 @@ import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.RequestMapping;
 
+@AllArgsConstructor
 @Controller
 @RequestMapping(CustomerController.URL)
 public class CustomerController {
-
-    @Autowired
-    private UserServices userServices;
 
     protected static final String URL = "/customer/";
 
@@ -46,19 +44,13 @@ public class CustomerController {
     }
 
     @GetMapping("account/create")
-    public String createAccount(Account account, Model model, BindingResult bindingResult) {
-        return null;
-    }
+    public String createAccount(Account account, Model model, BindingResult bindingResult) { return null; }
 
     @GetMapping("account/forgotpassword")
-    public String forgotPassword(String email, Model model) {
-        return null;
-    }
+    public String forgotPassword(String email, Model model) throws InvalidInputException { return null; }
 
     @GetMapping("order/place")
-    public void placeOrder() {
-
-    }
+    public void placeOrder() { }
 
     @GetMapping("inventory/product/")
     public String getProductPage(@PathVariable Long id, Model model) {

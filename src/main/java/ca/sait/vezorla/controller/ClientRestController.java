@@ -1,8 +1,10 @@
 package ca.sait.vezorla.controller;
 
+import ca.sait.vezorla.exception.InvalidInputException;
 import ca.sait.vezorla.exception.UnableToSaveException;
 import ca.sait.vezorla.model.Account;
 import ca.sait.vezorla.model.Invoice;
+import ca.sait.vezorla.service.AuthenticationServices;
 import ca.sait.vezorla.service.AccountServices;
 import ca.sait.vezorla.service.UserServices;
 import com.fasterxml.jackson.core.JsonProcessingException;
@@ -13,7 +15,6 @@ import org.springframework.web.bind.annotation.*;
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpSession;
 import java.util.List;
-import java.util.Optional;
 
 @AllArgsConstructor
 @RestController
@@ -23,6 +24,7 @@ public class ClientRestController {
     protected static final String URL = "/api/client/";
 
     private UserServices userServices;
+    private AuthenticationServices authenticationServices;
     private AccountServices accountServices;
 
     @GetMapping("find/{id}")
@@ -45,6 +47,14 @@ public class ClientRestController {
             session.setAttribute("ACCOUNT", account);
 
         return created;
+    }
+
+
+    @PutMapping("account/forgotpassword")
+    public boolean forgotPassword(@RequestBody String email) throws InvalidInputException {
+
+        return authenticationServices.forgotPassword(email);
+
     }
 
     @GetMapping("order/{id}")

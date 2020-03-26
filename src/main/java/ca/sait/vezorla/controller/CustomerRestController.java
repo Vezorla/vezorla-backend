@@ -9,6 +9,7 @@ import ca.sait.vezorla.model.Account;
 import ca.sait.vezorla.model.Cart;
 import ca.sait.vezorla.model.LineItem;
 import ca.sait.vezorla.model.Product;
+import ca.sait.vezorla.service.AuthenticationServices;
 import ca.sait.vezorla.service.AccountServices;
 import ca.sait.vezorla.service.EmailServices;
 import ca.sait.vezorla.service.UserServices;
@@ -42,6 +43,7 @@ import java.util.Optional;
 public class CustomerRestController {
 
     protected static final String URL = "/api/customer/";
+
     private UserServices userServices;
     private EmailServices emailServices;
     private AccountServices accountServices;
@@ -453,11 +455,6 @@ public class CustomerRestController {
     public boolean applyDiscount() {
 
         return false;
-    }
-
-    @GetMapping("account/forgotpassword/{email}")
-    public void forgotPassword(@PathVariable String email) {
-
     }
 
     @GetMapping("contact")
