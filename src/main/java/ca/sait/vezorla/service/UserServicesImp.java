@@ -50,7 +50,7 @@ public class UserServicesImp implements UserServices {
         HttpSession session = request.getSession();
         AccountDiscount accountDiscount = (AccountDiscount) session.getAttribute("ACCOUNT_DISCOUNT");
 
-        if (!accountDiscount.getCode().getCode().equals("NotSelected")) {
+        if (!accountDiscount.getCode().getCode().equals("NS")) {
             accountDiscountRepo.insertWithQuery(accountDiscount);
         }
     }
