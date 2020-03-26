@@ -1,6 +1,7 @@
 package ca.sait.vezorla.service;
 
 import ca.sait.vezorla.exception.InvalidInputException;
+import ca.sait.vezorla.exception.UnauthorizedException;
 import ca.sait.vezorla.model.*;
 import com.fasterxml.jackson.core.JsonProcessingException;
 import com.fasterxml.jackson.databind.ObjectMapper;
@@ -79,4 +80,6 @@ public interface UserServices {
     ObjectNode getUserInfo(Account account, ObjectMapper mapper);
 
     boolean checkLineItemStock(Cart cart);
+
+    public void paymentTransactions(HttpServletRequest request) throws UnauthorizedException, InvalidInputException;
 }

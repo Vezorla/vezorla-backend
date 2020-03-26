@@ -2,6 +2,7 @@ package ca.sait.vezorla.service;
 
 import ca.sait.vezorla.controller.util.CustomerClientUtil;
 import ca.sait.vezorla.exception.InvalidInputException;
+import ca.sait.vezorla.exception.UnauthorizedException;
 import ca.sait.vezorla.model.*;
 import ca.sait.vezorla.repository.*;
 import com.fasterxml.jackson.core.JsonProcessingException;
@@ -10,6 +11,7 @@ import com.fasterxml.jackson.databind.node.ArrayNode;
 import com.fasterxml.jackson.databind.node.ObjectNode;
 import lombok.AllArgsConstructor;
 import org.springframework.stereotype.Service;
+import org.springframework.web.bind.annotation.PutMapping;
 
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpSession;
@@ -36,6 +38,7 @@ public class UserServicesImp implements UserServices {
     private CartRepo cartRepo;
     private AccountDiscountRepo accountDiscountRepo;
     private AccountServices accountServices;
+    private EmailServices emailServices;
     private ObjectMapper mapper;
 
     /**
@@ -797,6 +800,16 @@ public class UserServicesImp implements UserServices {
         invoice.setLineItemList(lineItems);
     }
 
+    /**
+     * Method to get the User information for
+     * shipping page if they have an account,
+     * or if they are a customer returning
+     * to that page.
+     *
+     * @param account with information to fill fields
+     * @param mapper for the ObjectNode
+     * @return Object node for custom json
+     */
     public ObjectNode getUserInfo(Account account, ObjectMapper mapper){
         //create custom json
         ObjectNode node = mapper.createObjectNode();
@@ -814,6 +827,13 @@ public class UserServicesImp implements UserServices {
         return node;
     }
 
+    /**
+     * Method to check if even one item in
+     * the cart has something in stock.
+     * @param cart to check
+     * @return boolean true if there is an item
+     * in the cart with stock, otherwise false.
+     */
     public boolean checkLineItemStock(Cart cart){
         boolean inStock = false;
 
@@ -826,6 +846,33 @@ public class UserServicesImp implements UserServices {
         }
 
         return inStock;
+    }
+
+    /**
+     * Transactions after a successful payment occurs
+     *
+     * @param request for the session
+     * @throws UnauthorizedException
+     * @throws InvalidInputException
+     */
+    public void paymentTransactions(HttpServletRequest request) throws UnauthorizedException, InvalidInputException {
+        HttpSession session = request.getSession();
+
+        //check to ensure all previous steps have been performed
+        if (session.getAttribute("INVOICE") == null) {
+            throw new UnauthorizedException();
+        }
+
+        //perform transaction with successful payment
+        Invoice newInvoice = saveInvoice(request);
+        applyLineItemsToInvoice(newInvoice);
+        saveLineItems(request, newInvoice);
+        decreaseInventory(request);
+        applyDiscount(request);
+
+        //send email to customer/client
+        double totalAsDouble = (double) newInvoice.getTotal() / 100;
+        emailServices.sendInvoiceEmail(newInvoice.getAccount().getEmail(), newInvoice, totalAsDouble);
     }
 
 }

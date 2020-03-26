@@ -465,24 +465,17 @@ public class CustomerRestController {
     }
 
     /**
-     * Apply discount to the cart
-     *
-     * @return
-     * @author matthewjflee, jjrr1717
+     * Method to complete transactions after a successful payment
+     * @param success boolean if payment was successful
+     * @param request for the session
+     * @throws UnauthorizedException
+     * @throws InvalidInputException
      */
-    @GetMapping("discounts/apply")
-    public boolean applyDiscount() {
-
-        return false;
+    @PutMapping("payment/success")
+    public void successfulPayment(@RequestBody boolean success, HttpServletRequest request) throws UnauthorizedException, InvalidInputException {
+        if(success){
+            userServices.paymentTransactions(request);
+        }
     }
 
-    @GetMapping("contact")
-    public void contactBusiness(String sender, String message) {
-
-    }
-
-    @GetMapping("cart/update/{id}")
-    public void updateCart(@PathVariable Long id) {
-
-    }
 }
