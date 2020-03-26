@@ -11,7 +11,7 @@ public interface EmailServices {
 
     void sendDeclineEmail(String to, String additionText);
 
-    void sendForgotPassword(String email, String tempPassword);
+    void sendForgotPassword(String email, String tempPassword) throws InvalidInputException;
 
     void sendInvoiceEmail(String to, Invoice invoice, double total) throws InvalidInputException;
 

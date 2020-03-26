@@ -6,6 +6,7 @@ import ca.sait.vezorla.model.Account;
 import ca.sait.vezorla.model.Cart;
 import ca.sait.vezorla.model.LineItem;
 import ca.sait.vezorla.model.Product;
+import ca.sait.vezorla.service.AuthenticationServices;
 import ca.sait.vezorla.service.AccountServices;
 import ca.sait.vezorla.service.EmailServices;
 import ca.sait.vezorla.service.UserServices;
@@ -38,6 +39,7 @@ import java.util.Optional;
 public class CustomerRestController {
 
     protected static final String URL = "/api/customer/";
+
     private UserServices userServices;
     private EmailServices emailServices;
     private AccountServices accountServices;
@@ -460,5 +462,27 @@ public class CustomerRestController {
         }
 
         return false;
+    }
+
+    /**
+     * Apply discount to the cart
+     *
+     * @return
+     * @author matthewjflee, jjrr1717
+     */
+    @GetMapping("discounts/apply")
+    public boolean applyDiscount() {
+
+        return false;
+    }
+
+    @GetMapping("contact")
+    public void contactBusiness(String sender, String message) {
+
+    }
+
+    @GetMapping("cart/update/{id}")
+    public void updateCart(@PathVariable Long id) {
+
     }
 }
