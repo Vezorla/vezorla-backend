@@ -11,25 +11,27 @@ import ca.sait.vezorla.model.Product;
 import ca.sait.vezorla.model.ProductQuantity;
 import ca.sait.vezorla.model.PurchaseOrder;
 import ca.sait.vezorla.model.Warehouse;
+import com.fasterxml.jackson.databind.ObjectMapper;
+import com.fasterxml.jackson.databind.node.ObjectNode;
 
 public interface AdminServices {
 
-    public void acceptBusinessOrder(Invoice invoice);
-    public boolean createAccount(Account account);
-    public boolean createDiscount(Discount discount);
-    public void createReport(String type, Date start, Date end);
-    public void declineBusinessOrder(Long id);
-    public void exportData(Date start, Date end);
-    public void generatePDF(List<ProductQuantity> productQuantityList);
-    public void get(Long id);
-    public void getAllProducts();
-    public List<Backup> getBackupList();
-    public void getInvoice(Long id);
-    public List<Invoice> getOrder(Long id);
-    public List<Invoice> getPendingBusinessOrder();
-    public Invoice getPendingBusinessOrderById(Long id);
-    public boolean savePurchaseOrder(PurchaseOrder purchaseOrder);
-    public void restoreBackup(Long id);
-    public boolean saveProduct(Product product);
-    public boolean saveWarehouse(Warehouse warehouse);
+    void acceptBusinessOrder(Invoice invoice);
+    boolean createAccount(Account account);
+    boolean createDiscount(Discount discount);
+    void createReport(String type, Date start, Date end);
+    void declineBusinessOrder(Long id);
+    void exportData(Date start, Date end);
+    void generatePDF(List<ProductQuantity> productQuantityList);
+    void get(Long id);
+    List<Backup> getBackupList();
+    void getInvoice(Long id);
+    List<Invoice> getOrder(Long id);
+    List<Invoice> getPendingBusinessOrder();
+    Invoice getPendingBusinessOrderById(Long id);
+    boolean savePurchaseOrder(PurchaseOrder purchaseOrder);
+    void restoreBackup(Long id);
+    boolean saveProduct(Product product);
+    boolean saveWarehouse(Warehouse warehouse);
+    ObjectNode getAllProducts(ObjectMapper mapper);
 }

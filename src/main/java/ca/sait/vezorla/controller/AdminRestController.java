@@ -4,6 +4,10 @@ import ca.sait.vezorla.model.Backup;
 import ca.sait.vezorla.model.Discount;
 import ca.sait.vezorla.model.Invoice;
 import ca.sait.vezorla.model.Product;
+import ca.sait.vezorla.service.AdminServices;
+import com.fasterxml.jackson.core.JsonProcessingException;
+import com.fasterxml.jackson.databind.ObjectMapper;
+import lombok.AllArgsConstructor;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.RequestMapping;
@@ -12,15 +16,25 @@ import org.springframework.web.bind.annotation.RestController;
 import java.util.Date;
 import java.util.List;
 
+@AllArgsConstructor
 @RestController
 @RequestMapping(AdminRestController.URL)
 public class AdminRestController {
 
     protected final static String URL = "api/admin/";
 
+    private AdminServices adminServices;
+
+    /**
+     * Method to get all the products for admin view
+     * @return String for the custom json
+     * @throws JsonProcessingException
+     */
     @GetMapping("inventory/all")
-    public List<Product> getAllProducts() {
-        return null;
+    public String getAllProducts() throws JsonProcessingException {
+       ObjectMapper mapper = new ObjectMapper();
+        return mapper.writerWithDefaultPrettyPrinter().writeValueAsString(adminServices.getAllProducts(mapper));
+
     }
 
     @GetMapping("businessorder/pending")
