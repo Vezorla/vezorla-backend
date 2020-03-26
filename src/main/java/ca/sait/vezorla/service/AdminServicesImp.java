@@ -7,6 +7,7 @@ import com.fasterxml.jackson.databind.ObjectMapper;
 import com.fasterxml.jackson.databind.node.ArrayNode;
 import com.fasterxml.jackson.databind.node.ObjectNode;
 import lombok.AllArgsConstructor;
+import org.json.JSONArray;
 import org.json.JSONObject;
 import org.springframework.stereotype.Service;
 
@@ -109,6 +110,16 @@ public class AdminServicesImp implements AdminServices {
 
         JSONObject obj = new JSONObject(body);
         String received = obj.getJSONObject(("po")).getString("recieved");
+
+        JSONArray arr = obj.getJSONArray("lots");
+
+        for(int i = 0; i < arr.length(); i++){
+            Lot lot
+            int qty = arr.getJSONObject(i).getInt("qty");
+            double cost = arr.getJSONObject(i).getDouble("cost");
+            String bestBefore = arr.getJSONObject(i).getString("bestBefore");
+            long prodId = arr.getJSONObject(i).getLong("prodId");
+        }
 
 
 
