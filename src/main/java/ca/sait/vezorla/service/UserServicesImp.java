@@ -873,23 +873,21 @@ public class UserServicesImp implements UserServices {
     public void paymentTransactions(HttpServletRequest request) throws UnauthorizedException, InvalidInputException {
         HttpSession session = request.getSession();
 
-        Invoice o = (Invoice) session.getAttribute("INVOICE");
-        System.out.println("Total" + o.getTotal());
-
-        //perform transaction with successful payment
-        Invoice newInvoice = saveInvoice(request);
-
         ///check to ensure all previous steps have been performed
         if (session.getAttribute("INVOICE") == null) {
             throw new UnauthorizedException();
         }
 
-
-
+        //perform transaction with successful payment
+        Invoice newInvoice = saveInvoice(request);
         applyLineItemsToInvoice(newInvoice);
         saveLineItems(request, newInvoice);
         decreaseInventory(request);
         applyDiscount(request);
+
+        //send email to customer/client
+        double totalAsDouble = (double) newInvoice.getTotal() / 100;
+        emailServices.sendInvoiceEmail(newInvoice.getAccount().getEmail(), newInvoice, totalAsDouble);
 
         //Create new cart if the user is a client
         Account account = (Account) session.getAttribute("ACCOUNT");
@@ -898,10 +896,9 @@ public class UserServicesImp implements UserServices {
             ArrayList<Cart> carts = (ArrayList<Cart>) account.getCarts();
             carts.add(new Cart());
         }
-
-        //send email to customer/client
-        double totalAsDouble = (double) newInvoice.getTotal() / 100;
-        emailServices.sendInvoiceEmail(newInvoice.getAccount().getEmail(), newInvoice, totalAsDouble);
+        else{
+            session.removeAttribute("CART");
+        }
     }
 
 }
