@@ -873,15 +873,16 @@ public class UserServicesImp implements UserServices {
     public void paymentTransactions(HttpServletRequest request) throws UnauthorizedException, InvalidInputException {
         HttpSession session = request.getSession();
 
-
+        Invoice o = (Invoice) session.getAttribute("INVOICE");
+        System.out.println("Total" + o.getTotal());
 
         //perform transaction with successful payment
         Invoice newInvoice = saveInvoice(request);
 
         ///check to ensure all previous steps have been performed
-//        if (session.getAttribute("INVOICE") == null) {
-//            throw new UnauthorizedException();
-//        }
+        if (session.getAttribute("INVOICE") == null) {
+            throw new UnauthorizedException();
+        }
 
 
 
