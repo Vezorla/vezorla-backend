@@ -897,6 +897,7 @@ public class UserServicesImp implements UserServices {
         if (account.isUserCreated()) {
             ArrayList<Cart> carts = (ArrayList<Cart>) account.getCarts();
             carts.add(new Cart());
+        }
 
         //send email to customer/client
         double totalAsDouble = (double) newInvoice.getTotal() / 100;
