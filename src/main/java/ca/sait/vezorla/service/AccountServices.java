@@ -32,7 +32,7 @@ public interface AccountServices {
 
     boolean saveCart(Cart cart);
 
-    void updateAccount(Account account, Account changed) throws InvalidInputException;
+    Account updateAccount(Account account, Account changed) throws InvalidInputException;
 
     Cart findRecentCart(Account account);
 

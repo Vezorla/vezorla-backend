@@ -234,11 +234,17 @@ public class CustomerRestController {
         Cart cart = userServices.getCart(session);
 
         //Grab account
-        Optional<Account> findAccount = accountServices.findAccountByEmail(sessionAccount.getEmail());
-        if (findAccount.isPresent()) {
-            Account updateAccount = findAccount.get();
-            accountServices.updateAccount(updateAccount, sendAccount);
+        if(sessionAccount != null) {
+            Optional<Account> findAccount = accountServices.findAccountByEmail(sessionAccount.getEmail());
+            if (findAccount.isPresent()) {
+                Account updateAccount = findAccount.get();
+                System.out.println("user creat find " + updateAccount.isUserCreated());
+                sendAccount = accountServices.updateAccount(updateAccount, sendAccount);
+            }
         }
+
+        System.out.println("user creat " + sendAccount.isUserCreated());
+        System.out.println("sender after " + sendAccount.getPassword());
 
         //Check
         if (cart.getLineItems().size() > 0)
@@ -253,8 +259,16 @@ public class CustomerRestController {
     public String getUserInfo(HttpServletRequest request) throws JsonProcessingException, OutOfStockException {
         ObjectMapper mapper = new ObjectMapper();
         HttpSession session = request.getSession();
-        Account account = (Account) session.getAttribute("ACCOUNT");
         Cart cart = userServices.getCart(session);
+        Account sessionAccount = (Account) session.getAttribute("ACCOUNT");
+        Account account = null;
+
+        if(sessionAccount != null) {
+            Optional<Account> findAccount = accountServices.findAccountByEmail(sessionAccount.getEmail());
+            if(findAccount.isPresent())
+                account = findAccount.get();
+        } else
+            throw new AccountNotFoundException();
 
         if (!userServices.checkLineItemStock(cart))
             throw new OutOfStockException();

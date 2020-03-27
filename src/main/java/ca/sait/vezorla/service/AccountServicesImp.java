@@ -73,7 +73,7 @@ public class AccountServicesImp implements AccountServices {
         return true;
     }
 
-    public void updateAccount(Account account, Account changed) throws InvalidInputException {
+    public Account updateAccount(Account account, Account changed) throws InvalidInputException {
         CustomerClientUtil customerClientUtil = new CustomerClientUtil();
 
         if(changed.getEmail() != null)
@@ -111,6 +111,8 @@ public class AccountServicesImp implements AccountServices {
             account.setCountry(changed.getCountry());
 
         account.setSubscript(changed.isSubscript());
+
+        return account;
     }
 
     /**
