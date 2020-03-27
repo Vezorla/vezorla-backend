@@ -794,6 +794,7 @@ public class UserServicesImp implements UserServices {
         //loop through lineitems. Assign cart number & invoice number and persist line item
         for (int i = 0; i < lineItems.size(); i++) {
             lineItems.get(i).setInvoice(invoice);
+            lineItemRepo.save(lineItems.get(i));
         }
     }
 
