@@ -559,6 +559,7 @@ public class UserServicesImp implements UserServices {
         if(!account.isUserCreated())
             shippingAccount(session, account);
 
+        session.setAttribute("PICKUP", account.isPickup());
         boolean created = saveAccount(account);
 
         return mapper.writerWithDefaultPrettyPrinter().writeValueAsString(created);
