@@ -858,17 +858,29 @@ public class UserServicesImp implements UserServices {
     public void paymentTransactions(HttpServletRequest request) throws UnauthorizedException, InvalidInputException {
         HttpSession session = request.getSession();
 
-        //check to ensure all previous steps have been performed
-        if (session.getAttribute("INVOICE") == null) {
-            throw new UnauthorizedException();
-        }
+
 
         //perform transaction with successful payment
         Invoice newInvoice = saveInvoice(request);
+
+        //check to ensure all previous steps have been performed
+//        if (session.getAttribute("INVOICE") == null) {
+//            throw new UnauthorizedException();
+//        }
+
+
+
         applyLineItemsToInvoice(newInvoice);
         saveLineItems(request, newInvoice);
         decreaseInventory(request);
         applyDiscount(request);
+
+        //Create new cart if the user is a client
+//        Account account = (Account) session.getAttribute("ACCOUNT");
+//        assert account != null;
+//        if (account.isUserCreated()) {
+//            ArrayList<Cart> carts = (ArrayList<Cart>) account.getCarts();
+//            carts.add(new Cart());
 
         //send email to customer/client
         double totalAsDouble = (double) newInvoice.getTotal() / 100;

@@ -263,11 +263,7 @@ public class CustomerRestController {
         HttpSession session = request.getSession();
         Cart cart;
 
-        //Grab the cart
-        if (account == null || !account.isUserCreated())
             cart = userServices.getSessionCart(session);
-        else
-            cart = accountServices.findRecentCart(account);
 
         //Check
         if(cart.getLineItems().size() > 0)

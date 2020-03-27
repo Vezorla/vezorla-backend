@@ -217,4 +217,10 @@ public class AccountServicesImp implements AccountServices {
         return node;
     }
 
+    public Optional<Account> getSavedAccount(String email){
+        //grab account from the database
+        Optional<Account> account = accountRepo.findById(email);
+        return account;
+    }
+
 }
