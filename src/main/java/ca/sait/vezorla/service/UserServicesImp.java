@@ -878,7 +878,7 @@ public class UserServicesImp implements UserServices {
         //perform transaction with successful payment
         Invoice newInvoice = saveInvoice(request);
 
-        //check to ensure all previous steps have been performed
+        ///check to ensure all previous steps have been performed
 //        if (session.getAttribute("INVOICE") == null) {
 //            throw new UnauthorizedException();
 //        }
