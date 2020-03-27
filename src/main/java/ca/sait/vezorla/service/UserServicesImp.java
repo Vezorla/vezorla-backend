@@ -65,10 +65,17 @@ public class UserServicesImp implements UserServices {
      * @return the cart
      * @author matthewjflee, jjrr1717
      */
-    public Cart getSessionCart(HttpSession session) {
-        Cart cart = (Cart) session.getAttribute("CART");
-        if (cart == null) {
-            cart = new Cart();
+    public Cart getCart(HttpSession session) {
+        Cart cart;
+        Account account = (Account) session.getAttribute("ACCOUNT");
+
+        //Customer
+        if (account == null || !account.isUserCreated()) {
+            cart = (Cart) session.getAttribute("CART");
+            if (cart == null)
+                cart = new Cart();
+        } else { //Client
+            cart = accountServices.findRecentCart(account);
         }
 
         return cart;
@@ -549,6 +556,16 @@ public class UserServicesImp implements UserServices {
      * @author: matthewjflee, jjrr1717
      */
     public String getShippingInfo(HttpSession session, Account account) throws InvalidInputException, JsonProcessingException {
+        if(!account.isUserCreated())
+            shippingAccount(session, account);
+
+        session.setAttribute("PICKUP", account.isPickup());
+        boolean created = saveAccount(account);
+
+        return mapper.writerWithDefaultPrettyPrinter().writeValueAsString(created);
+    }
+
+    private void shippingAccount(HttpSession session, Account account) throws InvalidInputException {
         CustomerClientUtil customerClientUtil = new CustomerClientUtil();
 
         if (account.getEmail() == null || account.getFirstName() == null || account.getLastName() == null ||
@@ -561,10 +578,8 @@ public class UserServicesImp implements UserServices {
         account.setAccountType('C');
 
         session.setAttribute("ACCOUNT", account);
-        session.setAttribute("PICKUP", account.isPickup());
         boolean created = saveAccount(account);
 
-        return mapper.writerWithDefaultPrettyPrinter().writeValueAsString(created);
     }
 
     /**

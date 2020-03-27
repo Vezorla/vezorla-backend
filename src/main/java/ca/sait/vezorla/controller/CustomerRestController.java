@@ -6,7 +6,6 @@ import ca.sait.vezorla.model.Account;
 import ca.sait.vezorla.model.Cart;
 import ca.sait.vezorla.model.LineItem;
 import ca.sait.vezorla.model.Product;
-import ca.sait.vezorla.service.AuthenticationServices;
 import ca.sait.vezorla.service.AccountServices;
 import ca.sait.vezorla.service.EmailServices;
 import ca.sait.vezorla.service.UserServices;
@@ -94,18 +93,13 @@ public class CustomerRestController {
     @RequestMapping(value = "cart/add/{id}", method = RequestMethod.PUT, produces = {"application/json"})
     public String createLineItemSession(@PathVariable Long id, @RequestBody String quantity, HttpServletRequest request) throws JsonProcessingException {
         List<LineItem> lineItems;
-        Cart cart;
         HttpSession session = request.getSession();
+
         ObjectMapper mapper = new ObjectMapper();
         ObjectNode node = mapper.createObjectNode();
 
-        //Grab the cart
         Account account = (Account) session.getAttribute("ACCOUNT");
-        if (account == null || !account.isUserCreated())
-            cart = userServices.getSessionCart(session);
-        else {
-            cart = accountServices.findRecentCart(account);
-        }
+        Cart cart = userServices.getCart(session);
 
         //Validate product quantity
         Optional<Product> product = userServices.getProduct(id);
@@ -119,7 +113,7 @@ public class CustomerRestController {
                 userServices.updateSessionCart(lineItems, cart, request);
 
                 if (account != null) {
-                    accountServices.saveAccount(account);
+                    accountServices.saveAccount(account, session);
                     accountServices.saveCart(cart);
                 }
 
@@ -145,15 +139,7 @@ public class CustomerRestController {
     public String viewSessionCart(HttpServletRequest request) throws JsonProcessingException {
         HttpSession session = request.getSession();
         ObjectMapper mapper = new ObjectMapper();
-        Cart cart;
-
-        //Grab the cart
-        Account account = (Account) session.getAttribute("ACCOUNT");
-        if (account == null || !account.isUserCreated())
-            cart = userServices.getSessionCart(session);
-        else {
-            cart = accountServices.findRecentCart(account);
-        }
+        Cart cart = userServices.getCart(session);
 
         ArrayNode outOfStockItems = userServices.checkItemsOrderedOutOfStock(cart, request);
         ArrayNode arrayNode = userServices.viewSessionCart(request, cart);
@@ -174,7 +160,8 @@ public class CustomerRestController {
     public String viewItemsOutOfStock(HttpServletRequest request) throws JsonProcessingException {
         HttpSession session = request.getSession();
         ObjectMapper mapper = new ObjectMapper();
-        Cart cart = (Cart) session.getAttribute("CART");
+        Cart cart = userServices.getCart(session);
+
         ArrayNode outOfStockItems = userServices.checkItemsOrderedOutOfStock(cart, request);
         return mapper.writerWithDefaultPrettyPrinter().writeValueAsString(outOfStockItems);
     }
@@ -189,14 +176,7 @@ public class CustomerRestController {
     @RequestMapping(value = "cart/get", method = RequestMethod.GET,
             produces = {"application/json"})
     public String getSessionCartQuantity(HttpSession session) {
-        Account account = (Account) session.getAttribute("ACCOUNT");
-        Cart cart;
-
-        if (account == null || !account.isUserCreated())
-            cart = userServices.getSessionCart(session);
-        else {
-            cart = accountServices.findRecentCart(account);
-        }
+        Cart cart = userServices.getCart(session);
         return userServices.getTotalCartQuantity(cart.getLineItems());
     }
 
@@ -213,13 +193,7 @@ public class CustomerRestController {
     @PutMapping("cart/update/{id}/{quantity}")
     public boolean updateLineItemSession(@PathVariable Long id, @PathVariable int quantity, HttpServletRequest request) throws JsonProcessingException {
         HttpSession session = request.getSession();
-        Account account = (Account) session.getAttribute("ACCOUNT");
-        Cart cart;
-
-        if (account == null || !account.isUserCreated())
-            cart = userServices.getSessionCart(session);
-        else
-            cart = accountServices.findRecentCart(account);
+        Cart cart = userServices.getCart(session);
 
         return userServices.updateLineItemSession(id, quantity, cart, request);
     }
@@ -235,13 +209,7 @@ public class CustomerRestController {
     @DeleteMapping("cart/remove/{id}")
     public boolean removeLineItemSession(@PathVariable Long id, HttpServletRequest request) {
         HttpSession session = request.getSession();
-        Account account = (Account) session.getAttribute("ACCOUNT");
-        Cart cart;
-
-        if (account == null || !account.isUserCreated())
-            cart = userServices.getSessionCart(session);
-        else
-            cart = accountServices.findRecentCart(account);
+        Cart cart = userServices.getCart(session);
 
         return userServices.removeLineItemSession(id, cart, session);
     }
@@ -256,21 +224,29 @@ public class CustomerRestController {
             consumes = {"application/json"},
             produces = {"application/json"})
     @ResponseBody
-    public ResponseEntity<String> getShippingInfo(@RequestBody Account account,
+    public ResponseEntity<String> getShippingInfo(@RequestBody Account sendAccount,
                                                   HttpServletRequest request)
             throws JsonProcessingException, InvalidInputException, UnauthorizedException {
-        String output;
         HttpSession session = request.getSession();
-        Cart cart;
+        String output;
+        Account sessionAccount = (Account) session.getAttribute("ACCOUNT");
+        Cart cart = userServices.getCart(session);
 
-            cart = userServices.getSessionCart(session);
+        //Grab account
+        if(sessionAccount != null) {
+            Optional<Account> findAccount = accountServices.findAccountByEmail(sessionAccount.getEmail());
+            if (findAccount.isPresent()) {
+                Account updateAccount = findAccount.get();
+                System.out.println("user creat find " + updateAccount.isUserCreated());
+                sendAccount = accountServices.updateAccount(updateAccount, sendAccount);
+            }
+        }
 
         //Check
-        if(cart.getLineItems().size() > 0)
-            output = userServices.getShippingInfo(session, account);
+        if (cart.getLineItems().size() > 0)
+            output = userServices.getShippingInfo(session, sendAccount);
         else
             throw new UnauthorizedException();
-
 
         return ResponseEntity.ok().body(output);
     }
@@ -279,17 +255,19 @@ public class CustomerRestController {
     public String getUserInfo(HttpServletRequest request) throws JsonProcessingException, OutOfStockException {
         ObjectMapper mapper = new ObjectMapper();
         HttpSession session = request.getSession();
-        Account account = (Account) session.getAttribute("ACCOUNT");
-        Cart cart;
+        Cart cart = userServices.getCart(session);
+        Account sessionAccount = (Account) session.getAttribute("ACCOUNT");
+        Account account = null;
 
-        if (!account.isUserCreated())
-            cart = userServices.getSessionCart(session);
-        else
-            cart = accountServices.findRecentCart(account);
+        if(sessionAccount != null) {
+            Optional<Account> findAccount = accountServices.findAccountByEmail(sessionAccount.getEmail());
+            if(findAccount.isPresent())
+                account = findAccount.get();
+        } else
+            throw new AccountNotFoundException();
 
-        if(!userServices.checkLineItemStock(cart)){
+        if (!userServices.checkLineItemStock(cart))
             throw new OutOfStockException();
-        }
 
         return mapper.writerWithDefaultPrettyPrinter().writeValueAsString(userServices.getUserInfo(account, mapper));
     }
@@ -408,7 +386,7 @@ public class CustomerRestController {
     public String reviewOrder(HttpServletRequest request) throws JsonProcessingException, UnauthorizedException {
         HttpSession session = request.getSession();
         ObjectMapper mapper = new ObjectMapper();
-        Cart cart = (Cart) session.getAttribute("CART");
+        Cart cart = userServices.getCart(session);
         ArrayNode mainArrayNode = mapper.createArrayNode();
         ArrayNode outOfStockItems;
         if (session.getAttribute("ACCOUNT_DISCOUNT") != null) {
@@ -462,6 +440,7 @@ public class CustomerRestController {
 
     /**
      * Method to complete transactions after a successful payment
+     *
      * @param success boolean if payment was successful
      * @param request for the session
      * @throws UnauthorizedException
@@ -469,7 +448,7 @@ public class CustomerRestController {
      */
     @PutMapping("payment/success")
     public void successfulPayment(@RequestBody boolean success, HttpServletRequest request) throws UnauthorizedException, InvalidInputException {
-        if(success){
+        if (success) {
             userServices.paymentTransactions(request);
         }
     }

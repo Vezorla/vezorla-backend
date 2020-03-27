@@ -27,4 +27,12 @@ public interface LineItemRepo extends JpaRepository<LineItem, Long> {
     @Modifying
     @Query("DELETE from LineItem li where li.lineNum = :lineNum AND li.cart.orderNum = :orderNum")
     int deleteLineItemByLineNumAndCart_OrderNum(Long lineNum, Long orderNum);
+
+    /**
+     * Query to find line items by order number
+     * @param orderNum of order to obtain line items
+     * @return a list of line items
+     */
+    @Query("FROM LineItem l WHERE l.cart.orderNum = :orderNum")
+    List<LineItem> findLineItemByOrderNum(@Param("orderNum") Long orderNum);
 }
