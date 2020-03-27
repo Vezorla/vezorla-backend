@@ -65,10 +65,17 @@ public class UserServicesImp implements UserServices {
      * @return the cart
      * @author matthewjflee, jjrr1717
      */
-    public Cart getSessionCart(HttpSession session) {
-        Cart cart = (Cart) session.getAttribute("CART");
-        if (cart == null) {
-            cart = new Cart();
+    public Cart getCart(HttpSession session) {
+        Cart cart;
+        Account account = (Account) session.getAttribute("ACCOUNT");
+
+        //Customer
+        if (account == null || !account.isUserCreated()) {
+            cart = (Cart) session.getAttribute("CART");
+            if (cart == null)
+                cart = new Cart();
+        } else { //Client
+            cart = accountServices.findRecentCart(account);
         }
 
         return cart;

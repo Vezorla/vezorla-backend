@@ -40,7 +40,7 @@ public interface UserServices {
 
     boolean updateLineItemSession(long id, int quantity, Cart cart, HttpServletRequest request);
 
-    Cart getSessionCart(HttpSession session);
+    Cart getCart(HttpSession session);
 
     Cart updateSessionCart(List<LineItem> lineItems, Cart cart, HttpServletRequest request);
 

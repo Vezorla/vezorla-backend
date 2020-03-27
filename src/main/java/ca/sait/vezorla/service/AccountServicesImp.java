@@ -86,7 +86,7 @@ public class AccountServicesImp implements AccountServices {
             account.setLastName(changed.getLastName());
 
         if(changed.getPhoneNum() != null) {
-            customerClientUtil.validatePhoneNumber(account.getPhoneNum());
+            customerClientUtil.validatePhoneNumber(changed.getPhoneNum());
             account.setPhoneNum(changed.getPhoneNum());
         }
 
@@ -103,7 +103,7 @@ public class AccountServicesImp implements AccountServices {
             account.setPassword(changed.getPassword());
 
         if(changed.getPostalCode() != null) {
-            customerClientUtil.validatePostalCode(account.getPostalCode());
+            customerClientUtil.validatePostalCode(changed.getPostalCode());
             account.setPostalCode(changed.getPostalCode());
         }
 
