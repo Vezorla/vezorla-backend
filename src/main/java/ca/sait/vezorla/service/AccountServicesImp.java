@@ -217,4 +217,8 @@ public class AccountServicesImp implements AccountServices {
         return node;
     }
 
+    public List<LineItem> getSavedCartLineItems(Cart cart){
+        List<LineItem> lineItems = lineItemRepo.findLineItemByOrderNum(cart.getOrderNum());
+        return lineItems;
+    }
 }

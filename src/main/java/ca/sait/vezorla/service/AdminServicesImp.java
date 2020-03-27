@@ -114,7 +114,7 @@ public class AdminServicesImp implements AdminServices {
         JSONArray arr = obj.getJSONArray("lots");
 
         for(int i = 0; i < arr.length(); i++){
-            Lot lot
+            Lot lot = new Lot();
             int qty = arr.getJSONObject(i).getInt("qty");
             double cost = arr.getJSONObject(i).getDouble("cost");
             String bestBefore = arr.getJSONObject(i).getString("bestBefore");

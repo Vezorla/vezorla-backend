@@ -263,12 +263,34 @@ public class CustomerRestController {
         HttpSession session = request.getSession();
         Cart cart;
 
+        System.out.println(account.getEmail() + " " + account.isUserCreated());
+
+        //Grab the account
+        Optional<Account> findAccount = userServices.findAccountByEmail(account.getEmail());
+        if(!findAccount.isPresent()) {
+            cart = userServices.getSessionCart(session);
+        } else {
+            Account updateAccount = findAccount.get();
+            updateAccount.setEmail(account.getEmail());
+            updateAccount.setFirstName(account.getFirstName());
+            updateAccount.setLastName(account.getLastName());
+            updateAccount.setPhoneNum(account.getPhoneNum());
+
+            //Grab cart
+            cart = accountServices.findRecentCart(account);
+            cart.setLineItems(accountServices.getSavedCartLineItems(cart));
+        }
+
         //Grab the cart
         if (account == null || !account.isUserCreated())
             cart = userServices.getSessionCart(session);
-        else
+        else {
             cart = accountServices.findRecentCart(account);
+            cart.setLineItems(accountServices.getSavedCartLineItems(cart));
+            System.out.println("here");
+        }
 
+        System.out.println(cart.getLineItems().size());
         //Check
         if(cart.getLineItems().size() > 0)
             output = userServices.getShippingInfo(session, account);

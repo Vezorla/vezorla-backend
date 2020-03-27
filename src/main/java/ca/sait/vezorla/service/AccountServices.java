@@ -36,4 +36,6 @@ public interface AccountServices {
     ObjectNode viewInvoice(Long invoiceNum, ObjectMapper mapper);
 
     ObjectNode viewOrderHistory(String email, ObjectMapper mapper);
+
+    List<LineItem> getSavedCartLineItems(Cart cart);
 }
