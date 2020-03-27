@@ -36,6 +36,8 @@ public interface AccountServices {
 
     Cart findRecentCart(Account account);
 
+    Cart createNewCart(Account account);
+
     boolean saveLineItems(List<LineItem> lineItems);
 
     void saveLineItem(LineItem li);

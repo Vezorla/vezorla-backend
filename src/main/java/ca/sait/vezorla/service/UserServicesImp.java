@@ -266,7 +266,6 @@ public class UserServicesImp implements UserServices {
         boolean result = false;
         List<LineItem> lineItems = cart.getLineItems();
         LineItem lineItem = null;
-        System.out.println("from account " + cart.isFromAccount());
 
         for (int i = 0; i < lineItems.size() && !result; i++) {
             if (lineItems.get(i).getProduct().getProdId() == id) {
@@ -661,7 +660,6 @@ public class UserServicesImp implements UserServices {
 
         mainArrayNode.add(itemsArrayNode);
         mainArrayNode.add(node);
-        System.out.println("Shipping in review: " + shippingRate);
         //create temporary invoice
         Invoice invoice = new Invoice(shippingRate,
                 discountedSubtotal,
@@ -683,7 +681,7 @@ public class UserServicesImp implements UserServices {
     public void decreaseInventory(HttpServletRequest request) {
         //get line items to determine what was sold
         HttpSession session = request.getSession();
-        Cart cart = (Cart) session.getAttribute("CART");
+        Cart cart = getCart(session);
         List<LineItem> lineItems = cart.getLineItems();
 
         //loop through the items in the order
@@ -753,8 +751,6 @@ public class UserServicesImp implements UserServices {
         HttpSession session = request.getSession();
         Invoice newInvoice = (Invoice) session.getAttribute("INVOICE");
 
-        System.out.println("Shipping cost at Save Invoice: " + newInvoice.getShippingCost());
-
         //get current date
         Date currentDate = new Date();
         java.sql.Date sqlDate = new java.sql.Date(currentDate.getTime());
@@ -788,14 +784,13 @@ public class UserServicesImp implements UserServices {
         Cart cart = getCart(session);
         List<LineItem> lineItems = cart.getLineItems();
 
-        //persist cart because it is a parent
-        cartRepo.save(cart);
-
         //loop through lineitems. Assign cart number & invoice number and persist line item
         for (int i = 0; i < lineItems.size(); i++) {
             lineItems.get(i).setInvoice(invoice);
-            lineItemRepo.save(lineItems.get(i));
         }
+
+        //persist cart because it is a parent
+        cartRepo.save(cart);
     }
 
     /**
@@ -890,14 +885,10 @@ public class UserServicesImp implements UserServices {
 
         //Create new cart if the user is a client
         Account account = (Account) session.getAttribute("ACCOUNT");
-        if (account.isUserCreated()) {
-            ArrayList<Cart> carts = (ArrayList<Cart>) account.getCarts();
-            carts.add(new Cart());
-        }
-        else{
-            System.out.println("Remove");
+        if (account.isUserCreated())
+            accountServices.createNewCart(account);
+        else
             request.getSession().removeAttribute("CART");
-        }
     }
 
 }

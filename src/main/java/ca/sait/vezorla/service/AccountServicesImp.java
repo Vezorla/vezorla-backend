@@ -137,15 +137,19 @@ public class AccountServicesImp implements AccountServices {
      */
     public Cart findRecentCart(Account account) {
         Cart cart = cartRepo.findCartByAccount_Email(account.getEmail());
-        if (cart == null) {
-            cart = new Cart(account);
-            List<Cart> carts = cartRepo.findCartsByAccount_Email(account.getEmail());
-            carts.add(cart);
-            saveCart(cart);
-        }
+        if (cart == null)
+            cart = createNewCart(account);
 
         return cart;
-//        return cartRepo.findCartByAccount_Email(email);
+    }
+
+    public Cart createNewCart(Account account) {
+        Cart cart = new Cart(account);
+        List<Cart> carts = cartRepo.findCartsByAccount_Email(account.getEmail());
+        carts.add(cart);
+        saveCart(cart);
+
+        return cart;
     }
 
     /**
