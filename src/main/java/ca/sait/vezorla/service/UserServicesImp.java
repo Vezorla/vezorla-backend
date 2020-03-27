@@ -549,6 +549,15 @@ public class UserServicesImp implements UserServices {
      * @author: matthewjflee, jjrr1717
      */
     public String getShippingInfo(HttpSession session, Account account) throws InvalidInputException, JsonProcessingException {
+        if(!account.isUserCreated())
+            shippingAccount(session, account);
+
+        boolean created = saveAccount(account);
+
+        return mapper.writerWithDefaultPrettyPrinter().writeValueAsString(created);
+    }
+
+    private void shippingAccount(HttpSession session, Account account) throws InvalidInputException {
         CustomerClientUtil customerClientUtil = new CustomerClientUtil();
 
         if (account.getEmail() == null || account.getFirstName() == null || account.getLastName() == null ||
@@ -561,10 +570,8 @@ public class UserServicesImp implements UserServices {
         account.setAccountType('C');
 
         session.setAttribute("ACCOUNT", account);
-        session.setAttribute("PICKUP", account.isPickup());
         boolean created = saveAccount(account);
 
-        return mapper.writerWithDefaultPrettyPrinter().writeValueAsString(created);
     }
 
     /**

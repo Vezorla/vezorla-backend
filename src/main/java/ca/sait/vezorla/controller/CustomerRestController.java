@@ -118,7 +118,7 @@ public class CustomerRestController {
                 userServices.updateSessionCart(lineItems, cart, request);
 
                 if (account != null) {
-                    accountServices.saveAccount(account);
+                    accountServices.saveAccount(account, session);
                     accountServices.saveCart(cart);
                 }
 
@@ -258,9 +258,10 @@ public class CustomerRestController {
     public ResponseEntity<String> getShippingInfo(@RequestBody Account sendAccount,
                                                   HttpServletRequest request)
             throws JsonProcessingException, InvalidInputException, UnauthorizedException {
-        String output;
         HttpSession session = request.getSession();
+        String output;
         Cart cart;
+        boolean isAccount;
         Account sessionAccount = (Account) session.getAttribute("ACCOUNT");
 
         if (sessionAccount == null || !sessionAccount.isUserCreated())
@@ -272,20 +273,14 @@ public class CustomerRestController {
             System.out.println("present" + findAccount.isPresent());
 
             if (!findAccount.isPresent()) {
+                isAccount = false;
                 cart = userServices.getSessionCart(session);
             } else {
                 //Update account with
-                Account updateAccount = findAccount.get();
-                updateAccount.setEmail(sessionAccount.getEmail());
-                updateAccount.setFirstName(sessionAccount.getFirstName());
-                updateAccount.setLastName(sessionAccount.getLastName());
-                updateAccount.setPhoneNum(sessionAccount.getPhoneNum());
-                updateAccount.setAddress(sessionAccount.getAddress());
-                updateAccount.setCity(sessionAccount.getCity());
-                updateAccount.setProvince(sessionAccount.getProvince());
-                updateAccount.setPostalCode(sessionAccount.getPostalCode());
-                updateAccount.setCountry(sessionAccount.getCountry());
-                updateAccount.setSubscript(sessionAccount.isSubscript());
+//                Account updateAccount = findAccount.get();
+                sendAccount = findAccount.get();
+//                accountServices.updateAccount(updateAccount, sessionAccount);
+                accountServices.updateAccount(sendAccount, sessionAccount);
 
                 //Grab cart
                 cart = accountServices.findRecentCart(sessionAccount);
