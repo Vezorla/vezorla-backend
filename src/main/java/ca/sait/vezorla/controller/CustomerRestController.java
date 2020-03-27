@@ -141,7 +141,6 @@ public class CustomerRestController {
         ObjectMapper mapper = new ObjectMapper();
         Cart cart = userServices.getCart(session);
 
-
         ArrayNode outOfStockItems = userServices.checkItemsOrderedOutOfStock(cart, request);
         ArrayNode arrayNode = userServices.viewSessionCart(request, cart);
         return mapper.writerWithDefaultPrettyPrinter().writeValueAsString(arrayNode);
@@ -242,9 +241,6 @@ public class CustomerRestController {
                 sendAccount = accountServices.updateAccount(updateAccount, sendAccount);
             }
         }
-
-        System.out.println("user creat " + sendAccount.isUserCreated());
-        System.out.println("sender after " + sendAccount.getPassword());
 
         //Check
         if (cart.getLineItems().size() > 0)
