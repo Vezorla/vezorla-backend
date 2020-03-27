@@ -14,10 +14,9 @@ import lombok.NoArgsConstructor;
 import org.hibernate.annotations.Type;
 
 import javax.persistence.*;
-import javax.validation.constraints.Pattern;
-
 import java.io.Serializable;
 import java.util.ArrayList;
+import java.util.Comparator;
 import java.util.List;
 
 @AllArgsConstructor
@@ -25,7 +24,7 @@ import java.util.List;
 @Entity
 @Data
 @Table(name = "account")
-public class Account implements Serializable {
+public class Account implements Serializable, Comparable {
 
     @Id
     private String email;
@@ -125,12 +124,7 @@ public class Account implements Serializable {
         this.province = province;
         this.country = country;
         this.postalCode = postalCode;
-        this.password = null;
-        this.userCreated = false;
-        this.accountAdmin = false;
         this.accountType = 'C';
-        this.isConfirmed = false;
-        this.isSubscript = false;
         this.carts = new ArrayList<>();
         this.invoices = new ArrayList<>();
         this.accountDiscounts = new ArrayList<>();
@@ -145,19 +139,9 @@ public class Account implements Serializable {
      */
     public Account(String email, String password) {
         this.email = email;
-        this.lastName = null;
-        this.firstName = null;
-        this.phoneNum = null;
-        this.address = null;
-        this.city = null;
-        this.country = null;
-        this.postalCode = null;
         this.password = password;
         this.userCreated = true;
-        this.accountAdmin = false;
         this.accountType = 'C';
-        this.isConfirmed = false;
-        this.isSubscript = false;
         this.carts = new ArrayList<>();
         this.invoices = new ArrayList<>();
         this.accountDiscounts = new ArrayList<>();
@@ -173,5 +157,20 @@ public class Account implements Serializable {
     public Account(String email) {
         this.email = email;
         this.accountType = 'C';
+    }
+
+
+    @Override
+    public int compareTo(Object account) {
+        return Comparator.comparing(Account::getEmail)
+                .thenComparing(Account::getFirstName)
+                .thenComparing(Account::getPhoneNum)
+                .thenComparing(Account::getAddress)
+                .thenComparing(Account::getCity)
+                .thenComparing(Account::getProvince)
+                .thenComparing(Account::getPostalCode)
+                .thenComparing(Account::getCountry)
+                .thenComparing(Account::isSubscript)
+                .compare(this, (Account) account);
     }
 }

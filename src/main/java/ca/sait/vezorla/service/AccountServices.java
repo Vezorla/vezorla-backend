@@ -11,7 +11,16 @@ import java.util.ArrayList;
 import java.util.List;
 import java.util.Optional;
 
+/**
+ * Account services
+ *
+ * @author: matthewjflee
+ */
 public interface AccountServices {
+
+    Optional<Account> findAccountByEmail(String email);
+
+    void compareAccounts(Account account1, Account account2);
 
     boolean confirmAccount(Long id);
 

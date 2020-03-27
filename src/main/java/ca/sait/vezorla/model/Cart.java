@@ -35,7 +35,7 @@ public class Cart implements Serializable {
     private boolean fromAccount;
 
     @JsonIgnore
-    @OneToMany(mappedBy = "cart")
+    @OneToMany(mappedBy = "cart", cascade = {CascadeType.ALL})
     @Column
     private List<LineItem> lineItems;
 

@@ -6,7 +6,6 @@ import ca.sait.vezorla.model.Account;
 import ca.sait.vezorla.model.Cart;
 import ca.sait.vezorla.model.LineItem;
 import ca.sait.vezorla.model.Product;
-import ca.sait.vezorla.service.AuthenticationServices;
 import ca.sait.vezorla.service.AccountServices;
 import ca.sait.vezorla.service.EmailServices;
 import ca.sait.vezorla.service.UserServices;
@@ -256,47 +255,50 @@ public class CustomerRestController {
             consumes = {"application/json"},
             produces = {"application/json"})
     @ResponseBody
-    public ResponseEntity<String> getShippingInfo(@RequestBody Account account,
+    public ResponseEntity<String> getShippingInfo(@RequestBody Account sendAccount,
                                                   HttpServletRequest request)
             throws JsonProcessingException, InvalidInputException, UnauthorizedException {
         String output;
         HttpSession session = request.getSession();
         Cart cart;
+        Account sessionAccount = (Account) session.getAttribute("ACCOUNT");
 
-        System.out.println(account.getEmail() + " " + account.isUserCreated());
-
-        //Grab the account
-        Optional<Account> findAccount = userServices.findAccountByEmail(account.getEmail());
-        if(!findAccount.isPresent()) {
-            cart = userServices.getSessionCart(session);
-        } else {
-            Account updateAccount = findAccount.get();
-            updateAccount.setEmail(account.getEmail());
-            updateAccount.setFirstName(account.getFirstName());
-            updateAccount.setLastName(account.getLastName());
-            updateAccount.setPhoneNum(account.getPhoneNum());
-
-            //Grab cart
-            cart = accountServices.findRecentCart(account);
-            cart.setLineItems(accountServices.getSavedCartLineItems(cart));
-        }
-
-        //Grab the cart
-        if (account == null || !account.isUserCreated())
+        if (sessionAccount == null || !sessionAccount.isUserCreated())
             cart = userServices.getSessionCart(session);
         else {
-            cart = accountServices.findRecentCart(account);
-            cart.setLineItems(accountServices.getSavedCartLineItems(cart));
-            System.out.println("here");
+            //Grab the account
+            Optional<Account> findAccount = accountServices.findAccountByEmail(sessionAccount.getEmail());
+
+            System.out.println("present" + findAccount.isPresent());
+
+            if (!findAccount.isPresent()) {
+                cart = userServices.getSessionCart(session);
+            } else {
+                //Update account with
+                Account updateAccount = findAccount.get();
+                updateAccount.setEmail(sessionAccount.getEmail());
+                updateAccount.setFirstName(sessionAccount.getFirstName());
+                updateAccount.setLastName(sessionAccount.getLastName());
+                updateAccount.setPhoneNum(sessionAccount.getPhoneNum());
+                updateAccount.setAddress(sessionAccount.getAddress());
+                updateAccount.setCity(sessionAccount.getCity());
+                updateAccount.setProvince(sessionAccount.getProvince());
+                updateAccount.setPostalCode(sessionAccount.getPostalCode());
+                updateAccount.setCountry(sessionAccount.getCountry());
+                updateAccount.setSubscript(sessionAccount.isSubscript());
+
+                //Grab cart
+                cart = accountServices.findRecentCart(sessionAccount);
+                cart.setLineItems(accountServices.getSavedCartLineItems(cart));
+            }
         }
 
         System.out.println(cart.getLineItems().size());
         //Check
-        if(cart.getLineItems().size() > 0)
-            output = userServices.getShippingInfo(session, account);
+        if (cart.getLineItems().size() > 0)
+            output = userServices.getShippingInfo(session, sendAccount);
         else
             throw new UnauthorizedException();
-
 
         return ResponseEntity.ok().body(output);
     }
@@ -313,7 +315,7 @@ public class CustomerRestController {
         else
             cart = accountServices.findRecentCart(account);
 
-        if(!userServices.checkLineItemStock(cart)){
+        if (!userServices.checkLineItemStock(cart)) {
             throw new OutOfStockException();
         }
 
@@ -488,6 +490,7 @@ public class CustomerRestController {
 
     /**
      * Method to complete transactions after a successful payment
+     *
      * @param success boolean if payment was successful
      * @param request for the session
      * @throws UnauthorizedException
@@ -495,7 +498,7 @@ public class CustomerRestController {
      */
     @PutMapping("payment/success")
     public void successfulPayment(@RequestBody boolean success, HttpServletRequest request) throws UnauthorizedException, InvalidInputException {
-        if(success){
+        if (success) {
             userServices.paymentTransactions(request);
         }
     }

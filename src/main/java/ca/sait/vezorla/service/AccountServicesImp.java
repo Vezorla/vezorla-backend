@@ -17,6 +17,7 @@ import org.springframework.stereotype.Service;
 
 import javax.transaction.Transactional;
 import java.util.ArrayList;
+import java.util.Comparator;
 import java.util.List;
 import java.util.Optional;
 
@@ -25,9 +26,21 @@ import java.util.Optional;
 public class AccountServicesImp implements AccountServices {
 
     private InvoiceRepo invoiceRepo;
+
     private AccountRepo accountRepo;
     private CartRepo cartRepo;
     private LineItemRepo lineItemRepo;
+
+    /**
+     * Find an account by email
+     *
+     * @author: matthewjflee
+     * @param email user's email
+     * @return Account
+     */
+    public Optional<Account> findAccountByEmail(String email) {
+        return accountRepo.findById(email);
+    }
 
     public boolean confirmAccount(Long id) {
         return false;
@@ -41,6 +54,11 @@ public class AccountServicesImp implements AccountServices {
         return null;
     }
 
+    public void compareAccounts(Account account1, Account account2) {
+        int compare = account1.compareTo(account2);
+        System.out.println("compare me "  + compare);
+    }
+
     /**
      * Save the account in the database
      * @param account account to save
@@ -50,6 +68,10 @@ public class AccountServicesImp implements AccountServices {
     public boolean saveAccount(Account account) {
         Account saved = accountRepo.save(account);
         return true;
+    }
+
+    public void updateAccount(Account account) {
+
     }
 
     /**
