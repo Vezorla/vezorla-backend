@@ -891,13 +891,13 @@ public class UserServicesImp implements UserServices {
 
         //Create new cart if the user is a client
         Account account = (Account) session.getAttribute("ACCOUNT");
-        assert account != null;
         if (account.isUserCreated()) {
             ArrayList<Cart> carts = (ArrayList<Cart>) account.getCarts();
             carts.add(new Cart());
         }
         else{
-            session.removeAttribute("CART");
+            System.out.println("Remove");
+            request.getSession().removeAttribute("CART");
         }
     }
 
