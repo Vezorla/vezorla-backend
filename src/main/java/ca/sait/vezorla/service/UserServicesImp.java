@@ -873,7 +873,7 @@ public class UserServicesImp implements UserServices {
     public void paymentTransactions(HttpServletRequest request) throws UnauthorizedException, InvalidInputException {
         HttpSession session = request.getSession();
 
-        //check to ensure all previous steps have been performed
+        ///check to ensure all previous steps have been performed
         if (session.getAttribute("INVOICE") == null) {
             throw new UnauthorizedException();
         }
@@ -888,6 +888,17 @@ public class UserServicesImp implements UserServices {
         //send email to customer/client
         double totalAsDouble = (double) newInvoice.getTotal() / 100;
         emailServices.sendInvoiceEmail(newInvoice.getAccount().getEmail(), newInvoice, totalAsDouble);
+
+        //Create new cart if the user is a client
+        Account account = (Account) session.getAttribute("ACCOUNT");
+        if (account.isUserCreated()) {
+            ArrayList<Cart> carts = (ArrayList<Cart>) account.getCarts();
+            carts.add(new Cart());
+        }
+        else{
+            System.out.println("Remove");
+            request.getSession().removeAttribute("CART");
+        }
     }
 
 }

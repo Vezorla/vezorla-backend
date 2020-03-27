@@ -2,7 +2,9 @@ package ca.sait.vezorla.controller;
 
 import ca.sait.vezorla.exception.InvalidInputException;
 import ca.sait.vezorla.exception.UnableToSaveException;
+import ca.sait.vezorla.exception.UnauthorizedException;
 import ca.sait.vezorla.model.Account;
+import ca.sait.vezorla.model.Cart;
 import ca.sait.vezorla.model.Invoice;
 import ca.sait.vezorla.service.AuthenticationServices;
 import ca.sait.vezorla.service.AccountServices;
@@ -10,6 +12,7 @@ import ca.sait.vezorla.service.UserServices;
 import com.fasterxml.jackson.core.JsonProcessingException;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import lombok.AllArgsConstructor;
+import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 
 import javax.servlet.http.HttpServletRequest;
@@ -83,5 +86,27 @@ public class ClientRestController {
     public String viewOrderHistory(@PathVariable String email) throws JsonProcessingException {
         ObjectMapper mapper = new ObjectMapper();
         return mapper.writerWithDefaultPrettyPrinter().writeValueAsString(accountServices.viewOrderHistory(email, mapper));
+    }
+
+    @PostMapping(value = "/cart/checkout/shipping")
+    public ResponseEntity<String> getShippingInfo(@RequestBody Account account,
+                                                  HttpServletRequest request)
+            throws JsonProcessingException, InvalidInputException, UnauthorizedException {
+        String output;
+        HttpSession session = request.getSession();
+        Cart cart;
+
+        cart = accountServices.findRecentCart(account);
+
+
+
+        //Check
+        if(cart.getLineItems().size() > 0)
+            output = userServices.getShippingInfo(session, account);
+        else
+            throw new UnauthorizedException();
+
+
+        return ResponseEntity.ok().body(output);
     }
 }
