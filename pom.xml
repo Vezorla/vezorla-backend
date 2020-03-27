@@ -107,6 +107,11 @@
             <artifactId>rest-api-sdk</artifactId>
             <version>1.4.2</version>
         </dependency>
+        <dependency>
+            <groupId>org.json</groupId>
+            <artifactId>json</artifactId>
+            <version>20190722</version>
+        </dependency>
     </dependencies>
 
     <build>

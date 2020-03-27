@@ -38,7 +38,7 @@ public class LineItem implements Serializable {
     @Column(name = "current_price")
     private long currentPrice;
 
-    @ManyToOne
+    @ManyToOne//(cascade = {CascadeType.ALL})
     @JoinColumn(name = "order_num")
     private Cart cart;
 

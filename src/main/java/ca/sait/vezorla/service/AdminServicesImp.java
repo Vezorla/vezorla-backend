@@ -7,6 +7,8 @@ import com.fasterxml.jackson.databind.ObjectMapper;
 import com.fasterxml.jackson.databind.node.ArrayNode;
 import com.fasterxml.jackson.databind.node.ObjectNode;
 import lombok.AllArgsConstructor;
+import org.json.JSONArray;
+import org.json.JSONObject;
 import org.springframework.stereotype.Service;
 
 import java.util.Date;
@@ -104,8 +106,24 @@ public class AdminServicesImp implements AdminServices {
         return null;
     }
 
-    public boolean savePurchaseOrder(PurchaseOrder purchaseOrder) {
-        return false;
+    public boolean savePurchaseOrder(String body) {
+
+        JSONObject obj = new JSONObject(body);
+        String received = obj.getJSONObject(("po")).getString("recieved");
+
+        JSONArray arr = obj.getJSONArray("lots");
+
+        for(int i = 0; i < arr.length(); i++){
+            Lot lot = new Lot();
+            int qty = arr.getJSONObject(i).getInt("qty");
+            double cost = arr.getJSONObject(i).getDouble("cost");
+            String bestBefore = arr.getJSONObject(i).getString("bestBefore");
+            long prodId = arr.getJSONObject(i).getLong("prodId");
+        }
+
+
+
+        return true;
     }
 
     public void restoreBackup(Long id) {

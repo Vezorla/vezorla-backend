@@ -1,6 +1,7 @@
 package ca.sait.vezorla.service;
 
 import ca.sait.vezorla.controller.util.CustomerClientUtil;
+import ca.sait.vezorla.exception.InvalidInputException;
 import ca.sait.vezorla.model.Account;
 import ca.sait.vezorla.model.Cart;
 import ca.sait.vezorla.model.Invoice;
@@ -15,8 +16,10 @@ import com.fasterxml.jackson.databind.node.ObjectNode;
 import lombok.AllArgsConstructor;
 import org.springframework.stereotype.Service;
 
+import javax.servlet.http.HttpSession;
 import javax.transaction.Transactional;
 import java.util.ArrayList;
+import java.util.Comparator;
 import java.util.List;
 import java.util.Optional;
 
@@ -25,9 +28,21 @@ import java.util.Optional;
 public class AccountServicesImp implements AccountServices {
 
     private InvoiceRepo invoiceRepo;
+
     private AccountRepo accountRepo;
     private CartRepo cartRepo;
     private LineItemRepo lineItemRepo;
+
+    /**
+     * Find an account by email
+     *
+     * @author: matthewjflee
+     * @param email user's email
+     * @return Account
+     */
+    public Optional<Account> findAccountByEmail(String email) {
+        return accountRepo.findById(email);
+    }
 
     public boolean confirmAccount(Long id) {
         return false;
@@ -41,15 +56,63 @@ public class AccountServicesImp implements AccountServices {
         return null;
     }
 
+    public void compareAccounts(Account account1, Account account2) {
+        int compare = account1.compareTo(account2);
+        System.out.println("compare me "  + compare);
+    }
+
     /**
      * Save the account in the database
      * @param account account to save
      * @return if it was saved
      * @author: matthewjflee
      */
-    public boolean saveAccount(Account account) {
+    public boolean saveAccount(Account account, HttpSession session) {
         Account saved = accountRepo.save(account);
+        session.setAttribute("ACCOUNT", account);
         return true;
+    }
+
+    public Account updateAccount(Account account, Account changed) throws InvalidInputException {
+        CustomerClientUtil customerClientUtil = new CustomerClientUtil();
+
+        if(changed.getEmail() != null)
+            account.setEmail(changed.getEmail());
+
+        if(changed.getFirstName() != null)
+            account.setFirstName(changed.getFirstName());
+
+        if(changed.getLastName() != null)
+            account.setLastName(changed.getLastName());
+
+        if(changed.getPhoneNum() != null) {
+            customerClientUtil.validatePhoneNumber(changed.getPhoneNum());
+            account.setPhoneNum(changed.getPhoneNum());
+        }
+
+        if(changed.getAddress() != null)
+            account.setAddress(changed.getAddress());
+
+        if(changed.getCity() != null)
+            account.setCity(changed.getCity());
+
+        if(changed.getProvince() != null)
+            account.setProvince(changed.getProvince());
+
+        if(changed.getPassword() != null)
+            account.setPassword(changed.getPassword());
+
+        if(changed.getPostalCode() != null) {
+            customerClientUtil.validatePostalCode(changed.getPostalCode());
+            account.setPostalCode(changed.getPostalCode());
+        }
+
+        if(changed.getCountry() != null)
+            account.setCountry(changed.getCountry());
+
+        account.setSubscript(changed.isSubscript());
+
+        return account;
     }
 
     /**
@@ -59,8 +122,8 @@ public class AccountServicesImp implements AccountServices {
      * @author: matthewjflee
      */
     public boolean saveCart(Cart cart) {
-        if (cart.getLineItems().size() > 0)
-            saveLineItems(cart.getLineItems());
+//        if (cart.getLineItems().size() > 0)
+//            saveLineItems(cart.getLineItems());
 
         cartRepo.save(cart);
         return true;
@@ -217,4 +280,8 @@ public class AccountServicesImp implements AccountServices {
         return node;
     }
 
+    public List<LineItem> getSavedCartLineItems(Cart cart){
+        List<LineItem> lineItems = lineItemRepo.findLineItemByOrderNum(cart.getOrderNum());
+        return lineItems;
+    }
 }
