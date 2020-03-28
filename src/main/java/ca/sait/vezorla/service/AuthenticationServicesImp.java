@@ -55,8 +55,12 @@ public class AuthenticationServicesImp implements AuthenticationServices {
      */
     public Optional<Account> login(String email, String password, HttpSession session) {
         Optional<Account> account = accountRepo.findByEmailAndPassword(email, password);
-        if (account.isPresent())
+        if (account.isPresent()) {
             session.setAttribute("ACCOUNT", account.get());
+
+            //Check if temp account cookie is in session and remove it
+            session.removeAttribute("TEMP-ACCOUNT");
+        }
         else
             throw new AccountNotFoundException();
 
