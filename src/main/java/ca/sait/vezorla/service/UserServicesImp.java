@@ -11,7 +11,6 @@ import com.fasterxml.jackson.databind.node.ArrayNode;
 import com.fasterxml.jackson.databind.node.ObjectNode;
 import lombok.AllArgsConstructor;
 import org.springframework.stereotype.Service;
-import org.springframework.web.bind.annotation.PutMapping;
 
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpSession;
@@ -125,15 +124,13 @@ public class UserServicesImp implements UserServices {
     /**
      * Validate the order quantity before adding the product to the cart as a line item
      *
-     * @param orderedQuantitySent the quantity wanted to add to the line item
+     * @param orderedQuantity the quantity wanted to add to the line item
      * @param inStockQuantity     quantity currently in stock in database
      * @return the difference. >=0 means there is enough stock. >0 means
      * there is not enough stock.
      * @author matthewjflee, jjrr1717
      */
-    public int validateOrderedQuantity(String orderedQuantitySent, int inStockQuantity) {
-        orderedQuantitySent = orderedQuantitySent.replaceAll("\"", "");
-        int orderedQuantity = Integer.parseInt(orderedQuantitySent);
+    public int validateOrderedQuantity(int orderedQuantity, int inStockQuantity) {
         return inStockQuantity - orderedQuantity;
     }
 
@@ -144,26 +141,29 @@ public class UserServicesImp implements UserServices {
      * checkout process
      *
      * @param cart    to check if any items are out of stock
-     * @param request for the session
+     * @param session for the session
      * @return an ArrayNode of all the out of stock items for front end
      * to use.
      * @author jjrr1717
      */
-    public ArrayNode checkItemsOrderedOutOfStock(Cart cart, HttpServletRequest request) {
+    public ArrayNode checkItemsOrderedOutOfStock(Cart cart, HttpSession session) {
         ArrayNode outOfStockItems = mapper.createArrayNode();
+
         //check quantity in stock for each item
         for (int i = 0; i < cart.getLineItems().size(); i++) {
-            ObjectNode outOfStockNode = mapper.createObjectNode();
-            int quantityInStock = getProductQuantity(cart.getLineItems().get(i).getProduct().getProdId());
-            int checkQuantity = validateOrderedQuantity(cart.getLineItems().get(i).getQuantity() + "", quantityInStock);
+            LineItem li = cart.getLineItems().get(i);
+
+            int quantityInStock = getProductQuantity(li.getProduct().getProdId());
+            int checkQuantity = validateOrderedQuantity(li.getQuantity(), quantityInStock);
 
             if (checkQuantity < 0) {
                 checkQuantity = Math.abs(checkQuantity);
 
                 //update cart to only include amount that can be ordered
-                updateLineItemSession(cart.getLineItems().get(i).getProduct().getProdId(),
-                        quantityInStock, cart, request);
+                updateLineItem(li.getProduct().getProdId(),
+                        quantityInStock, cart, session);
 
+                ObjectNode outOfStockNode = mapper.createObjectNode();
                 outOfStockNode.put("name", cart.getLineItems().get(i).getProduct().getName());
                 outOfStockNode.put("by", checkQuantity);
                 outOfStockItems.add(outOfStockNode);
@@ -177,32 +177,25 @@ public class UserServicesImp implements UserServices {
      * Create a line item from the product for a customer
      *
      * @param product      for the line item
-     * @param sentQuantity quantity for the line item
+     * @param quantity quantity for the line item
      * @param cart         user's cart
      * @return line item to be added to the session
      * @author matthewjflee, jjrr1717
      */
-//    public ArrayList<LineItem> createLineItemSession(Optional<Product> product, String sentQuantity, Cart cart) {
-    public List<LineItem> createLineItemSession(Optional<Product> product, String sentQuantity, Cart cart) {
+    public List<LineItem> createLineItem(Product product, int quantity, Cart cart) {
         //Get cart
         LineItem lineItem;
-//        ArrayList<LineItem> lineItems;
         List<LineItem> lineItems;
 
-        //Parse quantity
-        sentQuantity = sentQuantity.replaceAll("\"", "");
-        int quantity = Integer.parseInt(sentQuantity);
-
         //check if product already exists
-        int lineItemIndex = checkProductLineItem(product.get().getProdId(), cart);
+        int lineItemIndex = checkProductLineItem(product.getProdId(), cart);
         if (lineItemIndex == -1) {
             //Create line item
-            lineItem = new LineItem(quantity, product.get().getName(), product.get().getPrice(), cart, product.get());
-//            lineItems = (ArrayList<LineItem>) cart.getLineItems();
+            lineItem = new LineItem(quantity, product.getName(), product.getPrice(), cart, product);
             lineItems = cart.getLineItems();
             lineItems.add(lineItem);
         } else {
-            lineItems = updateLineItemAdd(quantity, cart, lineItemIndex);
+            lineItems = updateLineItemQuantity(quantity, cart, lineItemIndex);
         }
 
         return lineItems;
@@ -240,15 +233,13 @@ public class UserServicesImp implements UserServices {
      * @return list of line items
      * @author jjrr1717, matthewjflee
      */
-    private List<LineItem> updateLineItemAdd(int quantity, Cart cart, int index) {
+    private List<LineItem> updateLineItemQuantity(int quantity, Cart cart, int index) {
         //get cart with line items
         List<LineItem> lineItems = cart.getLineItems();
 
         //Set quantity
         int currentQuantity = lineItems.get(index).getQuantity();
         lineItems.get(index).setQuantity(currentQuantity + quantity);
-
-//        cart.setLineItems(lineItems);
 
         return lineItems;
     }
@@ -260,9 +251,10 @@ public class UserServicesImp implements UserServices {
      * @param id       of the product to update
      * @param quantity of the line item
      * @param cart     to add updated line item
+     * @param session user session
      * @author matthewjflee, jjrr1717
      */
-    public boolean updateLineItemSession(long id, int quantity, Cart cart, HttpServletRequest request) {
+    public boolean updateLineItem(long id, int quantity, Cart cart, HttpSession session) {
         boolean result = false;
         List<LineItem> lineItems = cart.getLineItems();
         LineItem lineItem = null;
@@ -280,7 +272,7 @@ public class UserServicesImp implements UserServices {
                 accountServices.saveLineItem(lineItem);
         }
         else
-            request.getSession().setAttribute("CART", cart);
+            session.setAttribute("CART", cart);
 
         return result;
     }
@@ -295,7 +287,7 @@ public class UserServicesImp implements UserServices {
      * @return a boolean true if successfully removed, otherwise false.
      * @author matthewjflee, jjrr1717
      */
-    public boolean removeLineItemSession(long id, Cart cart, HttpSession session) {
+    public boolean removeLineItem(long id, Cart cart, HttpSession session) {
         boolean result = false;
         long deleteLineNum = -1;
         List<LineItem> lineItems = cart.getLineItems();
@@ -322,18 +314,6 @@ public class UserServicesImp implements UserServices {
         return result;
     }
 
-    /**
-     * Create and persist an account in the Accounts table
-     *
-     * @param account to persist in database
-     * @return boolean true if it was successfully added, otherwise false
-     * @author matthewjflee, jjrr1717
-     */
-    public boolean saveAccount(Account account) {
-        Account saved = accountRepo.save(account);
-        return true;
-    }
-
     public Optional<Account> findAccountByEmail(String email) {
         return accountRepo.findById(email);
     }
@@ -348,7 +328,7 @@ public class UserServicesImp implements UserServices {
         CustomerClientUtil ccu = new CustomerClientUtil();
 
         //obtain all the products
-        ArrayList<Product> products = (ArrayList<Product>) productRepo.findAll();
+        List<Product> products = productRepo.findAll();
 
         //create custom json
         ArrayNode productsNode = mapper.createArrayNode();
@@ -356,31 +336,12 @@ public class UserServicesImp implements UserServices {
         //loop through products
         for (int i = 0; i < products.size(); i++) {
             ObjectNode node = productsNode.objectNode();
-            node.put("prodId", products.get(i).getProdId());
-            node.put("name", products.get(i).getName());
-            node.put("description", products.get(i).getDescription());
-            node.put("subdescription", products.get(i).getSubdescription());
-            node.put("harvestTime:", products.get(i).getHarvestTime());
-            node.put("imageMain", products.get(i).getImageMain());
-            node.put("imageOne", products.get(i).getImageOne());
-            node.put("imageTwo", products.get(i).getImageTwo());
-            node.put("imageThree", products.get(i).getImageThree());
-            node.put("active", products.get(i).isActive());
-            node.put("threshold", products.get(i).getThreshhold());
-            node.put("price", ccu.formatAmount(products.get(i).getPrice()));
-            node.put("oldPrice", ccu.formatAmount(products.get(i).getOldPrice()));
-            productsNode.add(node);
+            Product product = products.get(i);
+
+            getProductInfo(ccu, productsNode, product, node);
         }
 
         return productsNode;
-    }
-
-    public Cart getCart() {
-        return null;
-    }
-
-    public List<Lot> getLots(Long id) {
-        return null;
     }
 
     /**
@@ -391,34 +352,42 @@ public class UserServicesImp implements UserServices {
      * @author matthewjflee, jjrr1717
      */
     public ArrayNode getProduct(Long id, ObjectMapper mapper) {
-
         CustomerClientUtil ccu = new CustomerClientUtil();
+        ArrayNode productsNode = mapper.createArrayNode();
+        Product product;
 
         //obtain all the products
-        Optional<Product> product = productRepo.findById(id);
+        Optional<Product> findProduct = productRepo.findById(id);
+        if(findProduct.isPresent()) {
+            product = findProduct.get();
 
-        //create custom json
-        ArrayNode productsNode = mapper.createArrayNode();
+            //create custom json
+            ObjectNode node = productsNode.objectNode();
 
-        ObjectNode node = productsNode.objectNode();
-        node.put("prodId", product.get().getProdId());
-        node.put("name", product.get().getName());
-        node.put("description", product.get().getDescription());
-        node.put("subdescription", product.get().getSubdescription());
-        node.put("harvestTime:", product.get().getHarvestTime());
-        node.put("imageMain", product.get().getImageMain());
-        node.put("imageOne", product.get().getImageOne());
-        node.put("imageTwo", product.get().getImageTwo());
-        node.put("imageThree", product.get().getImageThree());
-        node.put("active", product.get().isActive());
-        node.put("threshold", product.get().getThreshhold());
-        node.put("price", ccu.formatAmount(product.get().getPrice()));
-        node.put("oldPrice", ccu.formatAmount(product.get().getOldPrice()));
-        productsNode.add(node);
-
+            getProductInfo(ccu, productsNode, product, node);
+        }
 
         return productsNode;
     }
+
+    private void getProductInfo(CustomerClientUtil ccu, ArrayNode productsNode, Product product, ObjectNode node) {
+        node.put("prodId", product.getProdId());
+        node.put("name", product.getName());
+        node.put("description", product.getDescription());
+        node.put("subdescription", product.getSubdescription());
+        node.put("harvestTime:", product.getHarvestTime());
+        node.put("imageMain", product.getImageMain());
+        node.put("imageOne", product.getImageOne());
+        node.put("imageTwo", product.getImageTwo());
+        node.put("imageThree", product.getImageThree());
+        node.put("active", product.isActive());
+        node.put("threshold", product.getThreshhold());
+        node.put("price", ccu.formatAmount(product.getPrice()));
+        node.put("oldPrice", ccu.formatAmount(product.getOldPrice()));
+
+        productsNode.add(node);
+    }
+
 
     /**
      * Return a specified product
@@ -521,17 +490,14 @@ public class UserServicesImp implements UserServices {
     /**
      * Method to send information about the cart to the front-end
      *
-     * @param request the session
      * @param cart    to view
      * @return ArrayNode containing the information for the cart to view
-     * @throws JsonProcessingException error when parsing JSON
      * @author jjrr1717, matthewjflee
      */
-    public ArrayNode viewSessionCart(HttpServletRequest request, Cart cart) throws JsonProcessingException {
+    public ArrayNode viewCart(Cart cart) {
         CustomerClientUtil customerClientUtil = new CustomerClientUtil();
-        HttpSession session = request.getSession();
         ArrayNode arrayNode = mapper.createArrayNode();
-//        ArrayNode outOfStockItems = checkItemsOrderedOutOfStock(cart, request);
+
         for (int i = 0; i < cart.getLineItems().size(); i++) {
             ObjectNode node = mapper.createObjectNode();
             node.put("prodID", cart.getLineItems().get(i).getProduct().getProdId());
@@ -541,6 +507,7 @@ public class UserServicesImp implements UserServices {
             node.put("quantity", cart.getLineItems().get(i).getQuantity());
             arrayNode.add(node);
         }
+
         return arrayNode;
     }
 
@@ -552,19 +519,20 @@ public class UserServicesImp implements UserServices {
      * @return String boolean if account is created successfully for shipping info
      * @throws InvalidInputException   return 503
      * @throws JsonProcessingException exception when parsing json
-     * @author: matthewjflee, jjrr1717
+     * @author matthewjflee, jjrr1717
      */
     public String getShippingInfo(HttpSession session, Account account) throws InvalidInputException, JsonProcessingException {
-        if(!account.isUserCreated())
+        if(!account.isUserCreated()) {
             shippingAccount(session, account);
+        }
 
         session.setAttribute("PICKUP", account.isPickup());
-        boolean created = saveAccount(account);
+        boolean created = accountServices.saveAccount(account);
 
         return mapper.writerWithDefaultPrettyPrinter().writeValueAsString(created);
     }
 
-    private void shippingAccount(HttpSession session, Account account) throws InvalidInputException {
+    private Account shippingAccount(HttpSession session, Account account) throws InvalidInputException {
         CustomerClientUtil customerClientUtil = new CustomerClientUtil();
 
         if (account.getEmail() == null || account.getFirstName() == null || account.getLastName() == null ||
@@ -578,8 +546,8 @@ public class UserServicesImp implements UserServices {
 
         session.setAttribute("ACCOUNT", account);
         session.setAttribute("TEMP-ACCOUNT", true);
-        boolean created = saveAccount(account);
 
+        return account;
     }
 
     /**

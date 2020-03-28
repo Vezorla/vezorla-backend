@@ -17,7 +17,7 @@ public class AuthenticationServicesImp implements AuthenticationServices {
 
     private AccountRepo accountRepo;
 
-    private UserServices userServices;
+    private AccountServices accountServices;
 
     private EmailServices emailServices;
 
@@ -26,7 +26,7 @@ public class AuthenticationServicesImp implements AuthenticationServices {
     }
 
     public boolean forgotPassword(String email) throws InvalidInputException {
-        Optional<Account> accountOptional = userServices.findAccountByEmail(email);
+        Optional<Account> accountOptional = accountServices.findAccountByEmail(email);
 
         if(accountOptional.isPresent()) {
             String password = generatePassword();

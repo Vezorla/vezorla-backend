@@ -23,11 +23,11 @@ public interface AccountServices {
 
     Optional<Account> findAccountByEmail(String email);
 
-    void compareAccounts(Account account1, Account account2);
-
     boolean confirmAccount(Long id);
 
     List<Invoice> getOrder(Long id);
+
+    boolean saveAccount(Account account);
 
     boolean saveAccount(Account account, HttpSession session);
 
@@ -45,13 +45,7 @@ public interface AccountServices {
 
     void deleteLineItem(Long lineNum, Long cartID);
 
-    Optional<Cart> findCartById(long id);
-
-    boolean validatePaymentInfo();
-
     ObjectNode viewInvoice(Long invoiceNum, ObjectMapper mapper);
 
     ObjectNode viewOrderHistory(ObjectMapper mapper, HttpServletRequest request);
-
-    List<LineItem> getSavedCartLineItems(Cart cart);
 }

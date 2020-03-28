@@ -22,23 +22,17 @@ public interface UserServices {
 
     ArrayNode getAllProducts(ObjectMapper mapper);
 
-    Cart getCart();
-
-    List<Lot> getLots(Long id);
-
     ArrayNode getProduct(Long id, ObjectMapper mapper);
 
     Optional<Product> getProduct(Long id);
-
-    void getStoreProducts(Long id);
 
     List<Discount> getValidDiscounts(String email);
 
     List<Lot> obtainSufficientQtyLots(int qty, Product product);
 
-    boolean removeLineItemSession(long id, Cart cart, HttpSession session);
+    boolean removeLineItem(long id, Cart cart, HttpSession session);
 
-    boolean updateLineItemSession(long id, int quantity, Cart cart, HttpServletRequest request);
+    boolean updateLineItem(long id, int quantity, Cart cart, HttpSession session);
 
     Cart getCart(HttpSession session);
 
@@ -48,18 +42,13 @@ public interface UserServices {
 
     String getTotalCartQuantity(List<LineItem> lineItems);
 
-    int validateOrderedQuantity(String orderedQuantitySent, int inStockQuantity);
+    int validateOrderedQuantity(int orderedQuantity, int inStockQuantity);
 
-    List<LineItem> createLineItemSession(Optional<Product> product, String quantity, Cart cart);
-//    List<LineItem> createLineItemSession(Optional<Product> product, String quantity, Cart cart);
-
-    boolean saveAccount(Account account);
-
-    Optional<Account> findAccountByEmail(String email);
+    List<LineItem> createLineItem(Product product, int quantity, Cart cart);
 
     void getSelectedDiscount(String code, HttpServletRequest request, HttpSession session);
 
-    ArrayNode viewSessionCart(HttpServletRequest request, Cart cart) throws JsonProcessingException;
+    ArrayNode viewCart(Cart cart);
 
     String getShippingInfo(HttpSession session, Account account) throws InvalidInputException, JsonProcessingException;
 
@@ -67,7 +56,7 @@ public interface UserServices {
 
     ArrayNode reviewOrder(HttpSession session, ArrayNode mainArrayNode, Cart cart);
 
-    ArrayNode checkItemsOrderedOutOfStock(Cart cart, HttpServletRequest request);
+    ArrayNode checkItemsOrderedOutOfStock(Cart cart, HttpSession session);
 
     void decreaseInventory(HttpServletRequest request);
 
@@ -81,5 +70,5 @@ public interface UserServices {
 
     boolean checkLineItemStock(Cart cart);
 
-    public void paymentTransactions(HttpServletRequest request) throws UnauthorizedException, InvalidInputException;
+    void paymentTransactions(HttpServletRequest request) throws UnauthorizedException, InvalidInputException;
 }

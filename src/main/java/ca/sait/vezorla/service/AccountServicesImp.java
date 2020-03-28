@@ -49,17 +49,20 @@ public class AccountServicesImp implements AccountServices {
         return false;
     }
 
-    public Account findById(Long id) {
-        return null;
-    }
-
     public List<Invoice> getOrder(Long id) {
         return null;
     }
 
-    public void compareAccounts(Account account1, Account account2) {
-        int compare = account1.compareTo(account2);
-        System.out.println("compare me "  + compare);
+    /**
+     * Create and persist an account in the Accounts table
+     *
+     * @param account to persist in database
+     * @return boolean true if it was successfully added, otherwise false
+     * @author matthewjflee, jjrr1717
+     */
+    public boolean saveAccount(Account account) {
+        accountRepo.save(account);
+        return true;
     }
 
     /**
@@ -69,7 +72,7 @@ public class AccountServicesImp implements AccountServices {
      * @author: matthewjflee
      */
     public boolean saveAccount(Account account, HttpSession session) {
-        Account saved = accountRepo.save(account);
+        accountRepo.save(account);
         session.setAttribute("ACCOUNT", account);
         return true;
     }
@@ -184,14 +187,6 @@ public class AccountServicesImp implements AccountServices {
         }
     }
 
-    public Optional<Cart> findCartById(long id) {
-        return cartRepo.findById(id);
-    }
-
-    public boolean validatePaymentInfo() {
-        return false;
-    }
-
     /**
      * Method to view an individual invoice
      * from a client's account
@@ -285,10 +280,5 @@ public class AccountServicesImp implements AccountServices {
         node.put("invoices", invoiceNodes);
 
         return node;
-    }
-
-    public List<LineItem> getSavedCartLineItems(Cart cart){
-        List<LineItem> lineItems = lineItemRepo.findLineItemByOrderNum(cart.getOrderNum());
-        return lineItems;
     }
 }
