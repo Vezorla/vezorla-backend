@@ -16,6 +16,7 @@ import com.fasterxml.jackson.databind.node.ObjectNode;
 import lombok.AllArgsConstructor;
 import org.springframework.stereotype.Service;
 
+import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpSession;
 import javax.transaction.Transactional;
 import java.util.ArrayList;
@@ -254,16 +255,18 @@ public class AccountServicesImp implements AccountServices {
      * Method to view the order history on a client's
      * account.
      *
-     * @param email  of the client's account.
      * @param mapper to make the custom json
      * @return ObjectNode containing nodes for custom json
      * @author jjrr1717
      */
-    public ObjectNode viewOrderHistory(String email, ObjectMapper mapper) {
+    public ObjectNode viewOrderHistory(ObjectMapper mapper, HttpServletRequest request) {
         CustomerClientUtil ccu = new CustomerClientUtil();
 
+        //get account email
+        Account account = (Account) request.getSession().getAttribute("ACCOUNT");
+
         //obtain all the invoices for account
-        List<Invoice> invoices = invoiceRepo.findAllByAccount_Email(email);
+        List<Invoice> invoices = invoiceRepo.findAllByAccount_Email(account.getEmail());
 
         //create custom json
         ObjectNode node = mapper.createObjectNode();

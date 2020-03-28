@@ -785,13 +785,14 @@ public class UserServicesImp implements UserServices {
         Cart cart = getCart(session);
         List<LineItem> lineItems = cart.getLineItems();
 
+        //persist cart because it is a parent
+        cartRepo.save(cart);
         //loop through lineitems. Assign cart number & invoice number and persist line item
         for (int i = 0; i < lineItems.size(); i++) {
             lineItems.get(i).setInvoice(invoice);
+            lineItems.get(i).setCart(cart);
+            lineItemRepo.save(lineItems.get(i));
         }
-
-        //persist cart because it is a parent
-        cartRepo.save(cart);
     }
 
     /**
