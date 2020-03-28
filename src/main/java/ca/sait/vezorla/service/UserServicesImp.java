@@ -577,6 +577,7 @@ public class UserServicesImp implements UserServices {
         account.setAccountType('C');
 
         session.setAttribute("ACCOUNT", account);
+        session.setAttribute("TEMP-ACCOUNT", true);
         boolean created = saveAccount(account);
 
     }

@@ -74,7 +74,9 @@ public class AuthenticationRestController {
 
         //Grab account
         Account account = (Account) session.getAttribute("ACCOUNT");
-        if(account != null)
+        boolean tempAccount = (boolean ) session.getAttribute("TEMP-ACCOUNT");
+
+        if(account != null && !tempAccount)
             node.put("admin", account.isAccountAdmin());
         else
             throw new AccountNotFoundException();
