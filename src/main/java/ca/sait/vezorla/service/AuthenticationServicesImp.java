@@ -11,24 +11,33 @@ import javax.servlet.http.HttpSession;
 import java.util.Calendar;
 import java.util.Optional;
 
+/**
+ * Authentication services
+ *
+ * @author matthewjflee
+ */
 @AllArgsConstructor
 @Service
 public class AuthenticationServicesImp implements AuthenticationServices {
 
     private AccountRepo accountRepo;
-
     private AccountServices accountServices;
-
     private EmailServices emailServices;
 
+    /**
+     * Generate a password for the user
+     *
+     * @return generated password
+     * @author kwistech
+     */
     public String generatePassword() {
-        return "Vezorla" + Calendar.getInstance().get(Calendar.DAY_OF_YEAR);
+        return "AceiteDeOlivaVezorla " + Calendar.getInstance().get(Calendar.DAY_OF_YEAR);
     }
 
     public boolean forgotPassword(String email) throws InvalidInputException {
         Optional<Account> accountOptional = accountServices.findAccountByEmail(email);
 
-        if(accountOptional.isPresent()) {
+        if (accountOptional.isPresent()) {
             String password = generatePassword();
             Account account = accountOptional.get();
             account.setPassword(password);
@@ -44,14 +53,14 @@ public class AuthenticationServicesImp implements AuthenticationServices {
 
     /**
      * Check if the user's account is present
-     * If it is, perisist in session
+     * If it is, persist in session
      * If not, throw AccountNotFoundException
      *
-     * @author: matthewjflee
-     * @param email
-     * @param password
-     * @param session
-     * @return
+     * @param email    email login
+     * @param password password
+     * @param session  user's session
+     * @return account
+     * @author matthewjflee
      */
     public Optional<Account> login(String email, String password, HttpSession session) {
         Optional<Account> account = accountRepo.findByEmailAndPassword(email, password);
@@ -60,8 +69,7 @@ public class AuthenticationServicesImp implements AuthenticationServices {
 
             //Check if temp account cookie is in session and remove it
             session.removeAttribute("TEMP-ACCOUNT");
-        }
-        else
+        } else
             throw new AccountNotFoundException();
 
         return account;

@@ -154,6 +154,12 @@ public class AccountServicesImp implements AccountServices {
         return cart;
     }
 
+    /**
+     * Create a new cart for a client
+     * @param account account to create new cart for
+     * @return cart
+     * @author matthewjflee
+     */
     public Cart createNewCart(Account account) {
         Cart cart = new Cart(account);
         List<Cart> carts = cartRepo.findCartsByAccount_Email(account.getEmail());

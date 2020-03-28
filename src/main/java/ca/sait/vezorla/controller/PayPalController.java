@@ -3,8 +3,6 @@ package ca.sait.vezorla.controller;
 import ca.sait.vezorla.controller.util.CustomerClientUtil;
 import ca.sait.vezorla.exception.InvalidInputException;
 import ca.sait.vezorla.exception.UnauthorizedException;
-import ca.sait.vezorla.model.Account;
-import ca.sait.vezorla.model.Cart;
 import ca.sait.vezorla.model.Invoice;
 import ca.sait.vezorla.service.EmailServices;
 import ca.sait.vezorla.service.PaypalServices;
@@ -21,41 +19,44 @@ import org.springframework.web.bind.annotation.RequestParam;
 
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpSession;
-import java.util.ArrayList;
 
 /**
- * Controller for paypal payments
+ * Controller for PayPal payments
  * Taken from: https://github.com/Java-Techie-jt/spring-boot-paypal-example/blob/master/src/main/java/com/javatechie/spring/paypal/api/PaypalController.java
+ *
+ * @author jjrr1717
  */
 @AllArgsConstructor
 @Controller
 @CrossOrigin
-public class PaypalController {
+public class PayPalController {
 
     public static final String SUCCESS_URL = "cart/payment/success";
     public static final String CANCEL_URL = "cart/payment";
-    PaypalServices paypalServices;
 
+    private PaypalServices paypalServices;
     private UserServices userServices;
     private EmailServices emailServices;
 
     /**
-     * Method to make the payment through paypal
+     * Method to make the payment through PayPal
+     *
      * @param request the session
      * @return a String to redirect user
-     * @throws UnauthorizedException
+     * @throws UnauthorizedException if user is not authorized
+     * @author jjrr1717
      */
     @PostMapping("/customer/cart/payment")
     public String makePayment(HttpServletRequest request) throws UnauthorizedException, InvalidInputException {
         HttpSession session = request.getSession();
 
-        userServices.decreaseInventory(request);
-        userServices.applyDiscount(request);
-        Invoice newInvoice = userServices.saveInvoice(request);
+        userServices.decreaseInventory(session);
+        userServices.applyDiscount(session);
+        Invoice newInvoice = userServices.saveInvoice(session);
         userServices.applyLineItemsToInvoice(newInvoice);
 
 
-        userServices.saveLineItems(request, newInvoice);
+        userServices.saveLineItems(session, newInvoice);
 
         //check to ensure all previous steps have been performed
         if (session.getAttribute("INVOICE") == null) {
@@ -68,20 +69,8 @@ public class PaypalController {
         String formattedTotal = ccu.formatAmount(invoice.getTotal());
         double totalAsDouble = Double.parseDouble(formattedTotal);
 
-        //Send email
-        //Move later
-        emailServices.sendInvoiceEmail(invoice.getAccount().getEmail(), invoice, totalAsDouble);
-
-        //Create new cart if the user is a client
-//        Account account = (Account) session.getAttribute("ACCOUNT");
-//        assert account != null;
-//        if (account.isUserCreated()) {
-//            ArrayList<Cart> carts = (ArrayList<Cart>) account.getCarts();
-//            carts.add(new Cart());
-//        }
-
         //divide by 100 for total
-        double finalTotal = (double) newInvoice.getTotal() /100;
+        double finalTotal = (double) newInvoice.getTotal() / 100;
 
         try {
             Payment payment = paypalServices.createPayment(finalTotal, "CAD", "paypal",
@@ -98,12 +87,17 @@ public class PaypalController {
         }
         System.out.println("Made payment");
 
+        //Send email
+        emailServices.sendInvoiceEmail(invoice.getAccount().getEmail(), invoice, totalAsDouble);
+
         return "redirect:/";
     }
 
     /**
      * Method if the payment was cancelled
-     * @return
+     *
+     * @return cancel URL
+     * @author jjrr1717
      */
     @GetMapping(value = "/customer/cart/payment/cancel")
     public String cancelPay() {
@@ -113,10 +107,12 @@ public class PaypalController {
 
     /**
      * Method if the payment was successful
-     * @param paymentId
-     * @param payerId
-     * @param request
-     * @return
+     *
+     * @param paymentId payment ID
+     * @param payerId   payer's ID
+     * @param request   user request
+     * @return success URL
+     * @author jjrr1717
      */
     @GetMapping(value = "/customer/cart/payment/success")
     public String successPay(@RequestParam("paymentId") String paymentId, @RequestParam("PayerID") String payerId, HttpServletRequest request) {

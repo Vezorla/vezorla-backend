@@ -17,6 +17,10 @@ import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpSession;
 import java.util.Optional;
 
+/**
+ * Authentication
+ * @author matthewjflee
+ */
 @AllArgsConstructor
 @RestController
 @RequestMapping(AuthenticationRestController.URL)
@@ -28,12 +32,14 @@ public class AuthenticationRestController {
     /**
      * Find an account with that email and password
      *
-     * @return
+     * @return email and role of client
      * @author matthewjflee
      */
     @PostMapping("login")
     public ResponseEntity<String> login(@RequestBody String body, HttpServletRequest request) throws JsonProcessingException {
         HttpSession session = request.getSession();
+        ObjectMapper mapper = new ObjectMapper();
+        ObjectNode node = mapper.createObjectNode();
         String email = null;
         String password = null;
 
@@ -43,17 +49,18 @@ public class AuthenticationRestController {
             JSONObject jo = (JSONObject) obj;
             email = (String) jo.get("email");
             password = (String) jo.get("password");
-        } catch (ParseException e) {
+        } catch (ParseException ignored) {
         }
 
         //Find account in DB
-        Optional<Account> account = authServices.login(email, password, session);
+        Optional<Account> findAccount = authServices.login(email, password, session);
+        if(findAccount.isPresent()) {
+            Account account = findAccount.get();
+            node.put("email", account.getEmail());
+            node.put("admin", account.isAccountAdmin());
+        }
 
         //Create custom JSON for return
-        ObjectMapper mapper = new ObjectMapper();
-        ObjectNode node = mapper.createObjectNode();
-        node.put("email", account.get().getEmail());
-        node.put("admin", account.get().isAccountAdmin());
         String output = mapper.writerWithDefaultPrettyPrinter().writeValueAsString(node);
 
         return ResponseEntity.ok().body(output);
@@ -61,10 +68,10 @@ public class AuthenticationRestController {
 
     /**
      * Check the current role of the authenticated user
-     * @author: matthewjflee
      * @param request: HTTP request
      * @return role
-     * @throws JsonProcessingException
+     * @throws JsonProcessingException thrown if there is a problem parsing JSON
+     * @author matthewjflee
      */
     @GetMapping("check-role")
     public ResponseEntity<String> checkRole(HttpServletRequest request) throws JsonProcessingException {
@@ -95,9 +102,9 @@ public class AuthenticationRestController {
      * This way, it does not create a session if one is not existing
      * Will invalidate and check afterwards
      *
-     * @author: matthewjflee
      * @param request Http Request
      * @return result result if the session was invalidated
+     * @author matthewjflee
      */
     @DeleteMapping("logout")
     public boolean logout(HttpServletRequest request) {
@@ -111,5 +118,4 @@ public class AuthenticationRestController {
 
         return result;
     }
-
 }
