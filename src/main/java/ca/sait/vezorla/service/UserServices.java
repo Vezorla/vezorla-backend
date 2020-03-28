@@ -44,7 +44,7 @@ public interface UserServices {
 
     List<LineItem> createLineItem(Product product, int quantity, Cart cart);
 
-    void getSelectedDiscount(String code, HttpServletRequest request, HttpSession session);
+    void getSelectedDiscount(String code, HttpSession session);
 
     ArrayNode viewCart(Cart cart);
 

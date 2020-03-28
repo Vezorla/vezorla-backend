@@ -447,25 +447,24 @@ public class UserServicesImp implements UserServices {
      * front-end body.
      *
      * @param code    for the discount
-     * @param request the session
      * @param session the current session
      * @author jjrr1717
      */
-    public void getSelectedDiscount(String code, HttpServletRequest request, HttpSession session) {
-        session = request.getSession();
+    public void getSelectedDiscount(String code, HttpSession session) {
 
         //get user email from session
         Account account = (Account) session.getAttribute("ACCOUNT");
         String discountCode = code.replaceAll("\"", "");
+
         //create discount object
         Discount discount = new Discount();
         discount.setCode(discountCode);
+
         //create a AccountDiscount object
         AccountDiscount holdDiscount = new AccountDiscount(account, discount);
 
         //store account_discount into session
         session.setAttribute("ACCOUNT_DISCOUNT", holdDiscount);
-
     }
 
     /**

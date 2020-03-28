@@ -253,6 +253,13 @@ public class CustomerRestController {
         return ResponseEntity.ok().body(output);
     }
 
+    /**
+     * Return the user's info and check if user's line items are out of stock
+     * @param request user request
+     * @return user information
+     * @throws JsonProcessingException error parsing JSON
+     * @throws OutOfStockException error if the line item is out of stock
+     */
     @GetMapping(value = "info")
     public String getUserInfo(HttpServletRequest request) throws JsonProcessingException, OutOfStockException {
         ObjectMapper mapper = new ObjectMapper();
@@ -324,11 +331,12 @@ public class CustomerRestController {
      *
      * @param code    discount code the user selected
      * @param request for the session
+     * @author jjrr1717
      */
     @PutMapping("selected_discount/get")
     public void getSelectedDiscount(@RequestBody String code, HttpServletRequest request) {
         HttpSession session = request.getSession();
-        userServices.getSelectedDiscount(code, request, session);
+        userServices.getSelectedDiscount(code, session);
     }
 
     /**
@@ -338,6 +346,7 @@ public class CustomerRestController {
      * @param request user request
      * @return user's order
      * @throws JsonProcessingException parsing error
+     * @author jjrr1717
      */
     @GetMapping("cart/review")
     public String reviewOrder(HttpServletRequest request) throws JsonProcessingException, UnauthorizedException {
@@ -346,13 +355,10 @@ public class CustomerRestController {
         Cart cart = userServices.getCart(session);
         ArrayNode mainArrayNode = mapper.createArrayNode();
 
-        if (session.getAttribute("ACCOUNT_DISCOUNT") != null) {
-
+        if (session.getAttribute("ACCOUNT_DISCOUNT") != null)
             mainArrayNode = userServices.reviewOrder(session, mainArrayNode, cart);
-
-        } else {
+        else
             throw new UnauthorizedException();
-        }
 
         return mapper.writerWithDefaultPrettyPrinter().writeValueAsString(mainArrayNode);
     }
