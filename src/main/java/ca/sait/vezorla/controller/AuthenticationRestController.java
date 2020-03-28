@@ -74,10 +74,16 @@ public class AuthenticationRestController {
 
         //Grab account
         Account account = (Account) session.getAttribute("ACCOUNT");
-        if(account != null)
-            node.put("admin", account.isAccountAdmin());
-        else
+        Boolean tempAccount = (Boolean) session.getAttribute("TEMP-ACCOUNT");
+
+        if(tempAccount == null && account != null) {
+            System.out.println("no temp acc");
+
+                System.out.println("acc is here");
+                node.put("admin", account.isAccountAdmin());
+        } else
             throw new AccountNotFoundException();
+
         String output = mapper.writerWithDefaultPrettyPrinter().writeValueAsString(node);
 
         return ResponseEntity.ok().body(output);
