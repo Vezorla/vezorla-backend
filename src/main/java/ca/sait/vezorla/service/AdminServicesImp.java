@@ -55,6 +55,7 @@ public class AdminServicesImp implements AdminServices {
 
     /**
      * Method to get all the products for admin view
+     *
      * @param mapper for custom json
      * @return ObjectNode of custom json
      */
@@ -68,7 +69,7 @@ public class AdminServicesImp implements AdminServices {
         ArrayNode productNodes = node.arrayNode();
 
         //loop through products to get invoice details
-        for(Product product : products){
+        for (Product product : products) {
             ObjectNode productNode = productNodes.objectNode();
             productNode.put("name", product.getName());
             productNode.put("imageMain", product.getImageMain());
@@ -113,14 +114,13 @@ public class AdminServicesImp implements AdminServices {
 
         JSONArray arr = obj.getJSONArray("lots");
 
-        for(int i = 0; i < arr.length(); i++){
+        for (int i = 0; i < arr.length(); i++) {
             Lot lot = new Lot();
             int qty = arr.getJSONObject(i).getInt("qty");
             double cost = arr.getJSONObject(i).getDouble("cost");
             String bestBefore = arr.getJSONObject(i).getString("bestBefore");
             long prodId = arr.getJSONObject(i).getLong("prodId");
         }
-
 
 
         return true;

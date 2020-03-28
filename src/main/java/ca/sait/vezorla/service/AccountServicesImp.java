@@ -37,9 +37,9 @@ public class AccountServicesImp implements AccountServices {
     /**
      * Find an account by email
      *
-     * @author: matthewjflee
      * @param email user's email
-     * @return Account
+     * @return Account the account
+     * @author matthewjflee
      */
     public Optional<Account> findAccountByEmail(String email) {
         return accountRepo.findById(email);
@@ -49,31 +49,44 @@ public class AccountServicesImp implements AccountServices {
         return false;
     }
 
-    public Account findById(Long id) {
-        return null;
-    }
-
     public List<Invoice> getOrder(Long id) {
         return null;
     }
 
-    public void compareAccounts(Account account1, Account account2) {
-        int compare = account1.compareTo(account2);
-        System.out.println("compare me "  + compare);
+    /**
+     * Create and persist an account in the Accounts table
+     *
+     * @param account to persist in database
+     * @return boolean true if it was successfully added, otherwise false
+     * @author matthewjflee, jjrr1717
+     */
+    public boolean saveAccount(Account account) {
+        accountRepo.save(account);
+        return true;
     }
 
     /**
      * Save the account in the database
      * @param account account to save
      * @return if it was saved
-     * @author: matthewjflee
+     * @author matthewjflee
      */
     public boolean saveAccount(Account account, HttpSession session) {
-        Account saved = accountRepo.save(account);
+        accountRepo.save(account);
         session.setAttribute("ACCOUNT", account);
         return true;
     }
 
+    /**
+     * Update the existing account with the fields
+     * The reason why this method has so many checks is if this is not done, it will replace the field with null
+     * in the accounts table
+     * @param account Account to be updated
+     * @param changed new info
+     * @return the account after updating
+     * @throws InvalidInputException if the postal code or phone number is invalid
+     * @author matthewjflee
+     */
     public Account updateAccount(Account account, Account changed) throws InvalidInputException {
         CustomerClientUtil customerClientUtil = new CustomerClientUtil();
 
@@ -120,12 +133,9 @@ public class AccountServicesImp implements AccountServices {
      * Persist the user's cart in the database
      * @param cart cart to persist
      * @return if it was persisted
-     * @author: matthewjflee
+     * @author matthewjflee
      */
     public boolean saveCart(Cart cart) {
-//        if (cart.getLineItems().size() > 0)
-//            saveLineItems(cart.getLineItems());
-
         cartRepo.save(cart);
         return true;
     }
@@ -134,7 +144,7 @@ public class AccountServicesImp implements AccountServices {
      * Find the most recent cart from the account
      * @param account account to find the cart from
      * @return cart
-     * @author: matthewjflee
+     * @author matthewjflee
      */
     public Cart findRecentCart(Account account) {
         Cart cart = cartRepo.findCartByAccount_Email(account.getEmail());
@@ -144,6 +154,12 @@ public class AccountServicesImp implements AccountServices {
         return cart;
     }
 
+    /**
+     * Create a new cart for a client
+     * @param account account to create new cart for
+     * @return cart
+     * @author matthewjflee
+     */
     public Cart createNewCart(Account account) {
         Cart cart = new Cart(account);
         List<Cart> carts = cartRepo.findCartsByAccount_Email(account.getEmail());
@@ -157,7 +173,7 @@ public class AccountServicesImp implements AccountServices {
      * Persist line items in the database
      * @param lineItems line items to save
      * @return if it was saved
-     * @author: matthewjflee
+     * @author matthewjflee
      */
     public boolean saveLineItems(List<LineItem> lineItems) {
         for (LineItem li : lineItems) {
@@ -175,21 +191,13 @@ public class AccountServicesImp implements AccountServices {
      * Delete the line item from the database
      * @param lineNum line item to remove
      * @param cartID cart to delete line item from
-     * @author: matthewjflee
+     * @author matthewjflee
      */
     @Transactional
     public void deleteLineItem(Long lineNum, Long cartID) {
         if (lineNum > 0) {
             lineItemRepo.deleteLineItemByLineNumAndCart_OrderNum(lineNum, cartID);
         }
-    }
-
-    public Optional<Cart> findCartById(long id) {
-        return cartRepo.findById(id);
-    }
-
-    public boolean validatePaymentInfo() {
-        return false;
     }
 
     /**
@@ -285,10 +293,5 @@ public class AccountServicesImp implements AccountServices {
         node.put("invoices", invoiceNodes);
 
         return node;
-    }
-
-    public List<LineItem> getSavedCartLineItems(Cart cart){
-        List<LineItem> lineItems = lineItemRepo.findLineItemByOrderNum(cart.getOrderNum());
-        return lineItems;
     }
 }

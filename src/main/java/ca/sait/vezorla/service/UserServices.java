@@ -18,48 +18,35 @@ import java.util.Optional;
  */
 public interface UserServices {
 
-    void applyDiscount(HttpServletRequest request);
-
     ArrayNode getAllProducts(ObjectMapper mapper);
-
-    Cart getCart();
-
-    List<Lot> getLots(Long id);
 
     ArrayNode getProduct(Long id, ObjectMapper mapper);
 
     Optional<Product> getProduct(Long id);
 
-    void getStoreProducts(Long id);
-
     List<Discount> getValidDiscounts(String email);
 
     List<Lot> obtainSufficientQtyLots(int qty, Product product);
 
-    boolean removeLineItemSession(long id, Cart cart, HttpSession session);
+    boolean removeLineItem(long id, Cart cart, HttpSession session);
 
-    boolean updateLineItemSession(long id, int quantity, Cart cart, HttpServletRequest request);
+    boolean updateLineItem(long id, int quantity, Cart cart, HttpSession session);
 
     Cart getCart(HttpSession session);
 
-    Cart updateSessionCart(List<LineItem> lineItems, Cart cart, HttpServletRequest request);
+    void addLineItemToSessionCart(List<LineItem> lineItems, Cart cart, HttpSession session);
 
     int getProductQuantity(Long id);
 
     String getTotalCartQuantity(List<LineItem> lineItems);
 
-    int validateOrderedQuantity(String orderedQuantitySent, int inStockQuantity);
+    int validateOrderedQuantity(int orderedQuantity, int inStockQuantity);
 
-    List<LineItem> createLineItemSession(Optional<Product> product, String quantity, Cart cart);
-//    List<LineItem> createLineItemSession(Optional<Product> product, String quantity, Cart cart);
+    List<LineItem> createLineItem(Product product, int quantity, Cart cart);
 
-    boolean saveAccount(Account account);
+    void getSelectedDiscount(String code, HttpSession session);
 
-    Optional<Account> findAccountByEmail(String email);
-
-    void getSelectedDiscount(String code, HttpServletRequest request, HttpSession session);
-
-    ArrayNode viewSessionCart(HttpServletRequest request, Cart cart) throws JsonProcessingException;
+    ArrayNode viewCart(Cart cart);
 
     String getShippingInfo(HttpSession session, Account account) throws InvalidInputException, JsonProcessingException;
 
@@ -67,13 +54,13 @@ public interface UserServices {
 
     ArrayNode reviewOrder(HttpSession session, ArrayNode mainArrayNode, Cart cart);
 
-    ArrayNode checkItemsOrderedOutOfStock(Cart cart, HttpServletRequest request);
+    ArrayNode checkItemsOrderedOutOfStock(Cart cart, HttpSession session);
 
-    void decreaseInventory(HttpServletRequest request);
+    void decreaseInventory(HttpSession session);
 
-    Invoice saveInvoice(HttpServletRequest request);
+    Invoice saveInvoice(HttpSession session);
 
-    void saveLineItems(HttpServletRequest request, Invoice invoice);
+    void saveLineItems(HttpSession session, Invoice invoice);
 
     void applyLineItemsToInvoice(Invoice invoice);
 
@@ -81,5 +68,7 @@ public interface UserServices {
 
     boolean checkLineItemStock(Cart cart);
 
-    public void paymentTransactions(HttpServletRequest request) throws UnauthorizedException, InvalidInputException;
+    void applyDiscount(HttpSession session);
+
+    void paymentTransactions(HttpSession session) throws UnauthorizedException, InvalidInputException;
 }
