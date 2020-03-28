@@ -8,6 +8,7 @@ import ca.sait.vezorla.model.LineItem;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import com.fasterxml.jackson.databind.node.ObjectNode;
 
+import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpSession;
 import java.util.ArrayList;
 import java.util.List;
@@ -36,6 +37,8 @@ public interface AccountServices {
 
     Cart findRecentCart(Account account);
 
+    Cart createNewCart(Account account);
+
     boolean saveLineItems(List<LineItem> lineItems);
 
     void saveLineItem(LineItem li);
@@ -48,7 +51,7 @@ public interface AccountServices {
 
     ObjectNode viewInvoice(Long invoiceNum, ObjectMapper mapper);
 
-    ObjectNode viewOrderHistory(String email, ObjectMapper mapper);
+    ObjectNode viewOrderHistory(ObjectMapper mapper, HttpServletRequest request);
 
     List<LineItem> getSavedCartLineItems(Cart cart);
 }
