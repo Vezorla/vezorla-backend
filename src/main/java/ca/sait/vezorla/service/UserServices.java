@@ -18,8 +18,6 @@ import java.util.Optional;
  */
 public interface UserServices {
 
-    void applyDiscount(HttpServletRequest request);
-
     ArrayNode getAllProducts(ObjectMapper mapper);
 
     ArrayNode getProduct(Long id, ObjectMapper mapper);
@@ -36,7 +34,7 @@ public interface UserServices {
 
     Cart getCart(HttpSession session);
 
-    Cart updateSessionCart(List<LineItem> lineItems, Cart cart, HttpServletRequest request);
+    void addLineItemToSessionCart(List<LineItem> lineItems, Cart cart, HttpSession session);
 
     int getProductQuantity(Long id);
 
@@ -58,11 +56,11 @@ public interface UserServices {
 
     ArrayNode checkItemsOrderedOutOfStock(Cart cart, HttpSession session);
 
-    void decreaseInventory(HttpServletRequest request);
+    void decreaseInventory(HttpSession session);
 
-    Invoice saveInvoice(HttpServletRequest request);
+    Invoice saveInvoice(HttpSession session);
 
-    void saveLineItems(HttpServletRequest request, Invoice invoice);
+    void saveLineItems(HttpSession session, Invoice invoice);
 
     void applyLineItemsToInvoice(Invoice invoice);
 
@@ -70,5 +68,7 @@ public interface UserServices {
 
     boolean checkLineItemStock(Cart cart);
 
-    void paymentTransactions(HttpServletRequest request) throws UnauthorizedException, InvalidInputException;
+    void applyDiscount(HttpSession session);
+
+    void paymentTransactions(HttpSession session) throws UnauthorizedException, InvalidInputException;
 }

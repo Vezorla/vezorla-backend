@@ -117,7 +117,7 @@ public class CustomerRestController {
                         accountServices.saveAccount(account, session);
                         accountServices.saveCart(cart);
                     } else
-                        userServices.updateSessionCart(lineItems, cart, request);
+                        userServices.addLineItemToSessionCart(lineItems, cart, session);
 
                     node.put("added", true);
                 }
@@ -306,11 +306,12 @@ public class CustomerRestController {
         ObjectMapper mapper = new ObjectMapper();
         HttpSession session = request.getSession();
         ArrayNode arrayNode = mapper.createArrayNode();
-        if (session.getAttribute("ACCOUNT") != null) {
+
+        if (session.getAttribute("ACCOUNT") != null)
             arrayNode = userServices.buildValidDiscounts(session, arrayNode);
-        } else {
+        else
             throw new UnauthorizedException();
-        }
+
         return mapper.writerWithDefaultPrettyPrinter().writeValueAsString(arrayNode);
     }
 
@@ -405,7 +406,8 @@ public class CustomerRestController {
     @PutMapping("payment/success")
     public void successfulPayment(@RequestBody boolean success, HttpServletRequest request) throws UnauthorizedException, InvalidInputException {
         if (success) {
-            userServices.paymentTransactions(request);
+            HttpSession session = request.getSession();
+            userServices.paymentTransactions(session);
         }
     }
 

@@ -8,7 +8,6 @@ import ca.sait.vezorla.model.Cart;
 import ca.sait.vezorla.model.Invoice;
 import ca.sait.vezorla.service.AccountServices;
 import ca.sait.vezorla.service.AuthenticationServices;
-import ca.sait.vezorla.service.UserServices;
 import com.fasterxml.jackson.core.JsonProcessingException;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import lombok.AllArgsConstructor;
@@ -36,14 +35,13 @@ public class ClientRestController {
      * Create a new account
      *
      * @param body: JSON sending email and password
-     * @author: matthewjflee
+     * @author matthewjflee
      */
     @PostMapping("create-account")
-    public boolean createAccount(@RequestBody String body, HttpServletRequest request) {
+    public boolean createAccount(@RequestBody String body) {
         String email = null;
         String password = null;
         String rePassword = null;
-        HttpSession session = request.getSession();
 
         try {
             Object obj = new JSONParser().parse(body);
@@ -51,7 +49,7 @@ public class ClientRestController {
             email = (String) jo.get("email");
             password = (String) jo.get("password");
             rePassword = (String) jo.get("rePassword");
-        } catch (ParseException e) {
+        } catch (ParseException ignored) {
         }
 
         //Check if password and rePassword are the same
