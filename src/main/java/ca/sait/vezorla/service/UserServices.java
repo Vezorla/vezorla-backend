@@ -1,6 +1,7 @@
 package ca.sait.vezorla.service;
 
 import ca.sait.vezorla.exception.InvalidInputException;
+import ca.sait.vezorla.exception.OutOfStockException;
 import ca.sait.vezorla.exception.UnauthorizedException;
 import ca.sait.vezorla.model.*;
 import com.fasterxml.jackson.core.JsonProcessingException;
@@ -30,7 +31,7 @@ public interface UserServices {
 
     boolean removeLineItem(long id, Cart cart, HttpSession session);
 
-    boolean updateLineItem(long id, int quantity, Cart cart, HttpSession session);
+    boolean updateLineItem(long id, int quantity, Cart cart, HttpSession session) throws OutOfStockException;
 
     Cart getCart(HttpSession session);
 
@@ -54,7 +55,7 @@ public interface UserServices {
 
     ArrayNode reviewOrder(HttpSession session, ArrayNode mainArrayNode, Cart cart);
 
-    ArrayNode checkItemsOrderedOutOfStock(Cart cart, HttpSession session);
+    ArrayNode checkItemsOrderedOutOfStock(Cart cart, HttpSession session) throws OutOfStockException;
 
     void decreaseInventory(HttpSession session);
 
@@ -70,5 +71,7 @@ public interface UserServices {
 
     void applyDiscount(HttpSession session);
 
-    void paymentTransactions(HttpSession session) throws UnauthorizedException, InvalidInputException;
+    boolean paymentTransactions(HttpSession session) throws UnauthorizedException, InvalidInputException;
+
+    boolean checkIfLineItemInStock(long id, int updatedQty);
 }

@@ -2,6 +2,7 @@ package ca.sait.vezorla.service;
 
 import ca.sait.vezorla.controller.util.CustomerClientUtil;
 import ca.sait.vezorla.exception.InvalidInputException;
+import ca.sait.vezorla.exception.OutOfStockException;
 import ca.sait.vezorla.exception.UnauthorizedException;
 import ca.sait.vezorla.model.*;
 import ca.sait.vezorla.repository.*;
@@ -213,7 +214,7 @@ public class UserServicesImp implements UserServices {
      * to use.
      * @author jjrr1717
      */
-    public ArrayNode checkItemsOrderedOutOfStock(Cart cart, HttpSession session) {
+    public ArrayNode checkItemsOrderedOutOfStock(Cart cart, HttpSession session) throws OutOfStockException {
         ArrayNode outOfStockItems = mapper.createArrayNode();
 
         //check quantity in stock for each item
@@ -325,7 +326,13 @@ public class UserServicesImp implements UserServices {
      * @param session  user session
      * @author matthewjflee, jjrr1717
      */
-    public boolean updateLineItem(long id, int quantity, Cart cart, HttpSession session) {
+    public boolean updateLineItem(long id, int quantity, Cart cart, HttpSession session) throws OutOfStockException {
+        boolean inStock = checkIfLineItemInStock(id, quantity);
+
+        if(!inStock){
+            throw new OutOfStockException();
+        }
+
         boolean result = false;
         List<LineItem> lineItems = cart.getLineItems();
         LineItem lineItem = null;
@@ -345,6 +352,26 @@ public class UserServicesImp implements UserServices {
             session.setAttribute("CART", cart);
 
         return result;
+    }
+
+    /**
+     * Method to check if a single line item is out
+     * of stock during update.
+     *
+     * @param id of product
+     * @param updatedQty is new qty
+     * @return boolean true if item is in stock, otherwise false
+     */
+    public boolean checkIfLineItemInStock(long id, int updatedQty){
+        boolean inStock = true;
+
+        int inStockQty = getProductQuantity(id);
+        if(updatedQty > inStockQty){
+            inStock = false;
+        }
+
+        return inStock;
+
     }
 
 
@@ -831,7 +858,7 @@ public class UserServicesImp implements UserServices {
      * @throws UnauthorizedException thrown if there is no invoice in the session
      * @throws InvalidInputException postal code or phone number is invalid
      */
-    public void paymentTransactions(HttpSession session) throws UnauthorizedException, InvalidInputException {
+    public boolean paymentTransactions(HttpSession session) throws UnauthorizedException, InvalidInputException {
         ///check to ensure all previous steps have been performed
         if (session.getAttribute("INVOICE") == null)
             throw new UnauthorizedException();
@@ -853,6 +880,8 @@ public class UserServicesImp implements UserServices {
             accountServices.createNewCart(account);
         else
             session.removeAttribute("CART");
+
+        return true;
     }
 
 }

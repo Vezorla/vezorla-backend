@@ -410,11 +410,14 @@ public class CustomerRestController {
      * @author jjrr1717
      */
     @PutMapping("payment/success")
-    public void successfulPayment(@RequestBody boolean success, HttpServletRequest request) throws UnauthorizedException, InvalidInputException {
+    public boolean successfulPayment(@RequestBody boolean success, HttpServletRequest request) throws UnauthorizedException, InvalidInputException {
+        boolean output = false;
         if (success) {
             HttpSession session = request.getSession();
-            userServices.paymentTransactions(session);
+            output = userServices.paymentTransactions(session);
+
         }
+        return output;
     }
 
 }
