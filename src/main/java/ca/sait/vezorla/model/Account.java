@@ -1,10 +1,3 @@
-/**
- * Class to represent an account for
- * a client (more details included),
- * or a customer (less details included).
- *
- * @author Jocelyn Wegen
- */
 package ca.sait.vezorla.model;
 
 import com.fasterxml.jackson.annotation.JsonIgnore;
@@ -19,6 +12,13 @@ import java.util.ArrayList;
 import java.util.Comparator;
 import java.util.List;
 
+/**
+ * Class to represent an account for
+ * a client (more details included),
+ * or a customer (less details included).
+ *
+ * @author Jocelyn Wegen
+ */
 @AllArgsConstructor
 @NoArgsConstructor
 @Entity
@@ -39,7 +39,6 @@ public class Account implements Serializable {
     private String firstName;
 
     @Column(name = "phone_num")
-    //@Pattern(regexp = "((\\(\\d{3}\\) ?)|(\\d{3}-))?\\d{3}-\\d{4}")
     private String phoneNum;
 
     @Column(name = "address")
@@ -89,12 +88,6 @@ public class Account implements Serializable {
     @OneToMany(mappedBy ="account")
     private List<Invoice> invoices;
 
-//    @ManyToMany
-//    @JoinTable(name = "account_discount",
-//    		joinColumns = @JoinColumn(name = "email"),
-//    		inverseJoinColumns = @JoinColumn(name = "code"))
-//    private List<Discount> discountList;
-
     @JsonIgnore
     @OneToMany(mappedBy = "email")
     private List<AccountDiscount> accountDiscounts;
@@ -102,15 +95,15 @@ public class Account implements Serializable {
      /**
      * Constructor for gettings shipping information from a customer
      *
-     * @author: matthewjflee, jjrr1717
-     * @param email
-     * @param lastName
-     * @param firstName
-     * @param phoneNum
-     * @param address
-     * @param city
-     * @param country
-     * @param postalCode
+     * @author matthewjflee, jjrr1717
+     * @param email email
+     * @param lastName last name
+     * @param firstName first name
+     * @param phoneNum phone number
+     * @param address address
+     * @param city city
+     * @param country country
+     * @param postalCode postal
      */
     public Account(String email, String lastName, String firstName,
                    String phoneNum, String address, String city,
@@ -133,9 +126,9 @@ public class Account implements Serializable {
     /**
      * Constructor for creating account
      *
-     * @author: matthewjflee
-     * @param email
-     * @param password
+     * @author matthewjflee
+     * @param email email
+     * @param password password
      */
     public Account(String email, String password) {
         this.email = email;
@@ -151,8 +144,8 @@ public class Account implements Serializable {
      * Constructor for subscribing email
      * Ensures the account created is a customer
      *
-     * @author: matthewjflee
-     * @param email
+     * @author matthewjflee
+     * @param email email
      */
     public Account(String email) {
         this.email = email;
