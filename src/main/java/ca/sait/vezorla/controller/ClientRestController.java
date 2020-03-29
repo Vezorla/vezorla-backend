@@ -76,10 +76,25 @@ public class ClientRestController {
         return true;
     }
 
+    /**
+     * Update an existing account's information
+     * @param sendAccount account changed in the front-end
+     * @param request user request
+     * @return if it was updated
+     * @throws InvalidInputException thrown if phone number or postal is invalid
+     * @author matthewjflee
+     */
     @PutMapping("account/update")
-    public boolean updateAccount(@RequestBody Account account, HttpServletRequest request) {
+    public boolean updateAccount(@RequestBody Account sendAccount, HttpServletRequest request) throws InvalidInputException {
+        Account account = null;
         HttpSession session = request.getSession();
-        boolean created = accountServices.saveAccount(account, session);
+        Optional<Account> findAccount = accountServices.findAccountByEmail(sendAccount.getEmail());
+        if (findAccount.isPresent())
+            account = findAccount.get();
+
+        Account updateAccount = accountServices.updateAccount(account, sendAccount);
+
+        boolean created = accountServices.saveAccount(updateAccount, session);
         if (!created)
             throw new UnableToSaveException();
 

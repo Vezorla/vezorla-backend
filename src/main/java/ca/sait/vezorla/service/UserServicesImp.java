@@ -807,7 +807,7 @@ public class UserServicesImp implements UserServices {
         node.put("province", account.getProvince());
         node.put("postalCode", account.getPostalCode());
         node.put("country", account.getCountry());
-        node.put("subscription", account.isSubscript());
+        node.put("subscription", account.getIsSubscript());
 
         return node;
     }
@@ -819,9 +819,13 @@ public class UserServicesImp implements UserServices {
      * @param cart to check
      * @return boolean true if there is an item
      * in the cart with stock, otherwise false.
+     * @author jjrr1717, matthewjflee
      */
     public boolean checkLineItemStock(Cart cart) {
         boolean inStock = false;
+
+        if(cart.getLineItems().size() == 0)
+            return false;
 
         for (LineItem lineItem : cart.getLineItems()) {
             int quantity = getProductQuantity(lineItem.getProduct().getProdId());
