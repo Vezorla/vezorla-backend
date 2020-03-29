@@ -235,7 +235,7 @@ public class AccountServicesImp implements AccountServices {
     /**
      * Method to get all the line items in an invoice into
      * an ArrayNode. Will be used in viewInvoice() to
-     * create the json.
+     * create the json.s
      *
      * @param invoice to access the line items
      * @param node    used to store the ArrayNode of line items.
@@ -250,7 +250,7 @@ public class AccountServicesImp implements AccountServices {
             ObjectNode lineItem = lineItemNodes.objectNode();
             lineItem.put("name", invoice.getLineItemList().get(i).getCurrentName());
             lineItem.put("price", ccu.formatAmount(invoice.getLineItemList().get(i).getCurrentPrice()));
-
+            lineItem.put("qty", invoice.getLineItemList().get(i).getQuantity());
             //extended price
             long extendedPrice = invoice.getLineItemList().get(i).getQuantity() * invoice.getLineItemList().get(i).getCurrentPrice();
             lineItem.put("extendedPrice", ccu.formatAmount(extendedPrice));
