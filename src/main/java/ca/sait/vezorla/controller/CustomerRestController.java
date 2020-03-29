@@ -160,7 +160,7 @@ public class CustomerRestController {
      * @author jjrr1717
      */
     @GetMapping("cart/view/out_of_stock")
-    public String viewItemsOutOfStock(HttpServletRequest request) throws JsonProcessingException, OutOfStockException {
+    public String viewItemsOutOfStock(HttpServletRequest request) throws JsonProcessingException {
         HttpSession session = request.getSession();
         ObjectMapper mapper = new ObjectMapper();
         Cart cart = userServices.getCart(session);
@@ -193,7 +193,7 @@ public class CustomerRestController {
      * @author matthewjflee, jjrr1717
      */
     @PutMapping("cart/update/{id}/{quantity}")
-    public boolean updateLineItem(@PathVariable Long id, @PathVariable int quantity, HttpServletRequest request) throws OutOfStockException {
+    public boolean updateLineItem(@PathVariable Long id, @PathVariable int quantity, HttpServletRequest request)  {
         HttpSession session = request.getSession();
         Cart cart = userServices.getCart(session);
 

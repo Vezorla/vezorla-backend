@@ -214,7 +214,7 @@ public class UserServicesImp implements UserServices {
      * to use.
      * @author jjrr1717
      */
-    public ArrayNode checkItemsOrderedOutOfStock(Cart cart, HttpSession session) throws OutOfStockException {
+    public ArrayNode checkItemsOrderedOutOfStock(Cart cart, HttpSession session) {
         ArrayNode outOfStockItems = mapper.createArrayNode();
 
         //check quantity in stock for each item
@@ -326,30 +326,28 @@ public class UserServicesImp implements UserServices {
      * @param session  user session
      * @author matthewjflee, jjrr1717
      */
-    public boolean updateLineItem(long id, int quantity, Cart cart, HttpSession session) throws OutOfStockException {
+    public boolean updateLineItem(long id, int quantity, Cart cart, HttpSession session)  {
         boolean inStock = checkIfLineItemInStock(id, quantity);
-
-        if(!inStock){
-            throw new OutOfStockException();
-        }
-
         boolean result = false;
-        List<LineItem> lineItems = cart.getLineItems();
-        LineItem lineItem = null;
+        if(inStock) {
 
-        for (int i = 0; i < lineItems.size() && !result; i++) {
-            if (lineItems.get(i).getProduct().getProdId() == id) {
-                lineItem = lineItems.get(i);
-                lineItem.setQuantity(quantity);
-                result = true;
+            List<LineItem> lineItems = cart.getLineItems();
+            LineItem lineItem = null;
+
+            for (int i = 0; i < lineItems.size() && !result; i++) {
+                if (lineItems.get(i).getProduct().getProdId() == id) {
+                    lineItem = lineItems.get(i);
+                    lineItem.setQuantity(quantity);
+                    result = true;
+                }
             }
-        }
 
-        if (cart.isFromAccount()) {
-            if (lineItem != null)
-                accountServices.saveLineItem(lineItem);
-        } else
-            session.setAttribute("CART", cart);
+            if (cart.isFromAccount()) {
+                if (lineItem != null)
+                    accountServices.saveLineItem(lineItem);
+            } else
+                session.setAttribute("CART", cart);
+        }
 
         return result;
     }

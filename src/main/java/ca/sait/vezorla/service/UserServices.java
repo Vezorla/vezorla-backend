@@ -31,7 +31,7 @@ public interface UserServices {
 
     boolean removeLineItem(long id, Cart cart, HttpSession session);
 
-    boolean updateLineItem(long id, int quantity, Cart cart, HttpSession session) throws OutOfStockException;
+    boolean updateLineItem(long id, int quantity, Cart cart, HttpSession session);
 
     Cart getCart(HttpSession session);
 
@@ -55,7 +55,7 @@ public interface UserServices {
 
     ArrayNode reviewOrder(HttpSession session, ArrayNode mainArrayNode, Cart cart);
 
-    ArrayNode checkItemsOrderedOutOfStock(Cart cart, HttpSession session) throws OutOfStockException;
+    ArrayNode checkItemsOrderedOutOfStock(Cart cart, HttpSession session);
 
     void decreaseInventory(HttpSession session);
 
