@@ -47,5 +47,5 @@ public interface AccountServices {
 
     ObjectNode viewInvoice(Long invoiceNum, ObjectMapper mapper);
 
-    ObjectNode viewOrderHistory(ObjectMapper mapper, HttpServletRequest request);
+    ObjectNode viewOrderHistory(ObjectMapper mapper, HttpSession session);
 }
