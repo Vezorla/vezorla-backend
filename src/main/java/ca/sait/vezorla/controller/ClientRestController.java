@@ -40,7 +40,7 @@ public class ClientRestController {
      * @author matthewjflee
      */
     @PostMapping("create-account")
-    public boolean createAccount(@RequestBody String body) {
+    public boolean createAccount(@RequestBody String body) throws InvalidInputException {
         String email = null;
         String password = null;
         String rePassword = null;
@@ -61,7 +61,7 @@ public class ClientRestController {
 
         //Check if account exists
         Optional<Account> newAccount = accountServices.findAccountByEmail(email);
-        if (newAccount.isPresent()) //Account exists.
+        if (newAccount.isPresent() && newAccount.get().isUserCreated()) //Account exists.
             return false;
         else {
             newAccount = Optional.of(new Account(email, password));
@@ -74,7 +74,7 @@ public class ClientRestController {
                 accountServices.saveCart(cart);
 
                 //Send email
-
+                emailServices.sendCreateAccountEmail(email);
             }
         }
 
@@ -83,8 +83,9 @@ public class ClientRestController {
 
     /**
      * Update an existing account's information
+     *
      * @param sendAccount account changed in the front-end
-     * @param request user request
+     * @param request     user request
      * @return if it was updated
      * @throws InvalidInputException thrown if phone number or postal is invalid
      * @author matthewjflee
