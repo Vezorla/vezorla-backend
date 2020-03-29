@@ -119,7 +119,8 @@ public class ClientRestController {
      */
     @GetMapping("order_history")
     public String viewOrderHistory(HttpServletRequest request) throws JsonProcessingException {
+        HttpSession session = request.getSession();
         ObjectMapper mapper = new ObjectMapper();
-        return mapper.writerWithDefaultPrettyPrinter().writeValueAsString(accountServices.viewOrderHistory(mapper, request));
+        return mapper.writerWithDefaultPrettyPrinter().writeValueAsString(accountServices.viewOrderHistory(mapper, session));
     }
 }

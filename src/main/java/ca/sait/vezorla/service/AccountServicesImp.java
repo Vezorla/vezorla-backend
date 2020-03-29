@@ -267,11 +267,11 @@ public class AccountServicesImp implements AccountServices {
      * @return ObjectNode containing nodes for custom json
      * @author jjrr1717
      */
-    public ObjectNode viewOrderHistory(ObjectMapper mapper, HttpServletRequest request) {
+    public ObjectNode viewOrderHistory(ObjectMapper mapper, HttpSession session) {
         CustomerClientUtil ccu = new CustomerClientUtil();
 
         //get account email
-        Account account = (Account) request.getSession().getAttribute("ACCOUNT");
+        Account account = (Account) session.getAttribute("ACCOUNT");
 
         //obtain all the invoices for account
         List<Invoice> invoices = invoiceRepo.findAllByAccount_Email(account.getEmail());
@@ -281,11 +281,11 @@ public class AccountServicesImp implements AccountServices {
         ArrayNode invoiceNodes = node.arrayNode();
 
         //loop through invoices to get invoice details
-        for (int i = 0; i < invoices.size(); i++) {
+        for (Invoice invoice : invoices) {
             ObjectNode invoiceNode = invoiceNodes.objectNode();
-            invoiceNode.put("invoiceNum", invoices.get(i).getInvoiceNum());
-            invoiceNode.put("total", ccu.formatAmount(invoices.get(i).getTotal()));
-            String date = invoices.get(i).getDate() + "";
+            invoiceNode.put("invoiceNum", invoice.getInvoiceNum());
+            invoiceNode.put("total", ccu.formatAmount(invoice.getTotal()));
+            String date = invoice.getDate() + "";
             invoiceNode.put("date", date);
             invoiceNodes.add(invoiceNode);
         }
