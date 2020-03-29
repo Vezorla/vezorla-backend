@@ -249,7 +249,7 @@ public class AccountServicesImp implements AccountServices {
             ObjectNode lineItem = lineItemNodes.objectNode();
             lineItem.put("name", invoice.getLineItemList().get(i).getCurrentName());
             lineItem.put("price", ccu.formatAmount(invoice.getLineItemList().get(i).getCurrentPrice()));
-
+            lineItem.put("qty", invoice.getLineItemList().get(i).getQuantity());
             //extended price
             long extendedPrice = invoice.getLineItemList().get(i).getQuantity() * invoice.getLineItemList().get(i).getCurrentPrice();
             lineItem.put("extendedPrice", ccu.formatAmount(extendedPrice));
