@@ -8,10 +8,7 @@ import ca.sait.vezorla.service.AdminServices;
 import com.fasterxml.jackson.core.JsonProcessingException;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import lombok.AllArgsConstructor;
-import org.springframework.web.bind.annotation.GetMapping;
-import org.springframework.web.bind.annotation.PathVariable;
-import org.springframework.web.bind.annotation.RequestMapping;
-import org.springframework.web.bind.annotation.RestController;
+import org.springframework.web.bind.annotation.*;
 
 import java.util.Date;
 import java.util.List;
@@ -35,6 +32,12 @@ public class AdminRestController {
        ObjectMapper mapper = new ObjectMapper();
         return mapper.writerWithDefaultPrettyPrinter().writeValueAsString(adminServices.getAllProducts(mapper));
 
+    }
+
+    @PutMapping("receive_purchase_order")
+    public boolean receivePurchaseOrder(@RequestBody String body){
+        adminServices.receivePurchaseOrder(body);
+        return true;
     }
 
     @GetMapping("businessorder/pending")

@@ -461,7 +461,6 @@ public class UserServicesImp implements UserServices {
 
             arrayNode.add(node);
         }
-
         return arrayNode;
     }
 
@@ -877,7 +876,8 @@ public class UserServicesImp implements UserServices {
         if (account.isUserCreated())
             accountServices.createNewCart(account);
         else
-            session.removeAttribute("CART");
+            session.invalidate();
+            //session.removeAttribute("CART");
 
         return true;
     }

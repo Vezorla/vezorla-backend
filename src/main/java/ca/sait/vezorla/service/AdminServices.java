@@ -3,16 +3,11 @@ package ca.sait.vezorla.service;
 import java.util.Date;
 import java.util.List;
 
-import ca.sait.vezorla.model.Account;
-import ca.sait.vezorla.model.Backup;
-import ca.sait.vezorla.model.Discount;
-import ca.sait.vezorla.model.Invoice;
-import ca.sait.vezorla.model.Product;
-import ca.sait.vezorla.model.ProductQuantity;
-import ca.sait.vezorla.model.PurchaseOrder;
-import ca.sait.vezorla.model.Warehouse;
+import ca.sait.vezorla.model.*;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import com.fasterxml.jackson.databind.node.ObjectNode;
+
+import javax.servlet.http.HttpServletRequest;
 
 public interface AdminServices {
 
@@ -29,9 +24,11 @@ public interface AdminServices {
     List<Invoice> getOrder(Long id);
     List<Invoice> getPendingBusinessOrder();
     Invoice getPendingBusinessOrderById(Long id);
-    boolean savePurchaseOrder(String body);
+    PurchaseOrder savePurchaseOrder(PurchaseOrder purchaseOrder);
     void restoreBackup(Long id);
     boolean saveProduct(Product product);
     boolean saveWarehouse(Warehouse warehouse);
     ObjectNode getAllProducts(ObjectMapper mapper);
+    boolean receivePurchaseOrder(String body);
+    boolean saveLots(List<Lot> lots, PurchaseOrder po);
 }

@@ -34,7 +34,7 @@ import lombok.NoArgsConstructor;
 public class Lot implements Serializable {
 
 	@Id
-	private Long lotNum;
+	private String lotNum;
 	
 	@Column(name = "quantity")
 	private int quantity;

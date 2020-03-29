@@ -2,23 +2,34 @@ package ca.sait.vezorla.service;
 
 import ca.sait.vezorla.controller.util.CustomerClientUtil;
 import ca.sait.vezorla.model.*;
+import ca.sait.vezorla.repository.LotRepo;
 import ca.sait.vezorla.repository.ProductRepo;
+import ca.sait.vezorla.repository.PurchaseOrderRepo;
+import ca.sait.vezorla.repository.WarehouseRepo;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import com.fasterxml.jackson.databind.node.ArrayNode;
 import com.fasterxml.jackson.databind.node.ObjectNode;
 import lombok.AllArgsConstructor;
 import org.json.JSONArray;
 import org.json.JSONObject;
+import org.springframework.http.HttpRequest;
 import org.springframework.stereotype.Service;
 
-import java.util.Date;
-import java.util.List;
+import javax.servlet.http.HttpServletRequest;
+import javax.servlet.http.HttpSession;
+import java.text.DateFormat;
+import java.text.ParseException;
+import java.text.SimpleDateFormat;
+import java.util.*;
 
 @AllArgsConstructor
 @Service
 public class AdminServicesImp implements AdminServices {
 
     private ProductRepo productRepo;
+    private PurchaseOrderRepo purchaseOrderRepo;
+    private LotRepo lotRepo;
+    private WarehouseRepo warehouseRepo;
     private UserServices userServices;
 
     public void acceptBusinessOrder(Invoice invoice) {
@@ -107,28 +118,124 @@ public class AdminServicesImp implements AdminServices {
         return null;
     }
 
-    public boolean savePurchaseOrder(String body) {
+    /**
+     * Method to save purchase order to database
+     *
+     * @param purchaseOrder to save to database
+     * @return purchase order saved to database
+     * @author jjrr1717
+     */
+    public PurchaseOrder savePurchaseOrder(PurchaseOrder purchaseOrder) {
+        return purchaseOrderRepo.save(purchaseOrder);
+    }
 
+    /**
+     * Method to save all the lots from
+     * a purchase order to the database.
+     *
+     * @param lots to be saved
+     * @return boolean true if all of them saved
+     * successfully, otherwise false.
+     * @author jjrr1717
+     */
+    public boolean saveLots(List<Lot> lots, PurchaseOrder po) {
+        boolean result = false;
+        int counter = 1;
+        for (Lot lot : lots) {
+            lot.setPurchaseOrder(po);
+            lot.setLotNum(po.getPoNum() + "-" + counter);
+            lotRepo.save(lot);
+            counter++;
+        }
+        return true;
+    }
+
+    /**
+     * Method to parse out the po from the json
+     * file returned from front end.
+     *
+     * @param body the json
+     * @return boolean true is everything processed successfully,
+     * otherwise false;
+     * @author jjrr1717
+     */
+    public boolean receivePurchaseOrder(String body) {
+        DateFormat format = new SimpleDateFormat("yyyy-MM-dd", Locale.ENGLISH);
+
+        //parse json
         JSONObject obj = new JSONObject(body);
-        String received = obj.getJSONObject(("po")).getString("recieved");
-
+        String received = obj.getJSONObject(("po")).getString("received");
         JSONArray arr = obj.getJSONArray("lots");
 
+        //get lot list from PO
+        List<Lot> lots = new ArrayList<>();
         for (int i = 0; i < arr.length(); i++) {
             Lot lot = new Lot();
             int qty = arr.getJSONObject(i).getInt("qty");
             double cost = arr.getJSONObject(i).getDouble("cost");
             String bestBefore = arr.getJSONObject(i).getString("bestBefore");
             long prodId = arr.getJSONObject(i).getLong("prodId");
-        }
+            long warehouseNum = arr.getJSONObject(i).getLong("warehouseNum");
 
+            //get product & warehouse by their id's
+            Optional<Product> product = productRepo.findById(prodId);
+            Optional<Warehouse> warehouse = warehouseRepo.findById(warehouseNum);
+
+            //convert cost to cents
+            long costLong = (long) (cost * 100);
+
+            //convert bestBefore to Date
+            Date date = null;
+            try {
+                date = format.parse(bestBefore);
+            } catch (ParseException e) {
+                e.printStackTrace();
+            }
+            java.sql.Date sqlDate = new java.sql.Date(date.getTime());
+
+            //set the values into a lot
+            lot.setProduct(product.get());
+            lot.setWarehouse(warehouse.get());
+            lot.setQuantity(qty);
+            lot.setCost(costLong);
+            lot.setBestBefore(sqlDate);
+
+            lots.add(lot);
+        }
+        //create po
+        PurchaseOrder po = new PurchaseOrder();
+
+        //convert date ordered
+        Date currentDate = new Date();
+        java.sql.Date sqlDate = new java.sql.Date(currentDate.getTime());
+        po.setDateOrdered(sqlDate);
+
+        //convert date received
+        Date dateReceived = null;
+        try {
+            dateReceived = format.parse(received);
+        } catch (ParseException e) {
+            e.printStackTrace();
+        }
+        java.sql.Date sqlDateReceived;
+        sqlDateReceived = new java.sql.Date(dateReceived.getTime());
+        po.setDateReceived(sqlDateReceived);
+        po.setLotList(lots);
+
+        //save po to database
+        PurchaseOrder savedPo = savePurchaseOrder(po);
+
+        //save lots to database
+        saveLots(lots, savedPo);
 
         return true;
     }
 
+
     public void restoreBackup(Long id) {
 
     }
+
 
     public boolean saveProduct(Product product) {
         return false;
