@@ -8,6 +8,7 @@ import ca.sait.vezorla.model.Cart;
 import ca.sait.vezorla.model.Invoice;
 import ca.sait.vezorla.service.AccountServices;
 import ca.sait.vezorla.service.AuthenticationServices;
+import ca.sait.vezorla.service.EmailServices;
 import com.fasterxml.jackson.core.JsonProcessingException;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import lombok.AllArgsConstructor;
@@ -30,6 +31,7 @@ public class ClientRestController {
 
     private AuthenticationServices authenticationServices;
     private AccountServices accountServices;
+    private EmailServices emailServices;
 
     /**
      * Create a new account
@@ -70,6 +72,9 @@ public class ClientRestController {
                 Cart cart = new Cart(newAccount.get());
                 newAccount.get().getCarts().add(cart);
                 accountServices.saveCart(cart);
+
+                //Send email
+
             }
         }
 

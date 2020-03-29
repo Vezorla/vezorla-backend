@@ -16,7 +16,7 @@ import java.util.List;
 /**
  * Service to send emails
  *
- * @author: matthewjflee
+ * @author matthewjflee
  */
 @Service
 @AllArgsConstructor
@@ -31,7 +31,7 @@ public class EmailServicesImp implements EmailServices {
      * @param senderEmail user's email
      * @param message message to send
      * @throws MailException thrown when the email is not sent
-     * @author: matthewjflee
+     * @author matthewjflee
      */
     public void sendContactUsEmail(String name, String senderEmail, String message) throws MailException,
                                                                                     InvalidInputException {
@@ -50,8 +50,19 @@ public class EmailServicesImp implements EmailServices {
         mailSender.send(mail);
     }
 
-    public void sendAccountConfirmationEmail(String to, String additionText) {
-
+    /**
+     * Send the user an email whenever they create an account
+     * @param senderEmail user's email
+     */
+    public void sendCreateAccountEmail(String senderEmail) throws InvalidInputException {
+        verifyEmail(senderEmail);
+        SimpleMailMessage mail = new SimpleMailMessage();
+        mail.setTo(senderEmail);
+        mail.setFrom("vezorla.test@gmail.com");
+        mail.setSubject("Welcome to Vezorla!");
+        mail.setText("Welcome to Vezorla!" + "\n\n" +
+                "Please login at: https://www.vezorla.ca"+ "\n\n" +
+                "See you soon!!");
     }
 
     public void sendDeclineEmail(String to, String additionText) {
@@ -82,6 +93,7 @@ public class EmailServicesImp implements EmailServices {
      * @param total total cost
      * @throws MailException thrown if email is not sent
      * @throws InvalidInputException thrown if email is not valid
+     * @author matthewjflee
      */
     public void sendInvoiceEmail(String to, Invoice invoice, double total) throws MailException,
                                                                 InvalidInputException {
@@ -153,7 +165,7 @@ public class EmailServicesImp implements EmailServices {
      * @param email email to verify
      * @return if email is valid
      * @throws InvalidInputException if email is not valid
-     * @author: matthewjflee
+     * @author matthewjflee
      */
     public boolean verifyEmail(String email) throws InvalidInputException {
         CustomerClientUtil ccu = new CustomerClientUtil();

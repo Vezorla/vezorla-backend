@@ -7,7 +7,7 @@ public interface EmailServices {
 
     void sendContactUsEmail(String name, String senderEmail, String message) throws InvalidInputException;
 
-    void sendAccountConfirmationEmail(String to, String additionText);
+    void sendCreateAccountEmail(String senderEmail) throws InvalidInputException;
 
     void sendDeclineEmail(String to, String additionText);
 
