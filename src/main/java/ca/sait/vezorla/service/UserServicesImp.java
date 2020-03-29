@@ -862,6 +862,7 @@ public class UserServicesImp implements UserServices {
      * @param session user session
      * @throws UnauthorizedException thrown if there is no invoice in the session
      * @throws InvalidInputException postal code or phone number is invalid
+     * @author jjrr1717
      */
     public boolean paymentTransactions(HttpSession session) throws UnauthorizedException, InvalidInputException {
         ///check to ensure all previous steps have been performed
@@ -885,7 +886,6 @@ public class UserServicesImp implements UserServices {
             accountServices.createNewCart(account);
         else
             session.invalidate();
-            //session.removeAttribute("CART");
 
         return true;
     }
