@@ -8,10 +8,7 @@ import ca.sait.vezorla.service.AdminServices;
 import com.fasterxml.jackson.core.JsonProcessingException;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import lombok.AllArgsConstructor;
-import org.springframework.web.bind.annotation.GetMapping;
-import org.springframework.web.bind.annotation.PathVariable;
-import org.springframework.web.bind.annotation.RequestMapping;
-import org.springframework.web.bind.annotation.RestController;
+import org.springframework.web.bind.annotation.*;
 
 import java.util.Date;
 import java.util.List;
@@ -28,13 +25,32 @@ public class AdminRestController {
     /**
      * Method to get all the products for admin view
      * @return String for the custom json
-     * @throws JsonProcessingException
+     * @throws JsonProcessingException thrown when there is an error parsing JSON
+     * @author jjrr717
      */
     @GetMapping("inventory/all")
     public String getAllProducts() throws JsonProcessingException {
        ObjectMapper mapper = new ObjectMapper();
         return mapper.writerWithDefaultPrettyPrinter().writeValueAsString(adminServices.getAllProducts(mapper));
+    }
 
+    /**
+     * Create a  new product in the database
+     * @param product Product to create
+     * @return <code>true</code> if saving is successful
+     * Will throw a ProductAlreadyExistsException
+     *
+     * @author matthewjflee
+     */
+    @PostMapping("inventory/create")
+    public boolean createProduct(@RequestBody Product product) {
+        return adminServices.createProduct(product);
+    }
+
+    @PutMapping("receive_purchase_order")
+    public boolean receivePurchaseOrder(@RequestBody String body){
+        adminServices.receivePurchaseOrder(body);
+        return true;
     }
 
     @GetMapping("businessorder/pending")

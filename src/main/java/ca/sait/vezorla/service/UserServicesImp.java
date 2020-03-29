@@ -15,6 +15,8 @@ import org.springframework.stereotype.Service;
 
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpSession;
+import java.text.DateFormat;
+import java.text.SimpleDateFormat;
 import java.util.ArrayList;
 import java.util.Date;
 import java.util.List;
@@ -68,6 +70,17 @@ public class UserServicesImp implements UserServices {
     /**
      * Return a specified product
      *
+     * @param id Product ID
+     * @return product
+     * @author matthewjflee, jjrr1717
+     */
+    public Optional<Product> getProduct(Long id) {
+        return productRepo.findById(id);
+    }
+
+    /**
+     * Return a specified product
+     *
      * @param id product ID
      * @return product
      * @author matthewjflee, jjrr1717
@@ -103,7 +116,10 @@ public class UserServicesImp implements UserServices {
         node.put("name", product.getName());
         node.put("description", product.getDescription());
         node.put("subdescription", product.getSubdescription());
-        node.put("harvestTime:", product.getHarvestTime());
+
+        DateFormat df = new SimpleDateFormat("yyyy-MM-dd");
+        String date = df.format(product.getHarvestTime());
+        node.put("harvestTime:", date);
         node.put("imageMain", product.getImageMain());
         node.put("imageOne", product.getImageOne());
         node.put("imageTwo", product.getImageTwo());
@@ -114,18 +130,6 @@ public class UserServicesImp implements UserServices {
         node.put("oldPrice", ccu.formatAmount(product.getOldPrice()));
 
         productsNode.add(node);
-    }
-
-
-    /**
-     * Return a specified product
-     *
-     * @param id Product ID
-     * @return product
-     * @author matthewjflee, jjrr1717
-     */
-    public Optional<Product> getProduct(Long id) {
-        return productRepo.findById(id);
     }
 
     /**
@@ -461,7 +465,6 @@ public class UserServicesImp implements UserServices {
 
             arrayNode.add(node);
         }
-
         return arrayNode;
     }
 
@@ -859,6 +862,7 @@ public class UserServicesImp implements UserServices {
      * @param session user session
      * @throws UnauthorizedException thrown if there is no invoice in the session
      * @throws InvalidInputException postal code or phone number is invalid
+     * @author jjrr1717
      */
     public boolean paymentTransactions(HttpSession session) throws UnauthorizedException, InvalidInputException {
         ///check to ensure all previous steps have been performed
@@ -881,7 +885,7 @@ public class UserServicesImp implements UserServices {
         if (account.isUserCreated())
             accountServices.createNewCart(account);
         else
-            session.removeAttribute("CART");
+            session.invalidate();
 
         return true;
     }

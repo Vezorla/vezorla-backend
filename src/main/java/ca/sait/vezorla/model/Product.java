@@ -2,6 +2,7 @@ package ca.sait.vezorla.model;
 
 import java.io.Serializable;
 import java.math.BigDecimal;
+import java.sql.Date;
 import java.util.ArrayList;
 import java.util.List;
 
@@ -30,6 +31,8 @@ import org.hibernate.annotations.Type;
 public class Product implements Serializable {
 	
 	@Id
+	@Column(name = "prod_id")
+	@GeneratedValue(strategy = GenerationType.IDENTITY)
 	private Long prodId;
 	
 	@NotNull
@@ -44,9 +47,9 @@ public class Product implements Serializable {
 	private String subdescription;
 
 	@Column(name = "harvest_time")
-	private String harvestTime;
+	private Date harvestTime;
 	
-	@NotNull
+//	@NotNull
 	@Column(name = "image_main")
 	private String imageMain;
 
