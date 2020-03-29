@@ -17,7 +17,7 @@ import java.util.Optional;
 /**
  * Account services
  *
- * @author: matthewjflee
+ * @author matthewjflee
  */
 public interface AccountServices {
 

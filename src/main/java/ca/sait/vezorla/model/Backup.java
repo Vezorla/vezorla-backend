@@ -27,7 +27,9 @@ import lombok.NoArgsConstructor;
 @Data
 @Table(name = "backup")
 public class Backup {
+
 	@Id
+	@Column(name = "id")
 	@GeneratedValue(strategy = GenerationType.IDENTITY)
 	private Long id;
 	

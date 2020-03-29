@@ -1,6 +1,7 @@
 package ca.sait.vezorla.service;
 
 import ca.sait.vezorla.controller.util.CustomerClientUtil;
+import ca.sait.vezorla.exception.ProductAlreadyExistsException;
 import ca.sait.vezorla.model.*;
 import ca.sait.vezorla.repository.ProductRepo;
 import com.fasterxml.jackson.databind.ObjectMapper;
@@ -13,6 +14,7 @@ import org.springframework.stereotype.Service;
 
 import java.util.Date;
 import java.util.List;
+import java.util.Optional;
 
 @AllArgsConstructor
 @Service
@@ -58,6 +60,7 @@ public class AdminServicesImp implements AdminServices {
      *
      * @param mapper for custom json
      * @return ObjectNode of custom json
+     * @author jjr1717
      */
     public ObjectNode getAllProducts(ObjectMapper mapper) {
         CustomerClientUtil ccu = new CustomerClientUtil();
@@ -86,6 +89,19 @@ public class AdminServicesImp implements AdminServices {
 
         return node;
     }
+
+    public boolean createProduct(Product product) {
+        //Verify that product does not exist
+        Optional<Product> findProduct = productRepo.findByName(product.getName());
+
+        if(!findProduct.isPresent()) {
+            productRepo.save(product);
+        } else
+            throw new ProductAlreadyExistsException();
+
+        return true;
+    }
+
 
     public List<Backup> getBackupList() {
         return null;
