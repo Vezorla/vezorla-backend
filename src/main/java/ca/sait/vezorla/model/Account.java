@@ -24,7 +24,7 @@ import java.util.List;
 @Entity
 @Data
 @Table(name = "account")
-public class Account implements Serializable, Comparable {
+public class Account implements Serializable {
 
     @Id
     private String email;
@@ -75,7 +75,7 @@ public class Account implements Serializable, Comparable {
     
     @Column(name = "is_subscript", columnDefinition = "BIT")
     @Type(type = "org.hibernate.type.NumericBooleanType")
-    private boolean isSubscript;
+    private Boolean isSubscript;
 
     @Column(name = "pickup", columnDefinition = "BIT")
     private boolean pickup;
@@ -157,20 +157,5 @@ public class Account implements Serializable, Comparable {
     public Account(String email) {
         this.email = email;
         this.accountType = 'C';
-    }
-
-
-    @Override
-    public int compareTo(Object account) {
-        return Comparator.comparing(Account::getEmail)
-                .thenComparing(Account::getFirstName)
-                .thenComparing(Account::getPhoneNum)
-                .thenComparing(Account::getAddress)
-                .thenComparing(Account::getCity)
-                .thenComparing(Account::getProvince)
-                .thenComparing(Account::getPostalCode)
-                .thenComparing(Account::getCountry)
-                .thenComparing(Account::isSubscript)
-                .compare(this, (Account) account);
     }
 }

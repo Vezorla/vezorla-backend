@@ -239,7 +239,6 @@ public class CustomerRestController {
             Optional<Account> findAccount = accountServices.findAccountByEmail(sessionAccount.getEmail());
             if (findAccount.isPresent()) {
                 Account updateAccount = findAccount.get();
-                System.out.println("user creat find " + updateAccount.isUserCreated());
                 sendAccount = accountServices.updateAccount(updateAccount, sendAccount);
             }
         }
@@ -264,7 +263,6 @@ public class CustomerRestController {
     public String getUserInfo(HttpServletRequest request) throws JsonProcessingException, OutOfStockException {
         ObjectMapper mapper = new ObjectMapper();
         HttpSession session = request.getSession();
-        Cart cart = userServices.getCart(session);
         Account sessionAccount = (Account) session.getAttribute("ACCOUNT");
         Account account = null;
 
@@ -275,10 +273,25 @@ public class CustomerRestController {
         } else
             throw new AccountNotFoundException();
 
+        return mapper.writerWithDefaultPrettyPrinter().writeValueAsString(userServices.getUserInfo(account, mapper));
+    }
+
+    /**
+     * Check if the cart is empty or if a line item is out of stock
+     * @param request user session
+     * @return <code>true</code> if there no line items are out of stock
+     * @throws OutOfStockException thrown if a line item is out of stock
+     * @author matthewjflee
+     */
+    @GetMapping(value = "cart/check-out-of-stock")
+    public boolean checkCartAllItemsOutOfStock(HttpServletRequest request) throws OutOfStockException {
+        HttpSession session = request.getSession();
+        Cart cart = userServices.getCart(session);
+
         if (!userServices.checkLineItemStock(cart))
             throw new OutOfStockException();
 
-        return mapper.writerWithDefaultPrettyPrinter().writeValueAsString(userServices.getUserInfo(account, mapper));
+        return true;
     }
 
     /**
@@ -293,7 +306,7 @@ public class CustomerRestController {
         String replaceEmail = email.replaceAll("\"", "");
         emailServices.verifyEmail(replaceEmail);
         Account account = accountServices.findAccountByEmail(replaceEmail).orElse(new Account(replaceEmail));
-        account.setSubscript(true);
+        account.setIsSubscript(true);
         boolean save = accountServices.saveAccount(account);
         if (!save)
             throw new UnableToSaveException();
