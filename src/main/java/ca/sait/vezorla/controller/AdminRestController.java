@@ -47,6 +47,11 @@ public class AdminRestController {
         return adminServices.createProduct(product);
     }
 
+    @PutMapping("receive_purchase_order")
+    public boolean receivePurchaseOrder(@RequestBody String body){
+        adminServices.receivePurchaseOrder(body);
+        return true;
+    }
 
     @GetMapping("businessorder/pending")
     public List<Invoice> getPendingBusinessOrder() {

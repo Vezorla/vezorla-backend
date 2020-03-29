@@ -1,11 +1,13 @@
 package ca.sait.vezorla.service;
 
+
 import ca.sait.vezorla.model.*;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import com.fasterxml.jackson.databind.node.ObjectNode;
 
 import java.util.Date;
 import java.util.List;
+
 
 public interface AdminServices {
 
@@ -39,11 +41,15 @@ public interface AdminServices {
 
     Invoice getPendingBusinessOrderById(Long id);
 
-    boolean savePurchaseOrder(String body);
+    PurchaseOrder savePurchaseOrder(PurchaseOrder purchaseOrder);
 
     void restoreBackup(Long id);
 
     boolean saveProduct(Product product);
 
     boolean saveWarehouse(Warehouse warehouse);
+
+    boolean receivePurchaseOrder(String body);
+
+    boolean saveLots(List<Lot> lots, PurchaseOrder po);
 }
