@@ -234,7 +234,7 @@ public class AccountServicesImp implements AccountServices {
     /**
      * Method to get all the line items in an invoice into
      * an ArrayNode. Will be used in viewInvoice() to
-     * create the json.
+     * create the json.s
      *
      * @param invoice to access the line items
      * @param node    used to store the ArrayNode of line items.
