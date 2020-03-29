@@ -124,7 +124,8 @@ public class AccountServicesImp implements AccountServices {
         if(changed.getCountry() != null)
             account.setCountry(changed.getCountry());
 
-        account.setSubscript(changed.isSubscript());
+        if(changed.isSubscript() != account.isSubscript())
+            account.setSubscript(changed.isSubscript());
 
         return account;
     }
