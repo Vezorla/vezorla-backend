@@ -43,6 +43,9 @@ public class Discount implements Serializable {
     @Type(type = "org.hibernate.type.NumericBooleanType")
     private boolean isHighlighted;
 
+    @Column(name="banner_message")
+    private String bannerMessage;
+
     @Column(name = "description")
     private String description;
 

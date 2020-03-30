@@ -74,4 +74,6 @@ public interface UserServices {
     boolean paymentTransactions(HttpSession session) throws UnauthorizedException, InvalidInputException;
 
     boolean checkIfLineItemInStock(long id, int updatedQty);
+
+    ObjectNode getBannerMessage(ObjectMapper mapper);
 }

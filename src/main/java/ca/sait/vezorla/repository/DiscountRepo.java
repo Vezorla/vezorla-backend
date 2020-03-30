@@ -39,4 +39,12 @@ public interface DiscountRepo extends JpaRepository<Discount, String> {
     @Query("SELECT d.percent FROM Discount d " +
            "WHERE d.code = :code")
     String findDiscountPercent(@Param("code") String code);
+
+    /**
+     * Find the highlighted discount that will be
+     * on home page banner.
+     * @return bannerMessage
+     */
+    @Query("SELECT d.bannerMessage FROM Discount d WHERE d.isHighlighted = true")
+    String findHighlightedDiscount();
 }
