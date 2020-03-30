@@ -1,5 +1,6 @@
 package ca.sait.vezorla.controller;
 
+import ca.sait.vezorla.exception.InvalidInputException;
 import ca.sait.vezorla.model.Backup;
 import ca.sait.vezorla.model.Discount;
 import ca.sait.vezorla.model.Invoice;
@@ -43,7 +44,7 @@ public class AdminRestController {
      * @author matthewjflee
      */
     @PostMapping("inventory/create")
-    public boolean createProduct(@RequestBody Product product) {
+    public boolean createProduct(@RequestBody Product product) throws InvalidInputException {
         return adminServices.createProduct(product);
     }
 
