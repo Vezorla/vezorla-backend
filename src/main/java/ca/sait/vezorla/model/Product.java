@@ -73,7 +73,7 @@ public class Product implements Serializable {
 	
 	@NotNull
 	@Column(name = "price")
-	private long price;
+	private Long price;
 
 	@Column(name = "old_price")
 	private long oldPrice;

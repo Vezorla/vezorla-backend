@@ -1,6 +1,7 @@
 package ca.sait.vezorla.service;
 
 
+import ca.sait.vezorla.exception.InvalidInputException;
 import ca.sait.vezorla.model.*;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import com.fasterxml.jackson.databind.node.ObjectNode;
@@ -29,7 +30,7 @@ public interface AdminServices {
 
     ObjectNode getAllProducts(ObjectMapper mapper);
 
-    boolean createProduct(Product product);
+    boolean createProduct(Product product) throws InvalidInputException;
 
     List<Backup> getBackupList();
 

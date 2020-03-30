@@ -1,6 +1,7 @@
 package ca.sait.vezorla.service;
 
 import ca.sait.vezorla.controller.util.CustomerClientUtil;
+import ca.sait.vezorla.exception.InvalidInputException;
 import ca.sait.vezorla.exception.ProductAlreadyExistsException;
 import ca.sait.vezorla.model.*;
 import ca.sait.vezorla.repository.LotRepo;
@@ -105,7 +106,11 @@ public class AdminServicesImp implements AdminServices {
      * @return <code>true</code> if the product exists
      * Will throw ProductAlreadyExistsException if the product already exists
      */
-    public boolean createProduct(Product product) {
+    public boolean createProduct(Product product) throws InvalidInputException {
+        //Validate
+        if(product.getName() == null || product.getPrice() == null)
+            throw new InvalidInputException();
+
         //Verify that product does not exist
         Optional<Product> findProduct = productRepo.findByName(product.getName());
 
@@ -166,7 +171,7 @@ public class AdminServicesImp implements AdminServices {
             lot.setLotNum(po.getPoNum() + "-" + counter);
             lotRepo.save(lot);
             counter++;
-        }
+    }
         return true;
     }
 
