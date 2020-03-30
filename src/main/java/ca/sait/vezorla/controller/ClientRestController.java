@@ -139,8 +139,7 @@ public class ClientRestController {
      * @return the invoices to front-end
      */
     @GetMapping("order_history")
-    public String viewOrderHistory(HttpServletRequest request) throws JsonProcessingException {
-        HttpSession session = request.getSession();
+    public String viewOrderHistory(HttpSession session) throws JsonProcessingException {
         ObjectMapper mapper = new ObjectMapper();
         return mapper.writerWithDefaultPrettyPrinter().writeValueAsString(accountServices.viewOrderHistory(mapper, session));
     }

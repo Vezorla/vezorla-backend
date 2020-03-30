@@ -11,6 +11,8 @@ import com.fasterxml.jackson.databind.ObjectMapper;
 import lombok.AllArgsConstructor;
 import org.springframework.web.bind.annotation.*;
 
+import javax.servlet.http.HttpServletRequest;
+import javax.servlet.http.HttpSession;
 import java.util.Date;
 import java.util.List;
 
@@ -48,7 +50,7 @@ public class AdminRestController {
         return adminServices.createProduct(product);
     }
 
-    @PutMapping("receive_purchase_order")
+    @PostMapping("receive_purchase_order")
     public boolean receivePurchaseOrder(@RequestBody String body){
         adminServices.receivePurchaseOrder(body);
         return true;
@@ -74,8 +76,8 @@ public class AdminRestController {
         return null;
     }
 
-    @GetMapping("discount/create")
-    public boolean createDiscount(Discount discount) {
+    @PostMapping("discount/create")
+    public boolean createDiscount(@RequestBody String body) {
         return false;
     }
 
@@ -92,6 +94,14 @@ public class AdminRestController {
     @GetMapping("orders/get/{id}")
     public List<Invoice> getOrder(@PathVariable Long id) {
         return null;
+    }
+
+    @GetMapping("order_history")
+    public String viewOrderHistoryAdmin(HttpServletRequest request) throws JsonProcessingException{
+        HttpSession session = request.getSession();
+        ObjectMapper mapper = new ObjectMapper();
+        return mapper.writerWithDefaultPrettyPrinter().writeValueAsString(adminServices.viewOrderHistoryAdmin(mapper, session));
+
     }
 
 }

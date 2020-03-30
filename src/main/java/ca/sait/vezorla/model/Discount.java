@@ -78,7 +78,6 @@ public class Discount implements Serializable {
         this.percent = percent;
     }
 
-
     public Discount(String code, AccountDiscount... accountDiscounts) {
         this.code = code;
         this.accountDiscounts = Arrays.asList(accountDiscounts);
