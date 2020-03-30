@@ -17,6 +17,8 @@ public interface InvoiceRepo extends JpaRepository<Invoice, Long>{
     @Query("FROM Invoice i WHERE i.account.email = :email")
     public List<Invoice> findAllByAccount_Email(@Param("email") String email);
 
+    public List<Invoice> findTop50ByOrderByInvoiceNumDesc();
+
 //	/**
 //     * Change the state of the invoice
 //     * @param id Invoice ID

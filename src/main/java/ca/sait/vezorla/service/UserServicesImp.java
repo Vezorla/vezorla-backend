@@ -890,4 +890,20 @@ public class UserServicesImp implements UserServices {
         return true;
     }
 
+    /**
+     * Method to get the banner message for the
+     * home page
+     * @param mapper for the custom json
+     * @return ObjectNode for custom json
+     */
+    public ObjectNode getBannerMessage(ObjectMapper mapper){
+        ObjectNode node = mapper.createObjectNode();
+
+        //get message from discount
+        String message = discountRepo.findHighlightedDiscount();
+        node.put("text", message);
+
+        return node;
+    }
+
 }

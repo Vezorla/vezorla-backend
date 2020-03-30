@@ -2,7 +2,6 @@ package ca.sait.vezorla.controller;
 
 import ca.sait.vezorla.exception.InvalidInputException;
 import ca.sait.vezorla.model.Backup;
-import ca.sait.vezorla.model.Discount;
 import ca.sait.vezorla.model.Invoice;
 import ca.sait.vezorla.model.Product;
 import ca.sait.vezorla.service.AdminServices;
@@ -12,10 +11,11 @@ import com.fasterxml.jackson.databind.ObjectMapper;
 import lombok.AllArgsConstructor;
 import org.springframework.web.bind.annotation.*;
 
+import javax.servlet.http.HttpServletRequest;
+import javax.servlet.http.HttpSession;
 import java.util.Calendar;
 import java.util.Date;
 import java.util.List;
-import java.util.Optional;
 
 @AllArgsConstructor
 @RestController
@@ -29,18 +29,20 @@ public class AdminRestController {
 
     /**
      * Method to get all the products for admin view
+     *
      * @return String for the custom json
      * @throws JsonProcessingException thrown when there is an error parsing JSON
      * @author jjrr717
      */
     @GetMapping("inventory/all")
     public String getAllProducts() throws JsonProcessingException {
-       ObjectMapper mapper = new ObjectMapper();
+        ObjectMapper mapper = new ObjectMapper();
         return mapper.writerWithDefaultPrettyPrinter().writeValueAsString(adminServices.getAllProducts(mapper));
     }
 
     /**
      * View a single product
+     *
      * @param id ID of product
      * @return product info
      * @throws JsonProcessingException thrown if there is an error parsing JSON
@@ -54,10 +56,10 @@ public class AdminRestController {
 
     /**
      * Create a  new product in the database
+     *
      * @param product Product to create
      * @return <code>true</code> if saving is successful
      * Will throw a ProductAlreadyExistsException
-     *
      * @author matthewjflee
      */
     @PostMapping("inventory/create")
@@ -81,8 +83,8 @@ public class AdminRestController {
         return adminServices.saveProduct(sendProduct);
     }
 
-    @PutMapping("receive_purchase_order")
-    public boolean receivePurchaseOrder(@RequestBody String body){
+    @PostMapping("receive_purchase_order")
+    public boolean receivePurchaseOrder(@RequestBody String body) {
         adminServices.receivePurchaseOrder(body);
         return true;
     }
@@ -107,8 +109,8 @@ public class AdminRestController {
         return null;
     }
 
-    @GetMapping("discount/create")
-    public boolean createDiscount(Discount discount) {
+    @PostMapping("discount/create")
+    public boolean createDiscount(@RequestBody String body) {
         return false;
     }
 
@@ -125,6 +127,14 @@ public class AdminRestController {
     @GetMapping("orders/get/{id}")
     public List<Invoice> getOrder(@PathVariable Long id) {
         return null;
+    }
+
+    @GetMapping("order_history")
+    public String viewOrderHistoryAdmin(HttpServletRequest request) throws JsonProcessingException {
+        HttpSession session = request.getSession();
+        ObjectMapper mapper = new ObjectMapper();
+        return mapper.writerWithDefaultPrettyPrinter().writeValueAsString(adminServices.viewOrderHistoryAdmin(mapper, session));
+
     }
 
 }

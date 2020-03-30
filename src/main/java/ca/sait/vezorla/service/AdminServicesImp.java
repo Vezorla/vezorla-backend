@@ -4,10 +4,7 @@ import ca.sait.vezorla.controller.util.CustomerClientUtil;
 import ca.sait.vezorla.exception.InvalidInputException;
 import ca.sait.vezorla.exception.ProductAlreadyExistsException;
 import ca.sait.vezorla.model.*;
-import ca.sait.vezorla.repository.LotRepo;
-import ca.sait.vezorla.repository.ProductRepo;
-import ca.sait.vezorla.repository.PurchaseOrderRepo;
-import ca.sait.vezorla.repository.WarehouseRepo;
+import ca.sait.vezorla.repository.*;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import com.fasterxml.jackson.databind.node.ArrayNode;
 import com.fasterxml.jackson.databind.node.ObjectNode;
@@ -16,6 +13,7 @@ import org.json.JSONArray;
 import org.json.JSONObject;
 import org.springframework.stereotype.Service;
 
+import javax.servlet.http.HttpSession;
 import java.text.DateFormat;
 import java.text.ParseException;
 import java.text.SimpleDateFormat;
@@ -29,6 +27,7 @@ public class AdminServicesImp implements AdminServices {
     private PurchaseOrderRepo purchaseOrderRepo;
     private LotRepo lotRepo;
     private WarehouseRepo warehouseRepo;
+    private InvoiceRepo invoiceRepo;
     private UserServices userServices;
 
     public void acceptBusinessOrder(Invoice invoice) {
@@ -108,7 +107,7 @@ public class AdminServicesImp implements AdminServices {
      */
     public boolean createProduct(Product product) throws InvalidInputException {
         //Validate
-        if(product.getName() == null || product.getPrice() == null)
+        if (product.getName() == null || product.getPrice() == null)
             throw new InvalidInputException();
 
         //Verify that product does not exist
@@ -176,7 +175,7 @@ public class AdminServicesImp implements AdminServices {
             lot.setLotNum(po.getPoNum() + "-" + counter);
             lotRepo.save(lot);
             counter++;
-    }
+        }
         return true;
     }
 
@@ -270,4 +269,36 @@ public class AdminServicesImp implements AdminServices {
         return false;
     }
 
+    /**
+     * Method to view the order history on a client's
+     * account.
+     *
+     * @param mapper to make the custom json
+     * @return ObjectNode containing nodes for custom json
+     * @author jjrr1717
+     */
+    public ObjectNode viewOrderHistoryAdmin(ObjectMapper mapper, HttpSession session) {
+        CustomerClientUtil ccu = new CustomerClientUtil();
+
+        //obtain all the invoices for account
+        List<Invoice> invoices = invoiceRepo.findTop50ByOrderByInvoiceNumDesc();
+
+        //create custom json
+        ObjectNode node = mapper.createObjectNode();
+        ArrayNode invoiceNodes = node.arrayNode();
+
+        //loop through invoices to get invoice details
+        for (Invoice invoice : invoices) {
+            ObjectNode invoiceNode = invoiceNodes.objectNode();
+            invoiceNode.put("invoiceNum", invoice.getInvoiceNum());
+            invoiceNode.put("total", ccu.formatAmount(invoice.getTotal()));
+            String date = invoice.getDate() + "";
+            invoiceNode.put("date", date);
+            invoiceNodes.add(invoiceNode);
+        }
+
+        node.put("invoices", invoiceNodes);
+
+        return node;
+    }
 }

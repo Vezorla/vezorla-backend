@@ -433,4 +433,15 @@ public class CustomerRestController {
         return output;
     }
 
+    /**
+     * Method to send banner information for home page
+     * @param mapper for custom json
+     * @return String of custom json
+     * @throws JsonProcessingException
+     */
+    @GetMapping("banner")
+    public String getBannerMessage(ObjectMapper mapper) throws JsonProcessingException {
+        return mapper.writerWithDefaultPrettyPrinter().writeValueAsString(userServices.getBannerMessage(mapper));
+    }
+
 }

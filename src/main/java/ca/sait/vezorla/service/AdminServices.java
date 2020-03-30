@@ -6,6 +6,7 @@ import ca.sait.vezorla.model.*;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import com.fasterxml.jackson.databind.node.ObjectNode;
 
+import javax.servlet.http.HttpSession;
 import java.util.Date;
 import java.util.List;
 
@@ -53,4 +54,6 @@ public interface AdminServices {
     boolean receivePurchaseOrder(String body);
 
     boolean saveLots(List<Lot> lots, PurchaseOrder po);
+
+    ObjectNode viewOrderHistoryAdmin(ObjectMapper mapper, HttpSession session);
 }

@@ -43,6 +43,9 @@ public class Discount implements Serializable {
     @Type(type = "org.hibernate.type.NumericBooleanType")
     private boolean isHighlighted;
 
+    @Column(name="banner_message")
+    private String bannerMessage;
+
     @Column(name = "description")
     private String description;
 
@@ -74,7 +77,6 @@ public class Discount implements Serializable {
         this.description = description;
         this.percent = percent;
     }
-
 
     public Discount(String code, AccountDiscount... accountDiscounts) {
         this.code = code;
