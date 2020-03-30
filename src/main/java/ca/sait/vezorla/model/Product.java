@@ -25,7 +25,6 @@ import java.util.List;
 @AllArgsConstructor
 @NoArgsConstructor
 public class Product implements Serializable {
-
     @Id
     @Column(name = "prod_id")
     @GeneratedValue(strategy = GenerationType.IDENTITY)
