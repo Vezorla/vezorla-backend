@@ -1,92 +1,88 @@
 package ca.sait.vezorla.model;
 
-import java.io.Serializable;
-import java.math.BigDecimal;
-import java.sql.Date;
-import java.util.ArrayList;
-import java.util.List;
-
-import javax.persistence.*;
-import javax.validation.constraints.Min;
-
 import com.fasterxml.jackson.annotation.JsonIgnore;
-import com.fasterxml.jackson.annotation.JsonIgnoreProperties;
 import com.sun.istack.NotNull;
-
 import lombok.AllArgsConstructor;
 import lombok.Data;
 import lombok.NoArgsConstructor;
 import org.hibernate.annotations.Type;
 
+import javax.persistence.*;
+import javax.validation.constraints.Min;
+import java.io.Serializable;
+import java.sql.Date;
+import java.util.List;
+
 /**
  * Entity class for product
- * @author		Minh Lam
- * @version		1.0		 
- * */
+ *
+ * @author Minh Lam
+ * @version 1.0
+ */
 @Entity
 @Data
 @Table(name = "product")
 @AllArgsConstructor
 @NoArgsConstructor
 public class Product implements Serializable {
-	
-	@Id
-	@Column(name = "prod_id")
-	@GeneratedValue(strategy = GenerationType.IDENTITY)
-	private Long prodId;
-	
-	@NotNull
-	@Column(name = "name")
-	private String name;
-	
-	@NotNull
-	@Column(name = "description")
-	private String description;
 
-	@Column(name = "subdescription")
-	private String subdescription;
+    @Id
+    @Column(name = "prod_id")
+    @GeneratedValue(strategy = GenerationType.IDENTITY)
+    private Long prodId;
 
-	@Column(name = "harvest_time")
-	private Date harvestTime;
-	
-//	@NotNull
-	@Column(name = "image_main")
-	private String imageMain;
+    @NotNull
+    @Column(name = "name")
+    private String name;
 
-	@Column(name = "image_one")
-	private String imageOne;
+    @NotNull
+    @Column(name = "description")
+    private String description;
 
-	@Column(name = "image_two")
-	private String imageTwo;
+    @Column(name = "subdescription")
+    private String subdescription;
 
-	@Column(name = "image_three")
-	private String imageThree;
+    @Column(name = "harvest_time")
+    private Date harvestTime;
 
-	@Column(name = "active", columnDefinition = "BIT")
-	@Type(type = "org.hibernate.type.NumericBooleanType")
-	private boolean active;
-	
-	@NotNull
-	@Min(0)
-	@Column(name = "threshhold")
-	private int threshhold;
-	
-	@NotNull
-	@Column(name = "price")
-	private Long price;
+    //	@NotNull
+    @Column(name = "image_main")
+    private String imageMain;
 
-	@Column(name = "old_price")
-	private long oldPrice;
+    @Column(name = "image_one")
+    private String imageOne;
 
-	@JsonIgnore
-	@OneToMany (mappedBy = "product")
-	private List<Lot> lotList;
+    @Column(name = "image_two")
+    private String imageTwo;
 
-	@JsonIgnore
-	@OneToMany(mappedBy = "product")
-	private List<Discount> discounts;
+    @Column(name = "image_three")
+    private String imageThree;
 
-	@JsonIgnore
-	@OneToMany (mappedBy = "product")
-	private List<LineItem> lineItems;
+    @Column(name = "active", columnDefinition = "BIT")
+    @Type(type = "org.hibernate.type.NumericBooleanType")
+    private boolean active;
+
+    @NotNull
+    @Min(0)
+    @Column(name = "threshhold")
+    private int threshhold;
+
+    @NotNull
+    @Column(name = "price")
+    private Long price;
+
+    @Column(name = "old_price")
+    private long oldPrice;
+
+    @JsonIgnore
+    @OneToMany(mappedBy = "product")
+    private List<Lot> lotList;
+
+    @JsonIgnore
+    @OneToMany(mappedBy = "product")
+    private List<Discount> discounts;
+
+    @JsonIgnore
+    @OneToMany(mappedBy = "product")
+    private List<LineItem> lineItems;
 }

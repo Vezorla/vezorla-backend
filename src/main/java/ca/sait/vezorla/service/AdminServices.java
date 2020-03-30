@@ -32,8 +32,6 @@ public interface AdminServices {
 
     boolean createProduct(Product product) throws InvalidInputException;
 
-    Product updateProduct(Product product, Product changed);
-
     boolean saveProduct(Product product);
 
     List<Backup> getBackupList();

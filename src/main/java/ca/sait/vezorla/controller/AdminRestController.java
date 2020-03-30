@@ -12,6 +12,7 @@ import com.fasterxml.jackson.databind.ObjectMapper;
 import lombok.AllArgsConstructor;
 import org.springframework.web.bind.annotation.*;
 
+import java.util.Calendar;
 import java.util.Date;
 import java.util.List;
 import java.util.Optional;
@@ -65,15 +66,19 @@ public class AdminRestController {
     }
 
     @PutMapping("inventory/update")
-    public void updateProduct(@RequestBody Product sendProduct) {
-        //Find product
-        Product product = null;
-        Optional<Product> findProduct = userServices.getProduct(sendProduct.getProdId());
-        if(findProduct.isPresent())
-            product = findProduct.get();
+    public boolean updateProduct(@RequestBody Product sendProduct) {
+        //Fix date. Date comes in one day less so add one more day
+        Calendar cal = Calendar.getInstance();
+        cal.setTime(sendProduct.getHarvestTime());
+        cal.add(Calendar.DATE, 1);
+        java.sql.Date date = new java.sql.Date(cal.getTimeInMillis());
+        sendProduct.setHarvestTime(date);
 
-        Product updateProduct = adminServices.updateProduct(product, sendProduct);
-//        adminServices.saveProduct(updateProduct);
+        //Parse the price
+        long price = sendProduct.getPrice() * 100;
+        sendProduct.setPrice(price);
+
+        return adminServices.saveProduct(sendProduct);
     }
 
     @PutMapping("receive_purchase_order")

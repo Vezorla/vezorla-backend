@@ -122,59 +122,6 @@ public class AdminServicesImp implements AdminServices {
         return true;
     }
 
-    /**
-     * Update a product
-     * Do not update a field if it is not present
-     * @param product product to update
-     * @param changed user sent product
-     * @return product
-     * @author matthewjflee
-     */
-    public Product updateProduct(Product product, Product changed) {
-//        Optional<Product> checkNameProduct = productRepo.findByName(changed.getName());
-//        if(checkNameProduct.isPresent())
-//            throw new ProductAlreadyExistsException();
-//         if (changed.getName() != null)
-//            product.setName(changed.getName());
-
-//        if(changed.getDescription() != null)
-//            product.setDescription(changed.getDescription());
-//
-//        if(changed.getSubdescription() != null)
-//            product.setSubdescription(changed.getSubdescription());
-//
-//        if(changed.getHarvestTime() != null)
-//            product.setHarvestTime(changed.getHarvestTime());
-//
-//        if(changed.getImageMain() != null)
-//            product.setImageMain(changed.getImageMain());
-//
-//        if(changed.getImageOne() != null)
-//            product.setImageOne(changed.getImageOne());
-//
-//        if(changed.getImageTwo() != null)
-//            product.setImageTwo(changed.getImageTwo());
-//
-//        if(changed.getImageThree() != null)
-//            product.setImageThree(changed.getImageThree());
-//
-//        if(changed.getActive() != null)
-//            product.setActive(changed.getActive());
-//
-//        if(changed.getThreshhold() != null)
-//            product.setThreshhold(changed.getThreshhold());
-//
-//        if(changed.getPrice() != null)
-//            product.setPrice(changed.getPrice());
-//
-//        if(changed.getOldPrice() != null)
-//            product.setOldPrice(changed.getOldPrice());
-
-        saveProduct(changed);
-
-        return product;
-    }
-
     public boolean saveProduct(Product product) {
         productRepo.save(product);
         return true;
