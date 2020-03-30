@@ -189,7 +189,7 @@ public class UserServicesImp implements UserServices {
      * @author matthewjflee, jjrr1717
      * @author matthewjflee, jjrr1717
      */
-    public int getProductQuantity(Long id) {
+    public Integer getProductQuantity(Long id) {
         return productRepo.findTotalQuantity(id);
     }
 

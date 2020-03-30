@@ -32,6 +32,10 @@ public interface AdminServices {
 
     boolean createProduct(Product product) throws InvalidInputException;
 
+    Product updateProduct(Product product, Product changed);
+
+    boolean saveProduct(Product product);
+
     List<Backup> getBackupList();
 
     void getInvoice(Long id);
@@ -45,8 +49,6 @@ public interface AdminServices {
     PurchaseOrder savePurchaseOrder(PurchaseOrder purchaseOrder);
 
     void restoreBackup(Long id);
-
-    boolean saveProduct(Product product);
 
     boolean saveWarehouse(Warehouse warehouse);
 

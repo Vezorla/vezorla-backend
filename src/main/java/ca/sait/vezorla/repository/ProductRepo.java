@@ -12,8 +12,9 @@ import java.util.Optional;
 @Repository
 public interface ProductRepo extends JpaRepository<Product, Long>{
 
+//    @Query(value = "SELECT SUM(l.quantity) FROM Lot l WHERE l.product.prodId = :prod_num")
     @Query(value = "SELECT SUM(l.quantity) FROM Lot l WHERE l.product.prodId = :prod_num")
-    int findTotalQuantity(@Param("prod_num") Long prod_num);
+    Integer findTotalQuantity(@Param("prod_num") Long prod_num);
 
     Optional<Product> findByName(String productName);
 }

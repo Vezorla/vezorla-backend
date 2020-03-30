@@ -37,7 +37,7 @@ public interface UserServices {
 
     void addLineItemToSessionCart(List<LineItem> lineItems, Cart cart, HttpSession session);
 
-    int getProductQuantity(Long id);
+    Integer getProductQuantity(Long id);
 
     String getTotalCartQuantity(List<LineItem> lineItems);
 

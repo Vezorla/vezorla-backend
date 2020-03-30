@@ -6,6 +6,7 @@ import ca.sait.vezorla.model.Discount;
 import ca.sait.vezorla.model.Invoice;
 import ca.sait.vezorla.model.Product;
 import ca.sait.vezorla.service.AdminServices;
+import ca.sait.vezorla.service.UserServices;
 import com.fasterxml.jackson.core.JsonProcessingException;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import lombok.AllArgsConstructor;
@@ -13,6 +14,7 @@ import org.springframework.web.bind.annotation.*;
 
 import java.util.Date;
 import java.util.List;
+import java.util.Optional;
 
 @AllArgsConstructor
 @RestController
@@ -22,6 +24,7 @@ public class AdminRestController {
     protected final static String URL = "api/admin/";
 
     private AdminServices adminServices;
+    private UserServices userServices;
 
     /**
      * Method to get all the products for admin view
@@ -36,6 +39,19 @@ public class AdminRestController {
     }
 
     /**
+     * View a single product
+     * @param id ID of product
+     * @return product info
+     * @throws JsonProcessingException thrown if there is an error parsing JSON
+     * @author matthewjflee
+     */
+    @GetMapping("inventory/product/{id}")
+    public String getProduct(@PathVariable Long id) throws JsonProcessingException {
+        ObjectMapper mapper = new ObjectMapper();
+        return mapper.writerWithDefaultPrettyPrinter().writeValueAsString(userServices.getProduct(id, mapper));
+    }
+
+    /**
      * Create a  new product in the database
      * @param product Product to create
      * @return <code>true</code> if saving is successful
@@ -46,6 +62,18 @@ public class AdminRestController {
     @PostMapping("inventory/create")
     public boolean createProduct(@RequestBody Product product) throws InvalidInputException {
         return adminServices.createProduct(product);
+    }
+
+    @PutMapping("inventory/update")
+    public void updateProduct(@RequestBody Product sendProduct) {
+        //Find product
+        Product product = null;
+        Optional<Product> findProduct = userServices.getProduct(sendProduct.getProdId());
+        if(findProduct.isPresent())
+            product = findProduct.get();
+
+        Product updateProduct = adminServices.updateProduct(product, sendProduct);
+//        adminServices.saveProduct(updateProduct);
     }
 
     @PutMapping("receive_purchase_order")
