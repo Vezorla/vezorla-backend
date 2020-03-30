@@ -119,7 +119,7 @@ public class UserServicesImp implements UserServices {
 
         DateFormat df = new SimpleDateFormat("yyyy-MM-dd");
         String date = df.format(product.getHarvestTime());
-        node.put("harvestTime:", date);
+        node.put("harvestTime", date);
         node.put("imageMain", product.getImageMain());
         node.put("imageOne", product.getImageOne());
         node.put("imageTwo", product.getImageTwo());
