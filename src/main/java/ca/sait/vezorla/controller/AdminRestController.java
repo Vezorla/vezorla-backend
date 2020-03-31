@@ -68,25 +68,30 @@ public class AdminRestController {
         return adminServices.createProduct(product);
     }
 
+    /**
+     * Update a product
+     * @param product product to update
+     * @return <code>true</code> if successful, <code>false</code> if not
+     * @author matthewjflee
+     */
     @PutMapping("inventory/update")
-    public boolean updateProduct(@RequestBody Product sendProduct) {
+    public boolean updateProduct(@RequestBody Product product) {
         //Fix date. Date comes in one day less so add one more day
         Calendar cal = Calendar.getInstance();
-        cal.setTime(sendProduct.getHarvestTime());
+        cal.setTime(product.getHarvestTime());
         cal.add(Calendar.DATE, 1);
         java.sql.Date date = new java.sql.Date(cal.getTimeInMillis());
-        sendProduct.setHarvestTime(date);
+        product.setHarvestTime(date);
 
         //Parse the price
-//        double dblPrice = Double.parseDouble(sendProduct.getPrice()) * 100;
-        float floPrice = Float.parseFloat(sendProduct.getPrice()) * 100;
+        float floPrice = Float.parseFloat(product.getPrice()) * 100;
         long price = (long) floPrice;
 
 
         String stringPrice = Objects.toString(price);
-        sendProduct.setPrice(stringPrice);
+        product.setPrice(stringPrice);
 
-        return adminServices.saveProduct(sendProduct);
+        return adminServices.saveProduct(product);
     }
 
     @PostMapping("receive_purchase_order")
