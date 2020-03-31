@@ -5,6 +5,7 @@ import ca.sait.vezorla.model.Backup;
 import ca.sait.vezorla.model.Invoice;
 import ca.sait.vezorla.model.Product;
 import ca.sait.vezorla.service.AdminServices;
+import ca.sait.vezorla.service.UserServices;
 import com.fasterxml.jackson.core.JsonProcessingException;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import lombok.AllArgsConstructor;
@@ -13,8 +14,10 @@ import org.springframework.web.multipart.MultipartFile;
 
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpSession;
+import java.util.Calendar;
 import java.util.Date;
 import java.util.List;
+import java.util.Objects;
 
 @AllArgsConstructor
 @RestController
@@ -24,6 +27,7 @@ public class AdminRestController {
     protected final static String URL = "api/admin/";
 
     private AdminServices adminServices;
+    private UserServices userServices;
 
     /**
      * Method to get all the products for admin view
@@ -39,6 +43,20 @@ public class AdminRestController {
     }
 
     /**
+     * View a single product
+     *
+     * @param id ID of product
+     * @return product info
+     * @throws JsonProcessingException thrown if there is an error parsing JSON
+     * @author matthewjflee
+     */
+    @GetMapping("inventory/product/{id}")
+    public String getProduct(@PathVariable Long id) throws JsonProcessingException {
+        ObjectMapper mapper = new ObjectMapper();
+        return mapper.writerWithDefaultPrettyPrinter().writeValueAsString(userServices.getProduct(id, mapper));
+    }
+
+    /**
      * Create a  new product in the database
      *
      * @param product Product to create
@@ -49,6 +67,32 @@ public class AdminRestController {
     @PostMapping("inventory/create")
     public boolean createProduct(@RequestBody Product product) throws InvalidInputException {
         return adminServices.createProduct(product);
+    }
+
+    /**
+     * Update a product
+     * @param product product to update
+     * @return <code>true</code> if successful, <code>false</code> if not
+     * @author matthewjflee
+     */
+    @PutMapping("inventory/update")
+    public boolean updateProduct(@RequestBody Product product) {
+        //Fix date. Date comes in one day less so add one more day
+        Calendar cal = Calendar.getInstance();
+        cal.setTime(product.getHarvestTime());
+        cal.add(Calendar.DATE, 1);
+        java.sql.Date date = new java.sql.Date(cal.getTimeInMillis());
+        product.setHarvestTime(date);
+
+        //Parse the price
+        float floPrice = Float.parseFloat(product.getPrice()) * 100;
+        long price = (long) floPrice;
+
+
+        String stringPrice = Objects.toString(price);
+        product.setPrice(stringPrice);
+
+        return adminServices.saveProduct(product);
     }
 
     @PostMapping("receive_purchase_order")
