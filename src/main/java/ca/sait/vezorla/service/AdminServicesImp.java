@@ -8,12 +8,16 @@ import ca.sait.vezorla.repository.*;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import com.fasterxml.jackson.databind.node.ArrayNode;
 import com.fasterxml.jackson.databind.node.ObjectNode;
+import com.smattme.MysqlExportService;
 import lombok.AllArgsConstructor;
 import org.json.JSONArray;
 import org.json.JSONObject;
 import org.springframework.stereotype.Service;
 
 import javax.servlet.http.HttpSession;
+import java.io.File;
+import java.io.IOException;
+import java.sql.SQLException;
 import java.text.DateFormat;
 import java.text.ParseException;
 import java.text.SimpleDateFormat;
@@ -50,8 +54,44 @@ public class AdminServicesImp implements AdminServices {
 
     }
 
-    public void exportData(Date start, Date end) {
+    public boolean exportData() {
 
+
+        //https://dzone.com/articles/how-to-backup-mysql-database-programmatically-usin
+        Properties properties = new Properties();
+        properties.setProperty(MysqlExportService.DB_NAME, "vezorla");
+        properties.setProperty(MysqlExportService.DB_USERNAME, "root");
+        properties.setProperty(MysqlExportService.DB_PASSWORD, "pass");
+
+
+
+//        properties.setProperty(MysqlExportService.EMAIL_HOST, "");
+//        properties.setProperty(MysqlExportService.EMAIL_PORT, "");
+//        properties.setProperty(MysqlExportService.EMAIL_USERNAME, "");
+//        properties.setProperty(MysqlExportService.EMAIL_PASSWORD, "");
+//        properties.setProperty(MysqlExportService.EMAIL_FROM, "");
+//        properties.setProperty(MysqlExportService.EMAIL_TO, "");
+
+        properties.setProperty(MysqlExportService.PRESERVE_GENERATED_ZIP, "true");
+
+        //set the outputs temp dir
+        properties.setProperty(MysqlExportService.TEMP_DIR, new File("external").getPath());
+        MysqlExportService mysqlExportService = new MysqlExportService(properties);
+        File file = mysqlExportService.getGeneratedZipFile();
+
+        try {
+            mysqlExportService.export();
+        } catch (IOException e) {
+            e.printStackTrace();
+        } catch (SQLException e) {
+            e.printStackTrace();
+        } catch (ClassNotFoundException e) {
+            e.printStackTrace();
+        }
+
+        //mysqlExportService.clearTempFiles(false);
+
+        return true;
     }
 
     public void generatePDF(List<ProductQuantity> productQuantityList) {

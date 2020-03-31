@@ -23,7 +23,7 @@ public interface AdminServices {
 
     void declineBusinessOrder(Long id);
 
-    void exportData(Date start, Date end);
+    boolean exportData();
 
     void generatePDF(List<ProductQuantity> productQuantityList);
 

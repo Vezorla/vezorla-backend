@@ -2,7 +2,6 @@ package ca.sait.vezorla.controller;
 
 import ca.sait.vezorla.exception.InvalidInputException;
 import ca.sait.vezorla.model.Backup;
-import ca.sait.vezorla.model.Discount;
 import ca.sait.vezorla.model.Invoice;
 import ca.sait.vezorla.model.Product;
 import ca.sait.vezorla.service.AdminServices;
@@ -67,7 +66,8 @@ public class AdminRestController {
     }
 
     @GetMapping("backup/export")
-    public void exportData(Date start, Date end) {
+    public boolean exportData() {
+        return adminServices.exportData();
 
     }
 
