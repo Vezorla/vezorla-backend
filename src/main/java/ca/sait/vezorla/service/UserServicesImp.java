@@ -2,7 +2,6 @@ package ca.sait.vezorla.service;
 
 import ca.sait.vezorla.controller.util.CustomerClientUtil;
 import ca.sait.vezorla.exception.InvalidInputException;
-import ca.sait.vezorla.exception.OutOfStockException;
 import ca.sait.vezorla.exception.UnauthorizedException;
 import ca.sait.vezorla.model.*;
 import ca.sait.vezorla.repository.*;
@@ -13,7 +12,6 @@ import com.fasterxml.jackson.databind.node.ObjectNode;
 import lombok.AllArgsConstructor;
 import org.springframework.stereotype.Service;
 
-import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpSession;
 import java.text.DateFormat;
 import java.text.SimpleDateFormat;
@@ -126,8 +124,12 @@ public class UserServicesImp implements UserServices {
         node.put("imageThree", product.getImageThree());
         node.put("active", product.isActive());
         node.put("threshold", product.getThreshhold());
-        node.put("price", ccu.formatAmount(product.getPrice()));
-        node.put("oldPrice", ccu.formatAmount(product.getOldPrice()));
+
+        //Parse price
+        long price = Long.parseLong(product.getPrice());
+        long oldPrice = Long.parseLong(product.getOldPrice());
+        node.put("price", ccu.formatAmount(price));
+        node.put("oldPrice", ccu.formatAmount(oldPrice));
 
         productsNode.add(node);
     }
@@ -263,7 +265,10 @@ public class UserServicesImp implements UserServices {
         int lineItemIndex = checkProductLineItem(product.getProdId(), cart);
         if (lineItemIndex == -1) {
             //Create line item
-            lineItem = new LineItem(quantity, product.getName(), product.getPrice(), cart, product);
+
+            //Parse price
+            long price = Long.parseLong(product.getPrice());
+            lineItem = new LineItem(quantity, product.getName(), price, cart, product);
             lineItems = cart.getLineItems();
             lineItems.add(lineItem);
         } else {
@@ -330,10 +335,10 @@ public class UserServicesImp implements UserServices {
      * @param session  user session
      * @author matthewjflee, jjrr1717
      */
-    public boolean updateLineItem(long id, int quantity, Cart cart, HttpSession session)  {
+    public boolean updateLineItem(long id, int quantity, Cart cart, HttpSession session) {
         boolean inStock = checkIfLineItemInStock(id, quantity);
         boolean result = false;
-        if(inStock) {
+        if (inStock) {
 
             List<LineItem> lineItems = cart.getLineItems();
             LineItem lineItem = null;
@@ -360,15 +365,15 @@ public class UserServicesImp implements UserServices {
      * Method to check if a single line item is out
      * of stock during update.
      *
-     * @param id of product
+     * @param id         of product
      * @param updatedQty is new qty
      * @return boolean true if item is in stock, otherwise false
      */
-    public boolean checkIfLineItemInStock(long id, int updatedQty){
+    public boolean checkIfLineItemInStock(long id, int updatedQty) {
         boolean inStock = true;
 
         int inStockQty = getProductQuantity(id);
-        if(updatedQty > inStockQty){
+        if (updatedQty > inStockQty) {
             inStock = false;
         }
 
@@ -508,11 +513,16 @@ public class UserServicesImp implements UserServices {
 
         for (int i = 0; i < cart.getLineItems().size(); i++) {
             ObjectNode node = mapper.createObjectNode();
-            node.put("prodID", cart.getLineItems().get(i).getProduct().getProdId());
-            node.put("name", cart.getLineItems().get(i).getProduct().getName());
-            node.put("price", customerClientUtil.formatAmount(cart.getLineItems().get(i).getProduct().getPrice()));
-            node.put("imageMain", cart.getLineItems().get(i).getProduct().getImageMain());
-            node.put("quantity", cart.getLineItems().get(i).getQuantity());
+            LineItem lineItem = cart.getLineItems().get(i);
+
+            node.put("prodID", lineItem.getProduct().getProdId());
+            node.put("name", lineItem.getProduct().getName());
+
+            //Parse price
+            long price = Long.parseLong(lineItem.getProduct().getPrice());
+            node.put("price", customerClientUtil.formatAmount(price));
+            node.put("imageMain", lineItem.getProduct().getImageMain());
+            node.put("quantity", lineItem.getQuantity());
             arrayNode.add(node);
         }
 
@@ -587,10 +597,13 @@ public class UserServicesImp implements UserServices {
 
         for (int i = 0; i < cart.getLineItems().size(); i++) {
             ObjectNode nodeItem = mapper.createObjectNode();
-            int quantity = cart.getLineItems().get(i).getQuantity();
-            long price = cart.getLineItems().get(i).getProduct().getPrice();
+            LineItem lineItem = cart.getLineItems().get(i);
 
-            nodeItem.put("name", cart.getLineItems().get(i).getProduct().getName());
+            int quantity = lineItem.getQuantity();
+            String strPrice = lineItem.getProduct().getPrice();
+            long price = Long.parseLong(strPrice);
+
+            nodeItem.put("name", lineItem.getProduct().getName());
             nodeItem.put("quantity", quantity);
             nodeItem.put("price", customerClientUtil.formatAmount(price));
             //get over the extended price
@@ -827,7 +840,7 @@ public class UserServicesImp implements UserServices {
     public boolean checkLineItemStock(Cart cart) {
         boolean inStock = false;
 
-        if(cart.getLineItems().size() == 0)
+        if (cart.getLineItems().size() == 0)
             return false;
 
         for (LineItem lineItem : cart.getLineItems()) {
@@ -893,10 +906,11 @@ public class UserServicesImp implements UserServices {
     /**
      * Method to get the banner message for the
      * home page
+     *
      * @param mapper for the custom json
      * @return ObjectNode for custom json
      */
-    public ObjectNode getBannerMessage(ObjectMapper mapper){
+    public ObjectNode getBannerMessage(ObjectMapper mapper) {
         ObjectNode node = mapper.createObjectNode();
 
         //get message from discount

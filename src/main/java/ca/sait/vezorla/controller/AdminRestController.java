@@ -16,6 +16,7 @@ import javax.servlet.http.HttpSession;
 import java.util.Calendar;
 import java.util.Date;
 import java.util.List;
+import java.util.Objects;
 
 @AllArgsConstructor
 @RestController
@@ -77,8 +78,12 @@ public class AdminRestController {
         sendProduct.setHarvestTime(date);
 
         //Parse the price
-        long price = sendProduct.getPrice() * 100;
-        sendProduct.setPrice(price);
+        double dblPrice = Double.parseDouble(sendProduct.getPrice()) * 100;
+        long price = (long) dblPrice;
+
+
+        String stringPrice = Objects.toString(price);
+        sendProduct.setPrice(stringPrice);
 
         return adminServices.saveProduct(sendProduct);
     }

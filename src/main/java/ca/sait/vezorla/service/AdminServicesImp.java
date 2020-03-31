@@ -83,7 +83,10 @@ public class AdminServicesImp implements AdminServices {
             ObjectNode productNode = productNodes.objectNode();
             productNode.put("name", product.getName());
             productNode.put("imageMain", product.getImageMain());
-            productNode.put("price", ccu.formatAmount(product.getPrice()));
+
+            //Parse price
+            long price = Long.parseLong(product.getPrice());
+            productNode.put("price", ccu.formatAmount(price));
 
             //get total quantity
             Integer qty = userServices.getProductQuantity(product.getProdId());

@@ -68,10 +68,10 @@ public class Product implements Serializable {
 
     @NotNull
     @Column(name = "price")
-    private Long price;
+    private String price;
 
     @Column(name = "old_price")
-    private long oldPrice;
+    private String oldPrice;
 
     @JsonIgnore
     @OneToMany(mappedBy = "product")
