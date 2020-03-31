@@ -78,8 +78,9 @@ public class AdminRestController {
         sendProduct.setHarvestTime(date);
 
         //Parse the price
-        double dblPrice = Double.parseDouble(sendProduct.getPrice()) * 100;
-        long price = (long) dblPrice;
+//        double dblPrice = Double.parseDouble(sendProduct.getPrice()) * 100;
+        float floPrice = Float.parseFloat(sendProduct.getPrice()) * 100;
+        long price = (long) floPrice;
 
 
         String stringPrice = Objects.toString(price);
