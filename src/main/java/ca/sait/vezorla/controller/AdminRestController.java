@@ -13,7 +13,6 @@ import org.springframework.web.multipart.MultipartFile;
 
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpSession;
-import java.io.File;
 import java.util.Date;
 import java.util.List;
 
@@ -28,22 +27,23 @@ public class AdminRestController {
 
     /**
      * Method to get all the products for admin view
+     *
      * @return String for the custom json
      * @throws JsonProcessingException thrown when there is an error parsing JSON
      * @author jjrr717
      */
     @GetMapping("inventory/all")
     public String getAllProducts() throws JsonProcessingException {
-       ObjectMapper mapper = new ObjectMapper();
+        ObjectMapper mapper = new ObjectMapper();
         return mapper.writerWithDefaultPrettyPrinter().writeValueAsString(adminServices.getAllProducts(mapper));
     }
 
     /**
      * Create a  new product in the database
+     *
      * @param product Product to create
      * @return <code>true</code> if saving is successful
      * Will throw a ProductAlreadyExistsException
-     *
      * @author matthewjflee
      */
     @PostMapping("inventory/create")
@@ -52,7 +52,7 @@ public class AdminRestController {
     }
 
     @PostMapping("receive_purchase_order")
-    public boolean receivePurchaseOrder(@RequestBody String body){
+    public boolean receivePurchaseOrder(@RequestBody String body) {
         adminServices.receivePurchaseOrder(body);
         return true;
     }
@@ -99,11 +99,9 @@ public class AdminRestController {
     }
 
     @GetMapping("order_history")
-    public String viewOrderHistoryAdmin(HttpServletRequest request) throws JsonProcessingException{
+    public String viewOrderHistoryAdmin(HttpServletRequest request) throws JsonProcessingException {
         HttpSession session = request.getSession();
         ObjectMapper mapper = new ObjectMapper();
         return mapper.writerWithDefaultPrettyPrinter().writeValueAsString(adminServices.viewOrderHistoryAdmin(mapper, session));
-
     }
-
 }
