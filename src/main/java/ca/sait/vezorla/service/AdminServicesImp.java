@@ -83,10 +83,13 @@ public class AdminServicesImp implements AdminServices {
             ObjectNode productNode = productNodes.objectNode();
             productNode.put("name", product.getName());
             productNode.put("imageMain", product.getImageMain());
-            productNode.put("price", ccu.formatAmount(product.getPrice()));
+
+            //Parse price
+            long price = Long.parseLong(product.getPrice());
+            productNode.put("price", ccu.formatAmount(price));
 
             //get total quantity
-            int qty = userServices.getProductQuantity(product.getProdId());
+            Integer qty = userServices.getProductQuantity(product.getProdId());
             productNode.put("qty", qty);
 
             productNodes.add(productNode);
@@ -118,6 +121,11 @@ public class AdminServicesImp implements AdminServices {
         } else
             throw new ProductAlreadyExistsException();
 
+        return true;
+    }
+
+    public boolean saveProduct(Product product) {
+        productRepo.save(product);
         return true;
     }
 
@@ -258,11 +266,6 @@ public class AdminServicesImp implements AdminServices {
 
     public void restoreBackup(Long id) {
 
-    }
-
-
-    public boolean saveProduct(Product product) {
-        return false;
     }
 
     public boolean saveWarehouse(Warehouse warehouse) {
