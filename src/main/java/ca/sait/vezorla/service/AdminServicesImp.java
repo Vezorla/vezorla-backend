@@ -9,14 +9,21 @@ import com.fasterxml.jackson.databind.ObjectMapper;
 import com.fasterxml.jackson.databind.node.ArrayNode;
 import com.fasterxml.jackson.databind.node.ObjectNode;
 import com.smattme.MysqlExportService;
+import com.smattme.MysqlImportService;
 import lombok.AllArgsConstructor;
 import org.json.JSONArray;
 import org.json.JSONObject;
+import org.json.simple.parser.JSONParser;
 import org.springframework.stereotype.Service;
+import org.springframework.web.bind.annotation.RequestParam;
+import org.springframework.web.multipart.MultipartFile;
 
 import javax.servlet.http.HttpSession;
 import java.io.File;
 import java.io.IOException;
+import java.nio.file.Files;
+import java.nio.file.Paths;
+import java.sql.BatchUpdateException;
 import java.sql.SQLException;
 import java.text.DateFormat;
 import java.text.ParseException;
@@ -54,42 +61,31 @@ public class AdminServicesImp implements AdminServices {
 
     }
 
+    /**
+     * Backup the Vezorla database
+     * @return <code>true</code> if successful
+     * @author jjrr1717, matthewjflee
+     */
     public boolean exportData() {
+        boolean result = false;
+        String dbName = "vezorla";
+        String dbUser = "root";
+        String dbPass = "pass";
 
 
-        //https://dzone.com/articles/how-to-backup-mysql-database-programmatically-usin
-        Properties properties = new Properties();
-        properties.setProperty(MysqlExportService.DB_NAME, "vezorla");
-        properties.setProperty(MysqlExportService.DB_USERNAME, "root");
-        properties.setProperty(MysqlExportService.DB_PASSWORD, "pass");
-
-
-
-//        properties.setProperty(MysqlExportService.EMAIL_HOST, "");
-//        properties.setProperty(MysqlExportService.EMAIL_PORT, "");
-//        properties.setProperty(MysqlExportService.EMAIL_USERNAME, "");
-//        properties.setProperty(MysqlExportService.EMAIL_PASSWORD, "");
-//        properties.setProperty(MysqlExportService.EMAIL_FROM, "");
-//        properties.setProperty(MysqlExportService.EMAIL_TO, "");
-
-        properties.setProperty(MysqlExportService.PRESERVE_GENERATED_ZIP, "true");
-
-        //set the outputs temp dir
-        properties.setProperty(MysqlExportService.TEMP_DIR, new File("external").getPath());
-        MysqlExportService mysqlExportService = new MysqlExportService(properties);
-        File file = mysqlExportService.getGeneratedZipFile();
-
+        //C:/Program Files/MySQL/MySQL Server 8.0/bin/
+        String executeCmd;
+        executeCmd = "\"C:\\Program Files\\MySQL\\MySQL Workbench 8.0 CE\\mysqldump.exe\" -u" + dbUser + " -p" + dbPass + " " + dbName + " > C:\\Users\\783661\\Documents\\dumps\\backup3.sql";
+        System.out.println(executeCmd);
         try {
-            mysqlExportService.export();
-        } catch (IOException e) {
-            e.printStackTrace();
-        } catch (SQLException e) {
-            e.printStackTrace();
-        } catch (ClassNotFoundException e) {
+            Process runtimeProcess = Runtime.getRuntime().exec(executeCmd);
+            int processComplete = runtimeProcess.waitFor();
+            if (processComplete == 0) {
+                result = true;
+            }
+        } catch (IOException | InterruptedException e) {
             e.printStackTrace();
         }
-
-        //mysqlExportService.clearTempFiles(false);
 
         return true;
     }
@@ -295,9 +291,30 @@ public class AdminServicesImp implements AdminServices {
         return true;
     }
 
+    /**
+     * Restore the Vezorla database
+     *
+     * @param file file to restore
+     * @return <code>true</code> if successful
+     * @author jjrr1717, matthewjflee
+     */
+    public boolean restoreBackup(MultipartFile file) {
+        boolean result = false;
+        try {
+            String sql = new String(file.getBytes());
+            result = MysqlImportService.builder()
+                    .setDatabase("vezorla")
+                    .setSqlString(sql)
+                    .setUsername("root")
+                    .setPassword("pass")
+                    .setDeleteExisting(true)
+                    .setDropExisting(true)
+                    .importDatabase();
+        } catch (SQLException | ClassNotFoundException | IOException e) {
+            result = true;
+        }
 
-    public void restoreBackup(Long id) {
-
+        return result;
     }
 
 

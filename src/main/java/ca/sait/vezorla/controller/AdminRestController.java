@@ -9,9 +9,11 @@ import com.fasterxml.jackson.core.JsonProcessingException;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import lombok.AllArgsConstructor;
 import org.springframework.web.bind.annotation.*;
+import org.springframework.web.multipart.MultipartFile;
 
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpSession;
+import java.io.File;
 import java.util.Date;
 import java.util.List;
 
@@ -87,8 +89,8 @@ public class AdminRestController {
     }
 
     @GetMapping("backup/restore")
-    public boolean restoreBackup(Long id) {
-        return false;
+    public boolean restoreBackup(@RequestParam("file") MultipartFile body) {
+        return adminServices.restoreBackup(body);
     }
 
     @GetMapping("orders/get/{id}")

@@ -5,8 +5,11 @@ import ca.sait.vezorla.exception.InvalidInputException;
 import ca.sait.vezorla.model.*;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import com.fasterxml.jackson.databind.node.ObjectNode;
+import org.springframework.web.bind.annotation.RequestParam;
+import org.springframework.web.multipart.MultipartFile;
 
 import javax.servlet.http.HttpSession;
+import java.io.File;
 import java.util.Date;
 import java.util.List;
 
@@ -45,8 +48,6 @@ public interface AdminServices {
 
     PurchaseOrder savePurchaseOrder(PurchaseOrder purchaseOrder);
 
-    void restoreBackup(Long id);
-
     boolean saveProduct(Product product);
 
     boolean saveWarehouse(Warehouse warehouse);
@@ -56,4 +57,6 @@ public interface AdminServices {
     boolean saveLots(List<Lot> lots, PurchaseOrder po);
 
     ObjectNode viewOrderHistoryAdmin(ObjectMapper mapper, HttpSession session);
+
+    boolean restoreBackup(MultipartFile file);
 }
