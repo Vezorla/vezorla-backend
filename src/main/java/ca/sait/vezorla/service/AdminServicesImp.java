@@ -8,12 +8,16 @@ import ca.sait.vezorla.repository.*;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import com.fasterxml.jackson.databind.node.ArrayNode;
 import com.fasterxml.jackson.databind.node.ObjectNode;
+import com.smattme.MysqlImportService;
 import lombok.AllArgsConstructor;
 import org.json.JSONArray;
 import org.json.JSONObject;
 import org.springframework.stereotype.Service;
+import org.springframework.web.multipart.MultipartFile;
 
 import javax.servlet.http.HttpSession;
+import java.io.IOException;
+import java.sql.SQLException;
 import java.text.DateFormat;
 import java.text.ParseException;
 import java.text.SimpleDateFormat;
@@ -50,8 +54,34 @@ public class AdminServicesImp implements AdminServices {
 
     }
 
-    public void exportData(Date start, Date end) {
+    /**
+     * Backup the Vezorla database
+     *
+     * @return <code>true</code> if successful
+     * @author jjrr1717, matthewjflee
+     */
+    public boolean exportData() {
+        boolean result = false;
+        String dbName = "vezorla";
+        String dbUser = "root";
+        String dbPass = "pass";
 
+
+        //C:/Program Files/MySQL/MySQL Server 8.0/bin/
+        String executeCmd;
+        executeCmd = "\"C:\\Program Files\\MySQL\\MySQL Workbench 8.0 CE\\mysqldump.exe\" -u" + dbUser + " -p" + dbPass + " " + dbName + " > C:\\Users\\783661\\Documents\\dumps\\backup3.sql";
+        System.out.println(executeCmd);
+        try {
+            Process runtimeProcess = Runtime.getRuntime().exec(executeCmd);
+            int processComplete = runtimeProcess.waitFor();
+            if (processComplete == 0) {
+                result = true;
+            }
+        } catch (IOException | InterruptedException e) {
+            e.printStackTrace();
+        }
+
+        return true;
     }
 
     public void generatePDF(List<ProductQuantity> productQuantityList) {
@@ -263,9 +293,30 @@ public class AdminServicesImp implements AdminServices {
         return true;
     }
 
+    /**
+     * Restore the Vezorla database
+     *
+     * @param file file to restore
+     * @return <code>true</code> if successful
+     * @author jjrr1717, matthewjflee
+     */
+    public boolean restoreBackup(MultipartFile file) {
+        boolean result = false;
+        try {
+            String sql = new String(file.getBytes());
+            result = MysqlImportService.builder()
+                    .setDatabase("vezorla")
+                    .setSqlString(sql)
+                    .setUsername("root")
+                    .setPassword("pass")
+                    .setDeleteExisting(true)
+                    .setDropExisting(true)
+                    .importDatabase();
+        } catch (SQLException | ClassNotFoundException | IOException e) {
+            result = true;
+        }
 
-    public void restoreBackup(Long id) {
-
+        return result;
     }
 
     public boolean saveWarehouse(Warehouse warehouse) {

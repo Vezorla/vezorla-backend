@@ -10,6 +10,7 @@ import com.fasterxml.jackson.core.JsonProcessingException;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import lombok.AllArgsConstructor;
 import org.springframework.web.bind.annotation.*;
+import org.springframework.web.multipart.MultipartFile;
 
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpSession;
@@ -111,7 +112,8 @@ public class AdminRestController {
     }
 
     @GetMapping("backup/export")
-    public void exportData(Date start, Date end) {
+    public boolean exportData() {
+        return adminServices.exportData();
 
     }
 
@@ -131,8 +133,8 @@ public class AdminRestController {
     }
 
     @GetMapping("backup/restore")
-    public boolean restoreBackup(Long id) {
-        return false;
+    public boolean restoreBackup(@RequestParam("file") MultipartFile body) {
+        return adminServices.restoreBackup(body);
     }
 
     @GetMapping("orders/get/{id}")
@@ -145,7 +147,5 @@ public class AdminRestController {
         HttpSession session = request.getSession();
         ObjectMapper mapper = new ObjectMapper();
         return mapper.writerWithDefaultPrettyPrinter().writeValueAsString(adminServices.viewOrderHistoryAdmin(mapper, session));
-
     }
-
 }
