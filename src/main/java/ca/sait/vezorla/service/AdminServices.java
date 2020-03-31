@@ -30,8 +30,6 @@ public interface AdminServices {
 
     void generatePDF(List<ProductQuantity> productQuantityList);
 
-    void get(Long id);
-
     ObjectNode getAllProducts(ObjectMapper mapper);
 
     boolean createProduct(Product product) throws InvalidInputException;
@@ -49,10 +47,6 @@ public interface AdminServices {
     Invoice getPendingBusinessOrderById(Long id);
 
     PurchaseOrder savePurchaseOrder(PurchaseOrder purchaseOrder);
-
-    boolean saveProduct(Product product);
-
-    void restoreBackup(Long id);
 
     boolean saveWarehouse(Warehouse warehouse);
 
