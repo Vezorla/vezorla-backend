@@ -1,10 +1,7 @@
 package ca.sait.vezorla.controller;
 
 import ca.sait.vezorla.exception.InvalidInputException;
-import ca.sait.vezorla.model.Backup;
-import ca.sait.vezorla.model.Discount;
-import ca.sait.vezorla.model.Invoice;
-import ca.sait.vezorla.model.Product;
+import ca.sait.vezorla.model.*;
 import ca.sait.vezorla.service.AdminServices;
 import ca.sait.vezorla.service.UserServices;
 import com.fasterxml.jackson.core.JsonProcessingException;
@@ -123,9 +120,26 @@ public class AdminRestController {
         return null;
     }
 
+    /**
+     * Method to create and save discount to database
+     * @param discount to save
+     * @return <code>true</code> if successful, otherwise
+     * false.
+     */
     @PostMapping("discount/create")
     public boolean createDiscount(@RequestBody Discount discount) {
         return adminServices.createDiscount(discount);
+    }
+
+    /**
+     * Method to create and save warehouse to database
+     * @param warehouse to create and save
+     * @return <code>true</code> if successful, otherwise
+     * false.
+     */
+    @PostMapping("warehouse/create")
+    public boolean createWarehouse(@RequestBody Warehouse warehouse) throws InvalidInputException {
+        return adminServices.createWarehouse(warehouse);
     }
 
     @GetMapping("backup/get")
