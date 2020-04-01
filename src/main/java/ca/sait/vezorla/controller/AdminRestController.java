@@ -109,28 +109,34 @@ public class AdminRestController {
     /**
      * Update a product
      *
-     * @param product product to update
+     * @param changed product to update
      * @return <code>true</code> if successful, <code>false</code> if not
      * @author matthewjflee
      */
     @PutMapping("inventory/update")
-    public boolean updateProduct(@RequestBody Product product) {
+    public boolean updateProduct(@RequestBody Product changed) {
         //Fix date. Date comes in one day less so add one more day
         Calendar cal = Calendar.getInstance();
-        cal.setTime(product.getHarvestTime());
+        cal.setTime(changed.getHarvestTime());
         cal.add(Calendar.DATE, 1);
         java.sql.Date date = new java.sql.Date(cal.getTimeInMillis());
-        product.setHarvestTime(date);
+        changed.setHarvestTime(date);
 
         //Parse the price
-        float floPrice = Float.parseFloat(product.getPrice()) * 100;
+        float floPrice = Float.parseFloat(changed.getPrice()) * 100;
         long price = (long) floPrice;
 
 
         String stringPrice = Objects.toString(price);
-        product.setPrice(stringPrice);
+        changed.setPrice(stringPrice);
 
-        return adminServices.saveProduct(product);
+        //Find product
+        Product product = null;
+        Optional<Product> findProduct = userServices.getProduct(changed.getProdId());
+        if(findProduct.isPresent())
+            product = findProduct.get();
+
+        return adminServices.updateProduct(product, changed);
     }
 
     /**
@@ -142,13 +148,13 @@ public class AdminRestController {
      * @throws IOException thrown when compressing the bytes
      * @author matthewjflee
      */
-    @PostMapping("img/upload")
-    public boolean uploadImage(@RequestParam("imgFile") MultipartFile file) throws IOException {
+    @PostMapping("img/upload/{prodId}")
+    public boolean uploadImage(@RequestParam("imgFile") MultipartFile file, @PathVariable("prodId") Long prodId) throws IOException {
         byte[] imgCompressed = adminServices.compressBytes(file.getBytes());
 
         Image image = new Image(file.getOriginalFilename(), file.getContentType(), imgCompressed);
 
-        adminServices.saveImage(image);
+        adminServices.saveImage(image, prodId);
 
         return true;
     }

@@ -75,12 +75,12 @@ public class AdminServicesImp implements AdminServices {
 
     /**
      * Backup the Vezorla database
+     * Source: https://dzone.com/articles/how-to-backup-mysql-database-programmatically-usin
      *
      * @return <code>true</code> if successful
      * @author jjrr1717, matthewjflee
      */
     public boolean exportData() {
-        //https://dzone.com/articles/how-to-backup-mysql-database-programmatically-usin
         Properties properties = new Properties();
         properties.setProperty(MysqlExportService.DB_NAME, "vezorla");
         properties.setProperty(MysqlExportService.DB_USERNAME, "root");
@@ -103,12 +103,7 @@ public class AdminServicesImp implements AdminServices {
 
         try {
             mysqlExportService.export();
-        } catch (IOException e) {
-            e.printStackTrace();
-        } catch (SQLException e) {
-            e.printStackTrace();
-        } catch (ClassNotFoundException e) {
-            e.printStackTrace();
+        } catch (IOException | ClassNotFoundException | SQLException ignore) {
         }
 
         mysqlExportService.clearTempFiles(false);
@@ -117,10 +112,6 @@ public class AdminServicesImp implements AdminServices {
     }
 
     public void generatePDF(List<ProductQuantity> productQuantityList) {
-
-    }
-
-    public void get(Long id) {
 
     }
 
@@ -244,9 +235,51 @@ public class AdminServicesImp implements AdminServices {
         return true;
     }
 
-    public boolean saveProduct(Product product) {
-        productRepo.save(product);
+    /**
+     * Update a product
+     * Do not update a field if it is not present
+     *
+     * @param product product to update
+     * @param changed user sent product
+     * @return <code>true</code>> if successful
+     * <code>false</code> if unsuccessful
+     * @author matthewjflee
+     */
+    public boolean updateProduct(Product product, Product changed) {
+        if (changed.getName() != null)
+            product.setName(changed.getName());
+
+        if (changed.getDescription() != null)
+            product.setDescription(changed.getDescription());
+
+        if (changed.getHarvestTime() != null)
+            product.setHarvestTime(changed.getHarvestTime());
+
+        if (changed.getActive() != null)
+            product.setActive(changed.getActive());
+
+        product.setThreshhold(changed.getThreshhold());
+
+        if (changed.getPrice() != null)
+            product.setPrice(changed.getPrice());
+
+        Product saved = saveProduct(product);
+        if (saved == null)
+            return false;
+
         return true;
+    }
+
+
+    /**
+     * Save a product in the Products table
+     *
+     * @param product product to save
+     * @return if it has been saved
+     * @author matthewjflee
+     */
+    public Product saveProduct(Product product) {
+        return productRepo.save(product);
     }
 
 
@@ -449,10 +482,6 @@ public class AdminServicesImp implements AdminServices {
         return result;
     }
 
-    public boolean saveWarehouse(Warehouse warehouse) {
-        return false;
-    }
-
     /**
      * Method to view the order history on a client's
      * account.
@@ -562,11 +591,97 @@ public class AdminServicesImp implements AdminServices {
     /**
      * Persist an image in the database
      *
-     * @param image image to persist
+     * @param image  image to persist
+     * @param prodId product image to update
      * @author matthewjflee
      */
-    public void saveImage(Image image) {
-        imgRepo.save(image);
+    public void saveImage(Image image, Long prodId) {
+        Image saved = imgRepo.save(image);
+        updateProductImage(saved, prodId);
+    }
+
+    /**
+     * Update an image
+     * Go through the list of images and replace the oldest image
+     * Sorry we are out of time I know this is ugly
+     *
+     * @param image image to save
+     * @param prodId product
+     * @author matthewjflee
+     */
+    private void updateProductImage(Image image, Long prodId) {
+        Product product = null;
+        Optional<Product> findProduct = userServices.getProduct(prodId);
+        if (findProduct.isPresent())
+            product = findProduct.get();
+
+        //Update the product image
+        List<Long> imageIdList = new ArrayList<>();
+
+        if (product.getImageMain() != null)
+            imageIdList.add(product.getImageMain());
+
+        if (product.getImageOne() != null)
+            imageIdList.add(product.getImageOne());
+
+        if (product.getImageTwo() != null)
+            imageIdList.add(product.getImageTwo());
+
+        if (product.getImageThree() != null)
+            imageIdList.add(product.getImageThree());
+
+        //Find the image with the lowest ID
+        int index = 0;
+        int listSize = imageIdList.size();
+
+        switch (listSize) {
+            case 0:
+                index = 0;
+                break;
+
+            case 1:
+                index = 1;
+                break;
+
+            case 2:
+                index = 2;
+                break;
+
+            case 3:
+                index = 3;
+                break;
+
+            case 4:
+                long lowest = imageIdList.get(0);
+                for (int i = 1; i < imageIdList.size(); i++) {
+                    if (lowest > imageIdList.get(i)) {
+                        lowest = imageIdList.get(i);
+                        index = i;
+                    }
+                }
+                break;
+        }
+
+        switch (index) {
+            case 0:
+                product.setImageMain(image.getId());
+                break;
+
+            case 1:
+                product.setImageOne(image.getId());
+                break;
+
+            case 2:
+                product.setImageTwo(image.getId());
+                break;
+
+            case 3:
+                product.setImageThree(image.getId());
+                break;
+        }
+
+        //Update product
+        saveProduct(product);
     }
 
     /**
