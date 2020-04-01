@@ -122,7 +122,7 @@ public class UserServicesImp implements UserServices {
         node.put("imageOne", product.getImageOne());
         node.put("imageTwo", product.getImageTwo());
         node.put("imageThree", product.getImageThree());
-        node.put("active", product.isActive());
+        node.put("active", product.getActive());
         node.put("threshold", product.getThreshhold());
 
         //Parse price

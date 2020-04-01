@@ -589,7 +589,7 @@ public class AdminServicesImp implements AdminServices {
     /**
      * Persist an image in the database
      *
-     * @param image image to persist
+     * @param image  image to persist
      * @param prodId product image to update
      * @author matthewjflee
      */
@@ -598,30 +598,69 @@ public class AdminServicesImp implements AdminServices {
         updateProductImage(saved, prodId);
     }
 
+    /**
+     * Update an image
+     * Go through the list of images and replace the oldest image
+     * Sorry we are out of time I know this is ugly
+     *
+     * @param image image to save
+     * @param prodId product
+     * @author matthewjflee
+     */
     private void updateProductImage(Image image, Long prodId) {
         Product product = null;
         Optional<Product> findProduct = userServices.getProduct(prodId);
-        if(findProduct.isPresent())
+        if (findProduct.isPresent())
             product = findProduct.get();
 
         //Update the product image
         List<Long> imageIdList = new ArrayList<>();
-        imageIdList.add(product.getImageMain());
-        imageIdList.add(product.getImageOne());
-        imageIdList.add(product.getImageTwo());
-        imageIdList.add(product.getImageThree());
+
+        if (product.getImageMain() != null)
+            imageIdList.add(product.getImageMain());
+
+        if (product.getImageOne() != null)
+            imageIdList.add(product.getImageOne());
+
+        if (product.getImageTwo() != null)
+            imageIdList.add(product.getImageTwo());
+
+        if (product.getImageThree() != null)
+            imageIdList.add(product.getImageThree());
 
         //Find the image with the lowest ID
-        long lowest = imageIdList.get(0);
         int index = 0;
-        for(int i = 1; i < imageIdList.size(); i++) {
-            if(lowest > imageIdList.get(i)) {
-                lowest = imageIdList.get(i);
-                index = i;
-            }
+        int listSize = imageIdList.size();
+
+        switch (listSize) {
+            case 0:
+                index = 0;
+                break;
+
+            case 1:
+                index = 1;
+                break;
+
+            case 2:
+                index = 2;
+                break;
+
+            case 3:
+                index = 3;
+                break;
+
+            case 4:
+                long lowest = imageIdList.get(0);
+                for (int i = 1; i < imageIdList.size(); i++) {
+                    if (lowest > imageIdList.get(i)) {
+                        lowest = imageIdList.get(i);
+                        index = i;
+                    }
+                }
+                break;
         }
 
-        switch(index) {
+        switch (index) {
             case 0:
                 product.setImageMain(image.getId());
                 break;
