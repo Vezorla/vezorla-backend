@@ -13,12 +13,12 @@ import com.smattme.MysqlImportService;
 import lombok.AllArgsConstructor;
 import org.json.JSONArray;
 import org.json.JSONObject;
-import org.json.simple.parser.JSONParser;
 import org.springframework.stereotype.Service;
 import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.multipart.MultipartFile;
 
 import javax.servlet.http.HttpSession;
+import java.io.ByteArrayOutputStream;
 import java.io.File;
 import java.io.IOException;
 import java.sql.SQLException;
@@ -26,6 +26,9 @@ import java.text.DateFormat;
 import java.text.ParseException;
 import java.text.SimpleDateFormat;
 import java.util.*;
+import java.util.zip.DataFormatException;
+import java.util.zip.Deflater;
+import java.util.zip.Inflater;
 
 @AllArgsConstructor
 @Service
@@ -37,6 +40,7 @@ public class AdminServicesImp implements AdminServices {
     private WarehouseRepo warehouseRepo;
     private InvoiceRepo invoiceRepo;
     private DiscountRepo discountRepo;
+    private ImageRepository imgRepo;
     private UserServices userServices;
 
     public void acceptBusinessOrder(Invoice invoice) {
@@ -256,7 +260,7 @@ public class AdminServicesImp implements AdminServices {
         Invoice invoice = null;
         ObjectNode node = mapper.createObjectNode();
         Optional<Invoice> findInvoice = invoiceRepo.findById(id);
-        if(findInvoice.isPresent())
+        if (findInvoice.isPresent())
             invoice = findInvoice.get();
 
         Account account = Objects.requireNonNull(invoice).getAccount();
@@ -482,6 +486,7 @@ public class AdminServicesImp implements AdminServices {
 
     /**
      * Method to create and save warehouse to database
+     *
      * @param warehouse to save to database
      * @return <code>true</code> is successful, otherwise
      * false.
@@ -493,5 +498,83 @@ public class AdminServicesImp implements AdminServices {
         ccu.validatePostalCode(warehouse.getPostalCode());
         warehouseRepo.save(warehouse);
         return true;
+    }
+
+    /**
+     * Compress the bytes of an image to persist into the database
+     *
+     * @param data image data in bytes
+     * @return the compressed bytes of the image
+     * @author matthewjflee
+     */
+    public byte[] compressBytes(byte[] data) {
+        Deflater deflater = new Deflater();
+        deflater.setInput(data);
+        deflater.finish();
+
+        ByteArrayOutputStream outStream = new ByteArrayOutputStream(data.length);
+        byte[] buffer = new byte[1024];
+
+        while (!deflater.finished()) {
+            int count = deflater.deflate(buffer);
+            outStream.write(buffer, 0, count);
+        }
+
+        try {
+            outStream.close();
+        } catch (IOException e) {
+            e.printStackTrace();
+        }
+
+        return outStream.toByteArray();
+    }
+
+    /**
+     * Decompress the bytes of an image to display
+     *
+     * @param data image in bytes
+     * @return bytes of the image decompressed
+     * @author matthewjflee
+     */
+    public byte[] decompressBytes(byte[] data) {
+        Inflater inflater = new Inflater();
+        inflater.setInput(data);
+
+        ByteArrayOutputStream outStream = new ByteArrayOutputStream(data.length);
+        byte[] buffer = new byte[1024];
+
+        try {
+            while (!inflater.finished()) {
+                int count = inflater.inflate(buffer);
+                outStream.write(buffer, 0, count);
+            }
+
+            outStream.close();
+        } catch (DataFormatException | IOException e) {
+            e.printStackTrace();
+        }
+
+        return outStream.toByteArray();
+    }
+
+    /**
+     * Persist an image in the database
+     *
+     * @param image image to persist
+     * @author matthewjflee
+     */
+    public void saveImage(Image image) {
+        imgRepo.save(image);
+    }
+
+    /**
+     * Get an image in the database
+     *
+     * @param id ID of the image
+     * @return image
+     * @author matthewjflee
+     */
+    public Optional<Image> getImage(Long id) {
+        return imgRepo.findById(id);
     }
 }
