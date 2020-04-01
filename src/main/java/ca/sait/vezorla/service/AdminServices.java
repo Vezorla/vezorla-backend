@@ -40,8 +40,6 @@ public interface AdminServices {
 
     void getInvoice(Long id);
 
-    List<Invoice> getOrder(Long id);
-
     List<Invoice> getPendingBusinessOrder();
 
     Invoice getPendingBusinessOrderById(Long id);
@@ -53,6 +51,8 @@ public interface AdminServices {
     boolean receivePurchaseOrder(String body);
 
     boolean saveLots(List<Lot> lots, PurchaseOrder po);
+
+    ObjectNode viewOrder(Long id, ObjectMapper mapper);
 
     ObjectNode viewOrderHistoryAdmin(ObjectMapper mapper, HttpSession session);
 
