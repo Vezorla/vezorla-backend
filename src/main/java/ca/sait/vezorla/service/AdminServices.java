@@ -77,4 +77,6 @@ public interface AdminServices {
     ObjectNode getNextPONum(ObjectMapper mapper);
 
     ObjectNode getAdminEmail(HttpSession session, ObjectMapper mapper) throws UnauthorizedException;
+
+    ObjectNode viewAllClients(ObjectMapper mapper);
 }

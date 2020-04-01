@@ -293,4 +293,15 @@ public class AdminRestController {
         HttpSession session = request.getSession();
         return mapper.writerWithDefaultPrettyPrinter().writeValueAsString(adminServices.getAdminEmail(session, mapper));
     }
+
+    /**
+     * Method to view all of the clients
+     *
+     * @return the invoices to front-end
+     */
+    @GetMapping("clients")
+    public String viewAllClients() throws JsonProcessingException {
+        ObjectMapper mapper = new ObjectMapper();
+        return mapper.writerWithDefaultPrettyPrinter().writeValueAsString(adminServices.viewAllClients(mapper));
+    }
 }
