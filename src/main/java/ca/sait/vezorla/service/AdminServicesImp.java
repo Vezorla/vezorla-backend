@@ -8,6 +8,7 @@ import ca.sait.vezorla.repository.*;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import com.fasterxml.jackson.databind.node.ArrayNode;
 import com.fasterxml.jackson.databind.node.ObjectNode;
+import com.smattme.MysqlExportService;
 import com.smattme.MysqlImportService;
 import lombok.AllArgsConstructor;
 import org.json.JSONArray;
@@ -18,6 +19,7 @@ import org.springframework.web.multipart.MultipartFile;
 
 import javax.servlet.http.HttpSession;
 import java.io.ByteArrayOutputStream;
+import java.io.File;
 import java.io.IOException;
 import java.sql.SQLException;
 import java.text.DateFormat;
@@ -76,25 +78,38 @@ public class AdminServicesImp implements AdminServices {
      * @author jjrr1717, matthewjflee
      */
     public boolean exportData() {
-        boolean result = false;
-        String dbName = "vezorla";
-        String dbUser = "root";
-        String dbPass = "pass";
+        //https://dzone.com/articles/how-to-backup-mysql-database-programmatically-usin
+        Properties properties = new Properties();
+        properties.setProperty(MysqlExportService.DB_NAME, "vezorla");
+        properties.setProperty(MysqlExportService.DB_USERNAME, "root");
+        properties.setProperty(MysqlExportService.DB_PASSWORD, "pass");
 
 
-        //C:/Program Files/MySQL/MySQL Server 8.0/bin/
-        String executeCmd;
-        executeCmd = "\"C:\\Program Files\\MySQL\\MySQL Workbench 8.0 CE\\mysqldump.exe\" -u" + dbUser + " -p" + dbPass + " " + dbName + " > C:\\Users\\783661\\Documents\\dumps\\backup3.sql";
-        System.out.println(executeCmd);
+        properties.setProperty(MysqlExportService.EMAIL_HOST, "smtp.gmail.com");
+        properties.setProperty(MysqlExportService.EMAIL_PORT, "587");
+        properties.setProperty(MysqlExportService.EMAIL_USERNAME, "vezorla.test@gmail.com");
+        properties.setProperty(MysqlExportService.EMAIL_PASSWORD, "LR}6Kjm-<d4;\"z&s=D[X#.6+dk}@3[z\"V");
+        properties.setProperty(MysqlExportService.EMAIL_FROM, "vezorla.test@gmail.com");
+        properties.setProperty(MysqlExportService.EMAIL_TO, "vezorla.test@gmail.com");
+
+        properties.setProperty(MysqlExportService.PRESERVE_GENERATED_ZIP, "true");
+
+        //set the outputs temp dir
+        properties.setProperty(MysqlExportService.TEMP_DIR, new File("external").getPath());
+        MysqlExportService mysqlExportService = new MysqlExportService(properties);
+        File file = mysqlExportService.getGeneratedZipFile();
+
         try {
-            Process runtimeProcess = Runtime.getRuntime().exec(executeCmd);
-            int processComplete = runtimeProcess.waitFor();
-            if (processComplete == 0) {
-                result = true;
-            }
-        } catch (IOException | InterruptedException e) {
+            mysqlExportService.export();
+        } catch (IOException e) {
+            e.printStackTrace();
+        } catch (SQLException e) {
+            e.printStackTrace();
+        } catch (ClassNotFoundException e) {
             e.printStackTrace();
         }
+
+        mysqlExportService.clearTempFiles(false);
 
         return true;
     }
@@ -142,6 +157,63 @@ public class AdminServicesImp implements AdminServices {
         }
 
         node.put("products", productNodes);
+
+        return node;
+    }
+
+    /**
+     * Method to get all the products for PO combo box
+     *
+     * @param mapper for custom json
+     * @return ObjectNode of custom json
+     * @author jjr1717
+     */
+    public ObjectNode getAllProductsForPO(ObjectMapper mapper) {
+        //obtain all the products
+        List<Product> products = productRepo.findAll();
+
+        //create custom json
+        ObjectNode node = mapper.createObjectNode();
+        ArrayNode productNodes = node.arrayNode();
+
+        //loop through products to get invoice details
+        for (Product product : products) {
+            ObjectNode productNode = productNodes.objectNode();
+            productNode.put("prodId", product.getProdId());
+            productNode.put("name", product.getName());
+            productNodes.add(productNode);
+        }
+
+        node.put("products", productNodes);
+
+        return node;
+    }
+
+    /**
+     * Method to get all the warehouses for PO combo box
+     *
+     * @param mapper for custom json
+     * @return ObjectNode of custom json
+     * @author jjr1717
+     */
+    public ObjectNode getAllWarehousesForPO(ObjectMapper mapper) {
+        //obtain all the products
+        List<Warehouse> warehouses = warehouseRepo.findAll();
+
+        //create custom json
+        ObjectNode node = mapper.createObjectNode();
+        ArrayNode productNodes = node.arrayNode();
+
+        //loop through products to get invoice details
+        for (Warehouse warehouse : warehouses) {
+            ObjectNode productNode = productNodes.objectNode();
+            productNode.put("warehouseNum", warehouse.getWarehouseNum());
+            productNode.put("address", warehouse.getAddress());
+            productNode.put("city", warehouse.getCity());
+            productNodes.add(productNode);
+        }
+
+        node.put("warehouses", productNodes);
 
         return node;
     }
@@ -232,6 +304,19 @@ public class AdminServicesImp implements AdminServices {
      */
     public PurchaseOrder savePurchaseOrder(PurchaseOrder purchaseOrder) {
         return purchaseOrderRepo.save(purchaseOrder);
+    }
+
+    /**
+     * Method to get the next PO num
+     *
+     * @param mapper for json
+     * @return ObjectNode for json
+     */
+    public ObjectNode getNextPONum(ObjectMapper mapper) {
+        int nextPO = purchaseOrderRepo.findLastPO() + 1;
+        ObjectNode node = mapper.createObjectNode();
+        node.put("nextPO", nextPO);
+        return node;
     }
 
     /**

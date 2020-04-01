@@ -33,6 +33,8 @@ public interface AdminServices {
 
     ObjectNode getAllProducts(ObjectMapper mapper);
 
+    ObjectNode getAllProductsForPO(ObjectMapper mapper);
+
     boolean createProduct(Product product) throws InvalidInputException;
 
     boolean saveProduct(Product product);
@@ -68,4 +70,8 @@ public interface AdminServices {
     void saveImage(Image image);
 
     Optional<Image> getImage(Long id);
+  
+    ObjectNode getAllWarehousesForPO(ObjectMapper mapper);
+
+    ObjectNode getNextPONum(ObjectMapper mapper);
 }
