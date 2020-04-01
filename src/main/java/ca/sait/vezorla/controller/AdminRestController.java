@@ -2,6 +2,7 @@ package ca.sait.vezorla.controller;
 
 import ca.sait.vezorla.exception.InvalidInputException;
 import ca.sait.vezorla.model.Backup;
+import ca.sait.vezorla.model.Discount;
 import ca.sait.vezorla.model.Invoice;
 import ca.sait.vezorla.model.Product;
 import ca.sait.vezorla.service.AdminServices;
@@ -123,8 +124,8 @@ public class AdminRestController {
     }
 
     @PostMapping("discount/create")
-    public boolean createDiscount(@RequestBody String body) {
-        return false;
+    public boolean createDiscount(@RequestBody Discount discount) {
+        return adminServices.createDiscount(discount);
     }
 
     @GetMapping("backup/get")
