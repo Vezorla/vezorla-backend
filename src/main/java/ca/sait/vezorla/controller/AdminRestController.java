@@ -71,6 +71,7 @@ public class AdminRestController {
 
     /**
      * Update a product
+     *
      * @param product product to update
      * @return <code>true</code> if successful, <code>false</code> if not
      * @author matthewjflee
@@ -95,6 +96,14 @@ public class AdminRestController {
         return adminServices.saveProduct(product);
     }
 
+    /**
+     * Create a new purchase order
+     * This will create lots
+     *
+     * @param body purchase order
+     * @return <code>true</code> if it was created successfully
+     * @author jjrr1717
+     */
     @PostMapping("receive_purchase_order")
     public boolean receivePurchaseOrder(@RequestBody String body) {
         adminServices.receivePurchaseOrder(body);
@@ -111,15 +120,15 @@ public class AdminRestController {
 
     }
 
+    /**
+     * Export the data in the Vezorla database
+     *
+     * @return sql dump of data
+     * @author jjrr1717
+     */
     @GetMapping("backup/export")
     public boolean exportData() {
         return adminServices.exportData();
-
-    }
-
-    @GetMapping("sales/all")
-    public List<Invoice> getAllSales() {
-        return null;
     }
 
     @PostMapping("discount/create")
@@ -132,12 +141,19 @@ public class AdminRestController {
         return null;
     }
 
+    /**
+     * Restore a previously taken backup to the Vezorla database
+     *
+     * @param file file to restore the database with
+     * @return <code>true</code> if it was successful
+     * @author jjrr1717
+     */
     @GetMapping("backup/restore")
-    public boolean restoreBackup(@RequestParam("file") MultipartFile body) {
-        return adminServices.restoreBackup(body);
+    public boolean restoreBackup(@RequestParam("file") MultipartFile file) {
+        return adminServices.restoreBackup(file);
     }
 
-    @GetMapping("orders/get/{id}")
+    @GetMapping("orders/{id}")
     public List<Invoice> getOrder(@PathVariable Long id) {
         return null;
     }
