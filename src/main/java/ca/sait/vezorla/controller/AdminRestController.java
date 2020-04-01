@@ -41,6 +41,32 @@ public class AdminRestController {
     }
 
     /**
+     * Method to get all the products for admin view
+     *
+     * @return String for the custom json
+     * @throws JsonProcessingException thrown when there is an error parsing JSON
+     * @author jjrr717
+     */
+    @GetMapping("inventory/all/po")
+    public String getAllProductsForPO() throws JsonProcessingException {
+        ObjectMapper mapper = new ObjectMapper();
+        return mapper.writerWithDefaultPrettyPrinter().writeValueAsString(adminServices.getAllProductsForPO(mapper));
+    }
+
+    /**
+     * Method to get all the products for admin view
+     *
+     * @return String for the custom json
+     * @throws JsonProcessingException thrown when there is an error parsing JSON
+     * @author jjrr717
+     */
+    @GetMapping("warehouse/all/po")
+    public String getAllWarehousesForPO() throws JsonProcessingException {
+        ObjectMapper mapper = new ObjectMapper();
+        return mapper.writerWithDefaultPrettyPrinter().writeValueAsString(adminServices.getAllWarehousesForPO(mapper));
+    }
+
+    /**
      * View a single product
      *
      * @param id ID of product

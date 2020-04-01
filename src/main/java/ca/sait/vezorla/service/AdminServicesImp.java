@@ -158,6 +158,63 @@ public class AdminServicesImp implements AdminServices {
     }
 
     /**
+     * Method to get all the products for PO combo box
+     *
+     * @param mapper for custom json
+     * @return ObjectNode of custom json
+     * @author jjr1717
+     */
+    public ObjectNode getAllProductsForPO(ObjectMapper mapper) {
+        //obtain all the products
+        List<Product> products = productRepo.findAll();
+
+        //create custom json
+        ObjectNode node = mapper.createObjectNode();
+        ArrayNode productNodes = node.arrayNode();
+
+        //loop through products to get invoice details
+        for (Product product : products) {
+            ObjectNode productNode = productNodes.objectNode();
+            productNode.put("prodId", product.getProdId());
+            productNode.put("name", product.getName());
+            productNodes.add(productNode);
+        }
+
+        node.put("products", productNodes);
+
+        return node;
+    }
+
+    /**
+     * Method to get all the warehouses for PO combo box
+     *
+     * @param mapper for custom json
+     * @return ObjectNode of custom json
+     * @author jjr1717
+     */
+    public ObjectNode getAllWarehousesForPO(ObjectMapper mapper) {
+        //obtain all the products
+        List<Warehouse> warehouses = warehouseRepo.findAll();
+
+        //create custom json
+        ObjectNode node = mapper.createObjectNode();
+        ArrayNode productNodes = node.arrayNode();
+
+        //loop through products to get invoice details
+        for (Warehouse warehouse : warehouses) {
+            ObjectNode productNode = productNodes.objectNode();
+            productNode.put("warehouseNum", warehouse.getWarehouseNum());
+            productNode.put("address", warehouse.getAddress());
+            productNode.put("city", warehouse.getCity());
+            productNodes.add(productNode);
+        }
+
+        node.put("warehouses", productNodes);
+
+        return node;
+    }
+
+    /**
      * Create a new product in the Products table
      * Will check if the product exists in the database
      *
