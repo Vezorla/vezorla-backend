@@ -303,6 +303,19 @@ public class AdminServicesImp implements AdminServices {
     }
 
     /**
+     * Method to get the next PO num
+     *
+     * @param mapper for json
+     * @return ObjectNode for json
+     */
+    public ObjectNode getNextPONum(ObjectMapper mapper) {
+        int nextPO = purchaseOrderRepo.findLastPO() + 1;
+        ObjectNode node = mapper.createObjectNode();
+        node.put("nextPO", nextPO);
+        return node;
+    }
+
+    /**
      * Method to save all the lots from
      * a purchase order to the database.
      *
