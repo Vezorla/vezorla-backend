@@ -42,6 +42,7 @@ public class AdminServicesImp implements AdminServices {
     private WarehouseRepo warehouseRepo;
     private InvoiceRepo invoiceRepo;
     private DiscountRepo discountRepo;
+    private AccountRepo accountRepo;
     private ImageRepository imgRepo;
     private UserServices userServices;
 
@@ -218,6 +219,7 @@ public class AdminServicesImp implements AdminServices {
      * @param product product to create
      * @return <code>true</code> if the product exists
      * Will throw ProductAlreadyExistsException if the product already exists
+     * @author matthewjflee
      */
     public boolean createProduct(Product product) throws InvalidInputException {
         //Validate
@@ -346,6 +348,7 @@ public class AdminServicesImp implements AdminServices {
      *
      * @param mapper for json
      * @return ObjectNode for json
+     * @author jjrr1717
      */
     public ObjectNode getNextPONum(ObjectMapper mapper) {
         int nextPO = purchaseOrderRepo.findLastPO() + 1;
@@ -715,6 +718,46 @@ public class AdminServicesImp implements AdminServices {
         } else {
             throw new UnauthorizedException();
         }
+        return node;
+    }
+
+    /**
+     * Method to view all the clients
+     *
+     * @param mapper to make the custom json
+     * @return ObjectNode containing nodes for custom json
+     * @author jjrr1717
+     */
+    public ObjectNode viewAllClients(ObjectMapper mapper) {
+
+        //obtain all the client accounts
+        List<Account> accounts = accountRepo.findAllUserCreatedAccounts();
+
+        //create custom json
+        ObjectNode node = mapper.createObjectNode();
+        ArrayNode clientNodes = node.arrayNode();
+
+        //loop through invoices to get invoice details
+        for (Account account : accounts) {
+            ObjectNode accountNode = clientNodes.objectNode();
+            accountNode.put("email", account.getEmail());
+            accountNode.put("accountType", Character.toString(account.getAccountType()));
+            accountNode.put("firstName", account.getFirstName());
+            accountNode.put("lastName", account.getLastName());
+            accountNode.put("phoneNum", account.getPhoneNum());
+            accountNode.put("address", account.getAddress());
+            accountNode.put("city", account.getCity());
+            accountNode.put("province", account.getProvince());
+            accountNode.put("country", account.getCountry());
+            accountNode.put("postalCode", account.getPostalCode());
+            accountNode.put("isSubscript", account.getIsSubscript());
+
+            clientNodes.add(accountNode);
+
+        }
+
+        node.put("clients", clientNodes);
+
         return node;
     }
 

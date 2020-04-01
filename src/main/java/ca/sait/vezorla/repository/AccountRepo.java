@@ -6,6 +6,7 @@ import org.springframework.data.jpa.repository.Modifying;
 import org.springframework.data.jpa.repository.Query;
 import org.springframework.stereotype.Repository;
 
+import java.util.List;
 import java.util.Optional;
 
 @Repository
@@ -29,4 +30,7 @@ public interface AccountRepo extends JpaRepository<Account, String> {
      * @return <code>true</code> if account exists, <code>false</code> if account does not
      */
     Optional<Account> findByEmailAndPassword(String email, String password);
+
+    @Query(value = "FROM Account a WHERE a.userCreated = true")
+    List<Account> findAllUserCreatedAccounts();
 }
