@@ -219,6 +219,7 @@ public class AdminServicesImp implements AdminServices {
      * @param product product to create
      * @return <code>true</code> if the product exists
      * Will throw ProductAlreadyExistsException if the product already exists
+     * @author matthewjflee
      */
     public boolean createProduct(Product product) throws InvalidInputException {
         //Validate
@@ -347,6 +348,7 @@ public class AdminServicesImp implements AdminServices {
      *
      * @param mapper for json
      * @return ObjectNode for json
+     * @author jjrr1717
      */
     public ObjectNode getNextPONum(ObjectMapper mapper) {
         int nextPO = purchaseOrderRepo.findLastPO() + 1;
