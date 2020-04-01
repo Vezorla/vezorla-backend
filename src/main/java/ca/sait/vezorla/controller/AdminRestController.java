@@ -94,6 +94,15 @@ public class AdminRestController {
         return adminServices.saveProduct(product);
     }
 
+    /**
+     * Upload an image to the database
+     * Source: https://dzone.com/articles/upload-and-retrieve-filesimages-using-spring-boot
+     *
+     * @param file image
+     * @return if the image was persisted
+     * @throws IOException thrown when compressing the bytes
+     * @author matthewjflee
+     */
     @PostMapping("img/upload")
     public boolean uploadImage(@RequestParam("imgFile") MultipartFile file) throws IOException {
         byte[] imgCompressed = adminServices.compressBytes(file.getBytes());
@@ -105,6 +114,14 @@ public class AdminRestController {
         return true;
     }
 
+    /**
+     * Get an image
+     * Source: https://dzone.com/articles/upload-and-retrieve-filesimages-using-spring-boot
+     *
+     * @param id: ID of image
+     * @return image
+     * @author matthewjflee
+     */
     @GetMapping("img/get/{id}")
     public Image getImage(@PathVariable("id") Long id) {
         Image rawImage = null;

@@ -12,13 +12,11 @@ import com.smattme.MysqlImportService;
 import lombok.AllArgsConstructor;
 import org.json.JSONArray;
 import org.json.JSONObject;
-import org.json.simple.parser.JSONParser;
 import org.springframework.stereotype.Service;
 import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.multipart.MultipartFile;
 
 import javax.servlet.http.HttpSession;
-import java.io.ByteArrayInputStream;
 import java.io.ByteArrayOutputStream;
 import java.io.IOException;
 import java.sql.SQLException;
@@ -190,7 +188,7 @@ public class AdminServicesImp implements AdminServices {
         Invoice invoice = null;
         ObjectNode node = mapper.createObjectNode();
         Optional<Invoice> findInvoice = invoiceRepo.findById(id);
-        if(findInvoice.isPresent())
+        if (findInvoice.isPresent())
             invoice = findInvoice.get();
 
         Account account = Objects.requireNonNull(invoice).getAccount();
@@ -403,6 +401,7 @@ public class AdminServicesImp implements AdminServices {
 
     /**
      * Method to create and save warehouse to database
+     *
      * @param warehouse to save to database
      * @return <code>true</code> is successful, otherwise
      * false.
@@ -416,6 +415,13 @@ public class AdminServicesImp implements AdminServices {
         return true;
     }
 
+    /**
+     * Compress the bytes of an image to persist into the database
+     *
+     * @param data image data in bytes
+     * @return the compressed bytes of the image
+     * @author matthewjflee
+     */
     public byte[] compressBytes(byte[] data) {
         Deflater deflater = new Deflater();
         deflater.setInput(data);
@@ -424,7 +430,7 @@ public class AdminServicesImp implements AdminServices {
         ByteArrayOutputStream outStream = new ByteArrayOutputStream(data.length);
         byte[] buffer = new byte[1024];
 
-        while(!deflater.finished()) {
+        while (!deflater.finished()) {
             int count = deflater.deflate(buffer);
             outStream.write(buffer, 0, count);
         }
@@ -438,6 +444,13 @@ public class AdminServicesImp implements AdminServices {
         return outStream.toByteArray();
     }
 
+    /**
+     * Decompress the bytes of an image to display
+     *
+     * @param data image in bytes
+     * @return bytes of the image decompressed
+     * @author matthewjflee
+     */
     public byte[] decompressBytes(byte[] data) {
         Inflater inflater = new Inflater();
         inflater.setInput(data);
@@ -446,7 +459,7 @@ public class AdminServicesImp implements AdminServices {
         byte[] buffer = new byte[1024];
 
         try {
-            while(!inflater.finished()) {
+            while (!inflater.finished()) {
                 int count = inflater.inflate(buffer);
                 outStream.write(buffer, 0, count);
             }
@@ -459,10 +472,23 @@ public class AdminServicesImp implements AdminServices {
         return outStream.toByteArray();
     }
 
+    /**
+     * Persist an image in the database
+     *
+     * @param image image to persist
+     * @author matthewjflee
+     */
     public void saveImage(Image image) {
         imgRepo.save(image);
     }
 
+    /**
+     * Get an image in the database
+     *
+     * @param id ID of the image
+     * @return image
+     * @author matthewjflee
+     */
     public Optional<Image> getImage(Long id) {
         return imgRepo.findById(id);
     }
