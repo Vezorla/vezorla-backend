@@ -79,6 +79,7 @@ public class Account implements Serializable {
     @Column(name = "pickup", columnDefinition = "BIT")
     private boolean pickup;
 
+    @JsonIgnore
     @Column(name = "cart")
     @OneToMany(mappedBy = "account")
     private List<Cart> carts;

@@ -154,8 +154,9 @@ public class AdminRestController {
     }
 
     @GetMapping("orders/{id}")
-    public List<Invoice> getOrder(@PathVariable Long id) {
-        return null;
+    public String viewOrder(@PathVariable Long id) throws JsonProcessingException {
+        ObjectMapper mapper = new ObjectMapper();
+        return mapper.writerWithDefaultPrettyPrinter().writeValueAsString(adminServices.viewOrder(id, mapper));
     }
 
     @GetMapping("order_history")
