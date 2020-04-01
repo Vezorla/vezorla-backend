@@ -127,9 +127,7 @@ public class UserServicesImp implements UserServices {
 
         //Parse price
         long price = Long.parseLong(product.getPrice());
-        long oldPrice = Long.parseLong(product.getOldPrice());
         node.put("price", ccu.formatAmount(price));
-        node.put("oldPrice", ccu.formatAmount(oldPrice));
 
         productsNode.add(node);
     }
