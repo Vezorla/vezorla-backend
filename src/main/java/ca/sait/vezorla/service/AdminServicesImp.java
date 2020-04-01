@@ -12,7 +12,9 @@ import com.smattme.MysqlImportService;
 import lombok.AllArgsConstructor;
 import org.json.JSONArray;
 import org.json.JSONObject;
+import org.json.simple.parser.JSONParser;
 import org.springframework.stereotype.Service;
+import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.multipart.MultipartFile;
 
 import javax.servlet.http.HttpSession;
@@ -32,6 +34,7 @@ public class AdminServicesImp implements AdminServices {
     private LotRepo lotRepo;
     private WarehouseRepo warehouseRepo;
     private InvoiceRepo invoiceRepo;
+    private DiscountRepo discountRepo;
     private UserServices userServices;
 
     public void acceptBusinessOrder(Invoice invoice) {
@@ -42,8 +45,16 @@ public class AdminServicesImp implements AdminServices {
         return false;
     }
 
-    public boolean createDiscount(Discount discount) {
-        return false;
+    /**
+     * Create a new discount
+     *
+     * @param discount to add
+     * @return <code>true</code> is successful, otherwise false
+     * @author jjrr1717
+     */
+    public boolean createDiscount(@RequestBody Discount discount) {
+        discountRepo.save(discount);
+        return true;
     }
 
     public void createReport(String type, Date start, Date end) {
@@ -354,5 +365,20 @@ public class AdminServicesImp implements AdminServices {
         node.put("invoices", invoiceNodes);
 
         return node;
+    }
+
+    /**
+     * Method to create and save warehouse to database
+     * @param warehouse to save to database
+     * @return <code>true</code> is successful, otherwise
+     * false.
+     * @author jjrr1717
+     */
+    public boolean createWarehouse(Warehouse warehouse) throws InvalidInputException {
+        CustomerClientUtil ccu = new CustomerClientUtil();
+        ccu.validatePhoneNumber(warehouse.getPhoneNumber());
+        ccu.validatePostalCode(warehouse.getPostalCode());
+        warehouseRepo.save(warehouse);
+        return true;
     }
 }
