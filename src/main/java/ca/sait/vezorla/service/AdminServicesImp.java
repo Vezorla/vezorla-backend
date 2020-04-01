@@ -179,8 +179,35 @@ public class AdminServicesImp implements AdminServices {
 
     }
 
-    public List<Invoice> getOrder(Long id) {
-        return null;
+    public ObjectNode viewOrder(Long id, ObjectMapper mapper) {
+        Invoice invoice = null;
+        ObjectNode node = mapper.createObjectNode();
+        Optional<Invoice> findInvoice = invoiceRepo.findById(id);
+        if(findInvoice.isPresent())
+            invoice = findInvoice.get();
+
+        Account account = Objects.requireNonNull(invoice).getAccount();
+
+        //Create JSON
+        node.put("invoiceNum", invoice.getInvoiceNum());
+        String date = invoice.getDate() + "";
+        node.put("date", date);
+        node.put("pickup", invoice.isPickup());
+        node.put("shipped", invoice.isShipped());
+        node.put("shippingCost", invoice.getShippingCost());
+        node.put("subtotal", invoice.getSubtotal());
+        node.put("discount", invoice.getDiscount());
+        node.put("taxes", invoice.getTaxes());
+        node.put("total", invoice.getTotal());
+
+        node.put("email", account.getEmail());
+        node.put("firstName", account.getFirstName());
+        node.put("lastName", account.getLastName());
+        node.put("phoneNum", account.getPhoneNum());
+        node.put("address", account.getAddress());
+        node.put("postalCode", account.getPostalCode());
+
+        return node;
     }
 
     public List<Invoice> getPendingBusinessOrder() {

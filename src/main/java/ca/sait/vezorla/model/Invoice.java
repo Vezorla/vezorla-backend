@@ -43,7 +43,6 @@ public class Invoice implements Serializable {
 	@Column(name = "date")
 	private Date date;
 
-
 	/**
 	 * I think we should get rid of this field
 	 */
@@ -70,21 +69,6 @@ public class Invoice implements Serializable {
 
 	@Column(name = "total")
 	private long total;
-
-	/**
-	 * I think we should get delete this
-	 * field.
-	 */
-	@NotNull
-	@Column(name = "state")
-	private boolean state;
-
-	/**
-	 * I think we should delete this
-	 * field.
-	 */
-	@Column(name = "message")
-	private String message;
 
 	//constructor for temp invoice
 	public Invoice(long shippingCost, long subtotal, long discount, long taxes, long total){
