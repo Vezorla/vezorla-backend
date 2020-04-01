@@ -137,6 +137,7 @@ public class ClientRestController {
      * a client's account
      *
      * @return the invoices to front-end
+     * @author jjrr1717
      */
     @GetMapping("order_history")
     public String viewOrderHistory(HttpSession session) throws JsonProcessingException {
