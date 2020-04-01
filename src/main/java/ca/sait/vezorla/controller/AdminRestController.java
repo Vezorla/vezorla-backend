@@ -7,15 +7,15 @@ import ca.sait.vezorla.service.UserServices;
 import com.fasterxml.jackson.core.JsonProcessingException;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import lombok.AllArgsConstructor;
+import org.springframework.http.HttpStatus;
+import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 import org.springframework.web.multipart.MultipartFile;
 
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpSession;
-import java.util.Calendar;
-import java.util.Date;
-import java.util.List;
-import java.util.Objects;
+import java.io.IOException;
+import java.util.*;
 
 @AllArgsConstructor
 @RestController
@@ -92,6 +92,32 @@ public class AdminRestController {
         product.setPrice(stringPrice);
 
         return adminServices.saveProduct(product);
+    }
+
+    @PostMapping("img/upload")
+    public boolean uploadImage(@RequestParam("imgFile") MultipartFile file) throws IOException {
+        byte[] imgCompressed = adminServices.compressBytes(file.getBytes());
+
+        Image image = new Image(file.getOriginalFilename(), file.getContentType(), imgCompressed);
+
+        adminServices.saveImage(image);
+
+        return true;
+    }
+
+    @GetMapping("img/get/{id}")
+    public Image getImage(@PathVariable("id") Long id) {
+        Image rawImage = null;
+        Optional<Image> findImage = adminServices.getImage(id);
+
+        if(findImage.isPresent())
+            rawImage = findImage.get();
+
+        byte[] imgDecompressed = adminServices.decompressBytes(rawImage.getPicByte());
+
+        Image image = new Image(rawImage.getId(), rawImage.getName(), rawImage.getType(), imgDecompressed);
+
+        return image;
     }
 
     /**

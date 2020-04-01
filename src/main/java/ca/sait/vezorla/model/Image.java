@@ -10,7 +10,7 @@ import javax.persistence.*;
 @NoArgsConstructor
 @Entity
 @Data
-@Table(name = "image_table")
+@Table(name = "image")
 public class Image {
 
     @Id
@@ -26,6 +26,12 @@ public class Image {
 
     //image bytes can have large lengths so we specify a value
     //which is more than the default length for picByte column
-    @Column(name = "picByte", length = 1000)
+    @Column(name = "picByte", length = 10000000)
     private byte[] picByte;
+
+    public Image(String name, String type, byte[] picByte) {
+        this.name = name;
+        this.type = type;
+        this.picByte = picByte;
+    }
 }

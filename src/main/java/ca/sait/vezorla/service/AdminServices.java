@@ -12,6 +12,7 @@ import javax.servlet.http.HttpSession;
 import java.io.File;
 import java.util.Date;
 import java.util.List;
+import java.util.Optional;
 
 
 public interface AdminServices {
@@ -59,4 +60,12 @@ public interface AdminServices {
     boolean restoreBackup(MultipartFile file);
 
     boolean createWarehouse(Warehouse warehouse) throws InvalidInputException;
+
+    byte[] compressBytes(byte[] data);
+
+    byte[] decompressBytes(byte[] data);
+
+    void saveImage(Image image);
+
+    Optional<Image> getImage(Long id);
 }
