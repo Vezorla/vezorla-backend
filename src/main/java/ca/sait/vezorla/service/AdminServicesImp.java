@@ -3,6 +3,7 @@ package ca.sait.vezorla.service;
 import ca.sait.vezorla.controller.util.CustomerClientUtil;
 import ca.sait.vezorla.exception.InvalidInputException;
 import ca.sait.vezorla.exception.ProductAlreadyExistsException;
+import ca.sait.vezorla.exception.UnauthorizedException;
 import ca.sait.vezorla.model.*;
 import ca.sait.vezorla.repository.*;
 import com.fasterxml.jackson.databind.ObjectMapper;
@@ -17,6 +18,7 @@ import org.springframework.stereotype.Service;
 import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.multipart.MultipartFile;
 
+import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpSession;
 import java.io.ByteArrayOutputStream;
 import java.io.File;
@@ -577,4 +579,28 @@ public class AdminServicesImp implements AdminServices {
     public Optional<Image> getImage(Long id) {
         return imgRepo.findById(id);
     }
+
+    /**
+     * Method to return admin email to front end
+     * for update admin account.
+     *
+     * @param session to get Account
+     * @param mapper  for json
+     * @return Object node for json
+     * @throws UnauthorizedException
+     * @author jjrr1717
+     */
+    public ObjectNode getAdminEmail(HttpSession session, ObjectMapper mapper) throws UnauthorizedException {
+        Account account = (Account) session.getAttribute("ACCOUNT");
+        String adminEmail = account.getEmail();
+        ObjectNode node;
+        if (account.getAccountType() == 'A') {
+            node = mapper.createObjectNode();
+            node.put("email", adminEmail);
+        } else {
+            throw new UnauthorizedException();
+        }
+        return node;
+    }
+
 }
