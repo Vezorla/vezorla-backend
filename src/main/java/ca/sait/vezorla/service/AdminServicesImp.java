@@ -50,6 +50,7 @@ public class AdminServicesImp implements AdminServices {
      *
      * @param discount to add
      * @return <code>true</code> is successful, otherwise false
+     * @author jjrr1717
      */
     public boolean createDiscount(@RequestBody Discount discount) {
         discountRepo.save(discount);
@@ -392,5 +393,20 @@ public class AdminServicesImp implements AdminServices {
         node.put("invoices", invoiceNodes);
 
         return node;
+    }
+
+    /**
+     * Method to create and save warehouse to database
+     * @param warehouse to save to database
+     * @return <code>true</code> is successful, otherwise
+     * false.
+     * @author jjrr1717
+     */
+    public boolean createWarehouse(Warehouse warehouse) throws InvalidInputException {
+        CustomerClientUtil ccu = new CustomerClientUtil();
+        ccu.validatePhoneNumber(warehouse.getPhoneNumber());
+        ccu.validatePostalCode(warehouse.getPostalCode());
+        warehouseRepo.save(warehouse);
+        return true;
     }
 }
