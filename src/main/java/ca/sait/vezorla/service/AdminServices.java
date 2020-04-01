@@ -63,4 +63,6 @@ public interface AdminServices {
     boolean createWarehouse(Warehouse warehouse) throws InvalidInputException;
 
     ObjectNode getAllWarehousesForPO(ObjectMapper mapper);
+
+    ObjectNode getNextPONum(ObjectMapper mapper);
 }

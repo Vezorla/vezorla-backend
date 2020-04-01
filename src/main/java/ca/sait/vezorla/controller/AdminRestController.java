@@ -81,6 +81,18 @@ public class AdminRestController {
     }
 
     /**
+     * Method to get the next PO num
+     *
+     * @return the json
+     * @throws JsonProcessingException
+     */
+    @GetMapping("purchase_order/next")
+    public String getNextPONum() throws JsonProcessingException {
+        ObjectMapper mapper = new ObjectMapper();
+        return mapper.writerWithDefaultPrettyPrinter().writeValueAsString(adminServices.getNextPONum(mapper));
+    }
+
+    /**
      * Create a  new product in the database
      *
      * @param product Product to create
