@@ -1,6 +1,7 @@
 package ca.sait.vezorla.controller;
 
 import ca.sait.vezorla.exception.InvalidInputException;
+import ca.sait.vezorla.exception.UnauthorizedException;
 import ca.sait.vezorla.model.*;
 import ca.sait.vezorla.service.AdminServices;
 import ca.sait.vezorla.service.UserServices;
@@ -255,10 +256,35 @@ public class AdminRestController {
         return mapper.writerWithDefaultPrettyPrinter().writeValueAsString(adminServices.viewOrder(id, mapper));
     }
 
+    /**
+     * Method to view all the orders from the
+     * admin perspective
+     *
+     * @param request for the session
+     * @return the json
+     * @throws JsonProcessingException
+     * @@author jjrr1717
+     */
     @GetMapping("order_history")
     public String viewOrderHistoryAdmin(HttpServletRequest request) throws JsonProcessingException {
         HttpSession session = request.getSession();
         ObjectMapper mapper = new ObjectMapper();
         return mapper.writerWithDefaultPrettyPrinter().writeValueAsString(adminServices.viewOrderHistoryAdmin(mapper, session));
+    }
+
+    /**
+     * Method to get admin email for the update admin account page
+     *
+     * @param request for the session
+     * @param mapper  for the json
+     * @return the json
+     * @throws JsonProcessingException
+     * @throws UnauthorizedException
+     * @author jjrr1717
+     */
+    @GetMapping("email")
+    public String getAdminEmail(HttpServletRequest request, ObjectMapper mapper) throws JsonProcessingException, UnauthorizedException {
+        HttpSession session = request.getSession();
+        return mapper.writerWithDefaultPrettyPrinter().writeValueAsString(adminServices.getAdminEmail(session, mapper));
     }
 }

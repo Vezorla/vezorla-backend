@@ -2,6 +2,7 @@ package ca.sait.vezorla.service;
 
 
 import ca.sait.vezorla.exception.InvalidInputException;
+import ca.sait.vezorla.exception.UnauthorizedException;
 import ca.sait.vezorla.model.*;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import com.fasterxml.jackson.databind.node.ObjectNode;
@@ -70,8 +71,10 @@ public interface AdminServices {
     void saveImage(Image image);
 
     Optional<Image> getImage(Long id);
-  
+
     ObjectNode getAllWarehousesForPO(ObjectMapper mapper);
 
     ObjectNode getNextPONum(ObjectMapper mapper);
+
+    ObjectNode getAdminEmail(HttpSession session, ObjectMapper mapper) throws UnauthorizedException;
 }
