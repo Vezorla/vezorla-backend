@@ -57,4 +57,6 @@ public interface AdminServices {
     ObjectNode viewOrderHistoryAdmin(ObjectMapper mapper, HttpSession session);
 
     boolean restoreBackup(MultipartFile file);
+
+    boolean createWarehouse(Warehouse warehouse) throws InvalidInputException;
 }

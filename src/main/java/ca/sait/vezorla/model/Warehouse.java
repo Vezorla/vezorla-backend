@@ -48,14 +48,12 @@ public class Warehouse {
     private String postalCode;
 
     @NotNull
-    @Pattern(regexp = "((\\(\\d{3}\\) ?)|(\\d{3}-))?\\d{3}-\\d{4}")
+    @Pattern(regexp = "^([\\+][0-9]{1,3}([ \\.\\-])?)?([\\(]{1}[0-9]{3}[\\)])?([0-9A-Z \\.\\-]{1,32})((x|ext|extension)?[0-9]{1,4}?)$")
     @Column(name = "phone_number")
     private String phoneNumber;
 
     @Column(name = "active")
     @NotNull
-    @Size(min=1, max=1)
-    @Pattern(regexp = "([01])")
     private boolean active;
 
     @OneToMany(mappedBy = "warehouse")
