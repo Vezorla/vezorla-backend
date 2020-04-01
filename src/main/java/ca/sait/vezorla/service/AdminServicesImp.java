@@ -121,6 +121,7 @@ public class AdminServicesImp implements AdminServices {
         //loop through products to get invoice details
         for (Product product : products) {
             ObjectNode productNode = productNodes.objectNode();
+            productNode.put("prodId", product.getProdId());
             productNode.put("name", product.getName());
             productNode.put("imageMain", product.getImageMain());
 
