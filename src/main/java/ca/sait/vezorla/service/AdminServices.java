@@ -32,6 +32,8 @@ public interface AdminServices {
 
     ObjectNode getAllProducts(ObjectMapper mapper);
 
+    ObjectNode getAllProductsForPO(ObjectMapper mapper);
+
     boolean createProduct(Product product) throws InvalidInputException;
 
     boolean saveProduct(Product product);
@@ -59,4 +61,6 @@ public interface AdminServices {
     boolean restoreBackup(MultipartFile file);
 
     boolean createWarehouse(Warehouse warehouse) throws InvalidInputException;
+
+    ObjectNode getAllWarehousesForPO(ObjectMapper mapper);
 }
