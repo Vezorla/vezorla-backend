@@ -46,20 +46,20 @@ public class Product implements Serializable {
 
     //	@NotNull
     @Column(name = "image_main")
-    private String imageMain;
+    private Long imageMain;
 
     @Column(name = "image_one")
-    private String imageOne;
+    private Long imageOne;
 
     @Column(name = "image_two")
-    private String imageTwo;
+    private Long imageTwo;
 
     @Column(name = "image_three")
-    private String imageThree;
+    private Long imageThree;
 
     @Column(name = "active", columnDefinition = "BIT")
     @Type(type = "org.hibernate.type.NumericBooleanType")
-    private boolean active;
+    private Boolean active;
 
     @NotNull
     @Min(0)

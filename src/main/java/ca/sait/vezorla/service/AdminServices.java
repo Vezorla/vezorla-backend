@@ -37,7 +37,9 @@ public interface AdminServices {
 
     boolean createProduct(Product product) throws InvalidInputException;
 
-    boolean saveProduct(Product product);
+    boolean updateProduct(Product product, Product changed);
+
+    Product saveProduct(Product product);
 
     List<Backup> getBackupList();
 
@@ -48,8 +50,6 @@ public interface AdminServices {
     Invoice getPendingBusinessOrderById(Long id);
 
     PurchaseOrder savePurchaseOrder(PurchaseOrder purchaseOrder);
-
-    boolean saveWarehouse(Warehouse warehouse);
 
     boolean receivePurchaseOrder(String body);
 
@@ -67,7 +67,7 @@ public interface AdminServices {
 
     byte[] decompressBytes(byte[] data);
 
-    void saveImage(Image image);
+    void saveImage(Image image, Long prodId);
 
     Optional<Image> getImage(Long id);
   
