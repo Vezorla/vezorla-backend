@@ -1,10 +1,7 @@
 package ca.sait.vezorla.service;
 
 import ca.sait.vezorla.controller.util.CustomerClientUtil;
-import ca.sait.vezorla.exception.AccountNotFoundException;
-import ca.sait.vezorla.exception.InvalidInputException;
-import ca.sait.vezorla.exception.ProductAlreadyExistsException;
-import ca.sait.vezorla.exception.UnauthorizedException;
+import ca.sait.vezorla.exception.*;
 import ca.sait.vezorla.model.*;
 import ca.sait.vezorla.repository.*;
 import com.fasterxml.jackson.databind.ObjectMapper;
@@ -518,7 +515,7 @@ public class AdminServicesImp implements AdminServices {
      * @return <code>true</code> if successful
      * @author jjrr1717, matthewjflee
      */
-    public boolean restoreBackup(MultipartFile file) {
+    public boolean restoreBackup(MultipartFile file) throws OutOfStockException {
         boolean result;
         try {
             String sql = new String(file.getBytes());
@@ -530,7 +527,7 @@ public class AdminServicesImp implements AdminServices {
                     .setDeleteExisting(true)
                     .setDropExisting(true)
                     .importDatabase();
-        } catch (SQLException | ClassNotFoundException | IOException e) {
+        } catch (SQLException | ClassNotFoundException | IOException | StringIndexOutOfBoundsException e) {
             result = true;
         }
 

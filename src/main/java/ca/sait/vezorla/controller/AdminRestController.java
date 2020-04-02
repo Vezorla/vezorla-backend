@@ -1,6 +1,7 @@
 package ca.sait.vezorla.controller;
 
 import ca.sait.vezorla.exception.InvalidInputException;
+import ca.sait.vezorla.exception.OutOfStockException;
 import ca.sait.vezorla.exception.UnauthorizedException;
 import ca.sait.vezorla.model.*;
 import ca.sait.vezorla.service.AdminServices;
@@ -241,7 +242,7 @@ public class AdminRestController {
      * @author jjrr1717
      */
     @PostMapping("backup/restore")
-    public boolean restoreBackup(@RequestParam("file") MultipartFile file) {
+    public boolean restoreBackup(@RequestParam("file") MultipartFile file) throws OutOfStockException {
         return adminServices.restoreBackup(file);
     }
 
