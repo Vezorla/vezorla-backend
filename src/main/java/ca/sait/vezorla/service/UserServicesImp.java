@@ -543,6 +543,7 @@ public class UserServicesImp implements UserServices {
         }
 
         session.setAttribute("PICKUP", account.isPickup());
+
         boolean created = accountServices.saveAccount(account);
 
         return mapper.writerWithDefaultPrettyPrinter().writeValueAsString(created);
