@@ -183,7 +183,7 @@ public class AdminRestController {
         return true;
     }
 
-    @GetMapping("businessorder/pending")
+    @GetMapping("business-order/pending")
     public List<Invoice> getPendingBusinessOrder() {
         return null;
     }
