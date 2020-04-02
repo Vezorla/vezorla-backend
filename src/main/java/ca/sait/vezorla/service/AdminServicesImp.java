@@ -92,7 +92,7 @@ public class AdminServicesImp implements AdminServices {
         properties.setProperty(MysqlExportService.EMAIL_HOST, "smtp.gmail.com");
         properties.setProperty(MysqlExportService.EMAIL_PORT, "587");
         properties.setProperty(MysqlExportService.EMAIL_USERNAME, "vezorla.test@gmail.com");
-        properties.setProperty(MysqlExportService.EMAIL_PASSWORD, "LR}6Kjm-<d4;\"z&s=D[X#.6+dk}@3[z\"V");
+        properties.setProperty(MysqlExportService.EMAIL_PASSWORD, "NGB6DGZ98oXt6XmwxD7Q45povRzXHqGX8");
         properties.setProperty(MysqlExportService.EMAIL_FROM, "vezorla.test@gmail.com");
         properties.setProperty(MysqlExportService.EMAIL_TO, "vezorla.test@gmail.com");
 
