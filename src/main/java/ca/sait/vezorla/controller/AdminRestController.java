@@ -282,4 +282,28 @@ public class AdminRestController {
         HttpSession session = request.getSession();
         return mapper.writerWithDefaultPrettyPrinter().writeValueAsString(adminServices.getAdminEmail(session, mapper));
     }
+
+    /**
+     * Method to view all of the clients
+     *
+     * @return the clients to front-end
+     * @author jjrr1717
+     */
+    @GetMapping("clients")
+    public String viewAllClients() throws JsonProcessingException {
+        ObjectMapper mapper = new ObjectMapper();
+        return mapper.writerWithDefaultPrettyPrinter().writeValueAsString(adminServices.viewAllClients(mapper));
+    }
+
+    /**
+     * Method to view a client
+     *
+     * @return the json of client to front end
+     * @author jjrr1717
+     */
+    @GetMapping("client/{email}")
+    public String viewClient(@PathVariable String email) throws JsonProcessingException {
+        ObjectMapper mapper = new ObjectMapper();
+        return mapper.writerWithDefaultPrettyPrinter().writeValueAsString(adminServices.viewClient(email, mapper));
+    }
 }

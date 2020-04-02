@@ -1,6 +1,7 @@
 package ca.sait.vezorla.service;
 
 import ca.sait.vezorla.controller.util.CustomerClientUtil;
+import ca.sait.vezorla.exception.AccountNotFoundException;
 import ca.sait.vezorla.exception.InvalidInputException;
 import ca.sait.vezorla.exception.ProductAlreadyExistsException;
 import ca.sait.vezorla.exception.UnauthorizedException;
@@ -41,6 +42,7 @@ public class AdminServicesImp implements AdminServices {
     private WarehouseRepo warehouseRepo;
     private InvoiceRepo invoiceRepo;
     private DiscountRepo discountRepo;
+    private AccountRepo accountRepo;
     private ImageRepository imgRepo;
     private UserServices userServices;
 
@@ -395,6 +397,7 @@ public class AdminServicesImp implements AdminServices {
      *
      * @param mapper for json
      * @return ObjectNode for json
+	 * @author jjrr1717
      */
     public ObjectNode getNextPONum(ObjectMapper mapper) {
         int nextPO = purchaseOrderRepo.findLastPO() + 1;
@@ -492,6 +495,7 @@ public class AdminServicesImp implements AdminServices {
         } catch (ParseException e) {
             e.printStackTrace();
         }
+
         java.sql.Date sqlDateReceived;
         assert dateReceived != null;
         sqlDateReceived = new java.sql.Date(dateReceived.getTime());
@@ -773,5 +777,71 @@ public class AdminServicesImp implements AdminServices {
             throw new UnauthorizedException();
         }
         return node;
+    }
+
+    /**
+     * Method to view all the clients
+     *
+     * @param mapper to make the custom json
+     * @return ObjectNode containing nodes for custom json
+     * @author jjrr1717
+     */
+    public ObjectNode viewAllClients(ObjectMapper mapper) {
+
+        //obtain all the client accounts
+        List<Account> accounts = accountRepo.findAllUserCreatedAccounts();
+
+        //create custom json
+        ObjectNode node = mapper.createObjectNode();
+        ArrayNode clientNodes = node.arrayNode();
+
+        //loop through accounts to get account details
+        for (Account account : accounts) {
+            ObjectNode accountNode = clientNodes.objectNode();
+            accountNode.put("email", account.getEmail());
+            accountNode.put("firstName", account.getFirstName());
+            accountNode.put("lastName", account.getLastName());
+            accountNode.put("phoneNum", account.getPhoneNum());
+
+            clientNodes.add(accountNode);
+
+        }
+
+        node.put("clients", clientNodes);
+
+        return node;
+    }
+
+	/**
+     * Method to view a client
+     *
+     * @param mapper to make the custom json
+     * @return ObjectNode containing nodes for custom json
+     * @author jjrr1717
+     */
+    public ObjectNode viewClient(String email, ObjectMapper mapper) {
+
+        //obtain all the client accounts
+        Optional<Account> account = accountRepo.findById(email);
+        ObjectNode accountNode;
+        if (account.isPresent()) {
+            //create custom json
+            accountNode = mapper.createObjectNode();
+            accountNode.put("email", account.get().getEmail());
+            accountNode.put("accountType", Character.toString(account.get().getAccountType()));
+            accountNode.put("firstName", account.get().getFirstName());
+            accountNode.put("lastName", account.get().getLastName());
+            accountNode.put("phoneNum", account.get().getPhoneNum());
+            accountNode.put("address", account.get().getAddress());
+            accountNode.put("city", account.get().getCity());
+            accountNode.put("province", account.get().getProvince());
+            accountNode.put("country", account.get().getCountry());
+            accountNode.put("postalCode", account.get().getPostalCode());
+            accountNode.put("isSubscript", account.get().getIsSubscript());
+        } else {
+            throw new AccountNotFoundException();
+        }
+
+        return accountNode;
     }
 }
