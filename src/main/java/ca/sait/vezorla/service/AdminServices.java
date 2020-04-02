@@ -2,6 +2,7 @@ package ca.sait.vezorla.service;
 
 
 import ca.sait.vezorla.exception.InvalidInputException;
+import ca.sait.vezorla.exception.OutOfStockException;
 import ca.sait.vezorla.exception.UnauthorizedException;
 import ca.sait.vezorla.model.*;
 import com.fasterxml.jackson.databind.ObjectMapper;
@@ -60,7 +61,7 @@ public interface AdminServices {
 
     ObjectNode viewOrderHistoryAdmin(ObjectMapper mapper, HttpSession session);
 
-    boolean restoreBackup(MultipartFile file) throws UnauthorizedException;
+    boolean restoreBackup(MultipartFile file) throws OutOfStockException;
 
     boolean createWarehouse(Warehouse warehouse) throws InvalidInputException;
 
