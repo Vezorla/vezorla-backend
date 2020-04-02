@@ -31,7 +31,7 @@ public class AuthenticationServicesImp implements AuthenticationServices {
      * @author kwistech
      */
     public String generatePassword() {
-        return "AceiteDeOlivaVezorla " + Calendar.getInstance().get(Calendar.DAY_OF_YEAR);
+        return "AceiteDeOlivaVezorla" + Calendar.getInstance().get(Calendar.DAY_OF_YEAR);
     }
 
     public boolean forgotPassword(String email) throws InvalidInputException {

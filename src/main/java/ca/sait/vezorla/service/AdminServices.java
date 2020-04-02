@@ -36,7 +36,7 @@ public interface AdminServices {
 
     ObjectNode getAllProductsForPO(ObjectMapper mapper);
 
-    boolean createProduct(Product product) throws InvalidInputException;
+    boolean createProduct(Product product, HttpSession session) throws InvalidInputException;
 
     boolean updateProduct(Product product, Product changed);
 
@@ -68,7 +68,7 @@ public interface AdminServices {
 
     byte[] decompressBytes(byte[] data);
 
-    void saveImage(Image image, Long prodId);
+    void saveImage(Image image, Optional<Long> prodId, HttpSession session);
 
     Optional<Image> getImage(Long id);
 
