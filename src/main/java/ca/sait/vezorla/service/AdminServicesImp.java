@@ -527,9 +527,8 @@ public class AdminServicesImp implements AdminServices {
                     .setDeleteExisting(true)
                     .setDropExisting(true)
                     .importDatabase();
-        } catch (SQLException | ClassNotFoundException | IOException e) {
+        } catch (SQLException | ClassNotFoundException | IOException | StringIndexOutOfBoundsException e) {
             result = true;
-            throw new OutOfStockException();
         }
 
         return result;
