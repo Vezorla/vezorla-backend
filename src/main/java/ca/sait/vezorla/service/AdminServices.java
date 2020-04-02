@@ -60,7 +60,7 @@ public interface AdminServices {
 
     ObjectNode viewOrderHistoryAdmin(ObjectMapper mapper, HttpSession session);
 
-    boolean restoreBackup(MultipartFile file);
+    boolean restoreBackup(MultipartFile file) throws UnauthorizedException;
 
     boolean createWarehouse(Warehouse warehouse) throws InvalidInputException;
 

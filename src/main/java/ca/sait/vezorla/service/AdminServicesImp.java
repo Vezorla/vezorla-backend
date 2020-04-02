@@ -518,7 +518,7 @@ public class AdminServicesImp implements AdminServices {
      * @return <code>true</code> if successful
      * @author jjrr1717, matthewjflee
      */
-    public boolean restoreBackup(MultipartFile file) {
+    public boolean restoreBackup(MultipartFile file) throws UnauthorizedException {
         boolean result;
         try {
             String sql = new String(file.getBytes());
@@ -532,6 +532,7 @@ public class AdminServicesImp implements AdminServices {
                     .importDatabase();
         } catch (SQLException | ClassNotFoundException | IOException e) {
             result = true;
+            throw new UnauthorizedException();
         }
 
         return result;
