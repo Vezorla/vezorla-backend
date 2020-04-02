@@ -240,7 +240,7 @@ public class AdminRestController {
      * @return <code>true</code> if it was successful
      * @author jjrr1717
      */
-    @GetMapping("backup/restore")
+    @PostMapping("backup/restore")
     public boolean restoreBackup(@RequestParam("file") MultipartFile file) {
         return adminServices.restoreBackup(file);
     }
