@@ -9,7 +9,7 @@ import java.util.Optional;
 /**
  * Authentication services
  *
- * @author: matthewjflee
+ * @author matthewjflee
  */
 public interface AuthenticationServices {
 
