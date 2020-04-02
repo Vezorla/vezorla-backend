@@ -18,7 +18,6 @@ import org.springframework.stereotype.Service;
 import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.multipart.MultipartFile;
 
-import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpSession;
 import java.io.ByteArrayOutputStream;
 import java.io.File;
@@ -99,7 +98,7 @@ public class AdminServicesImp implements AdminServices {
         //set the outputs temp dir
         properties.setProperty(MysqlExportService.TEMP_DIR, new File("external").getPath());
         MysqlExportService mysqlExportService = new MysqlExportService(properties);
-        File file = mysqlExportService.getGeneratedZipFile();
+        mysqlExportService.getGeneratedZipFile();
 
         try {
             mysqlExportService.export();
@@ -216,10 +215,11 @@ public class AdminServicesImp implements AdminServices {
      * Will check if the product exists in the database
      *
      * @param product product to create
+     * @param session user session to grab the image
      * @return <code>true</code> if the product exists
      * Will throw ProductAlreadyExistsException if the product already exists
      */
-    public boolean createProduct(Product product) throws InvalidInputException {
+    public boolean createProduct(Product product, HttpSession session) throws InvalidInputException {
         //Validate
         if (product.getName() == null || product.getPrice() == null)
             throw new InvalidInputException();
@@ -228,6 +228,19 @@ public class AdminServicesImp implements AdminServices {
         Optional<Product> findProduct = productRepo.findByName(product.getName());
 
         if (!findProduct.isPresent()) {
+            //Grab the image
+            Long imageID = (Long) session.getAttribute("IMAGE_ID");
+            product.setImageMain(imageID);
+            session.removeAttribute("IMAGE_ID");
+
+            //Fix date
+            java.sql.Date date = fixDate(product.getHarvestTime());
+            product.setHarvestTime(date);
+
+            //Fix price
+            String price = parsePrice(product.getPrice());
+            product.setPrice(price);
+
             productRepo.save(product);
         } else
             throw new ProductAlreadyExistsException();
@@ -246,6 +259,14 @@ public class AdminServicesImp implements AdminServices {
      * @author matthewjflee
      */
     public boolean updateProduct(Product product, Product changed) {
+        //Fix date and price
+        java.sql.Date date = fixDate(changed.getHarvestTime());
+        changed.setHarvestTime(date);
+
+        String price = parsePrice(changed.getPrice());
+        changed.setPrice(price);
+
+
         if (changed.getName() != null)
             product.setName(changed.getName());
 
@@ -270,6 +291,34 @@ public class AdminServicesImp implements AdminServices {
         return true;
     }
 
+    /**
+     * Fix date. Date comes in one day less so add one more day
+     *
+     * @param date input
+     * @return fixed date
+     * @author matthewjflee
+     */
+    private java.sql.Date fixDate(java.sql.Date date) {
+        Calendar cal = Calendar.getInstance();
+        cal.setTime(date);
+        cal.add(Calendar.DATE, 1);
+
+        return new java.sql.Date(cal.getTimeInMillis());
+    }
+
+    /**
+     * Parse price to remove any decimals and multiply it by 100 in the database
+     *
+     * @param inputPrice changed price
+     * @return parsed price
+     * @author matthewjflee
+     */
+    private String parsePrice(String inputPrice) {
+        float floPrice = Float.parseFloat(inputPrice) * 100;
+        long price = (long) floPrice;
+
+        return Objects.toString(price);
+    }
 
     /**
      * Save a product in the Products table
@@ -364,7 +413,6 @@ public class AdminServicesImp implements AdminServices {
      * @author jjrr1717
      */
     public boolean saveLots(List<Lot> lots, PurchaseOrder po) {
-        boolean result = false;
         int counter = 1;
         for (Lot lot : lots) {
             lot.setPurchaseOrder(po);
@@ -416,6 +464,8 @@ public class AdminServicesImp implements AdminServices {
             } catch (ParseException e) {
                 e.printStackTrace();
             }
+
+            assert date != null;
             java.sql.Date sqlDate = new java.sql.Date(date.getTime());
 
             //set the values into a lot
@@ -443,6 +493,7 @@ public class AdminServicesImp implements AdminServices {
             e.printStackTrace();
         }
         java.sql.Date sqlDateReceived;
+        assert dateReceived != null;
         sqlDateReceived = new java.sql.Date(dateReceived.getTime());
         po.setDateReceived(sqlDateReceived);
         po.setLotList(lots);
@@ -464,7 +515,7 @@ public class AdminServicesImp implements AdminServices {
      * @author jjrr1717, matthewjflee
      */
     public boolean restoreBackup(MultipartFile file) {
-        boolean result = false;
+        boolean result;
         try {
             String sql = new String(file.getBytes());
             result = MysqlImportService.builder()
@@ -595,9 +646,14 @@ public class AdminServicesImp implements AdminServices {
      * @param prodId product image to update
      * @author matthewjflee
      */
-    public void saveImage(Image image, Long prodId) {
+    public void saveImage(Image image, Optional<Long> prodId, HttpSession session) {
         Image saved = imgRepo.save(image);
-        updateProductImage(saved, prodId);
+
+        if (prodId.isPresent())
+            updateProductImage(saved, prodId.get());
+        else {
+            session.setAttribute("IMAGE_ID", saved.getId());
+        }
     }
 
     /**
@@ -605,7 +661,7 @@ public class AdminServicesImp implements AdminServices {
      * Go through the list of images and replace the oldest image
      * Sorry we are out of time I know this is ugly
      *
-     * @param image image to save
+     * @param image  image to save
      * @param prodId product
      * @author matthewjflee
      */
@@ -618,6 +674,7 @@ public class AdminServicesImp implements AdminServices {
         //Update the product image
         List<Long> imageIdList = new ArrayList<>();
 
+        assert product != null;
         if (product.getImageMain() != null)
             imageIdList.add(product.getImageMain());
 
@@ -702,7 +759,7 @@ public class AdminServicesImp implements AdminServices {
      * @param session to get Account
      * @param mapper  for json
      * @return Object node for json
-     * @throws UnauthorizedException
+     * @throws UnauthorizedException email is invalid
      * @author jjrr1717
      */
     public ObjectNode getAdminEmail(HttpSession session, ObjectMapper mapper) throws UnauthorizedException {
@@ -717,5 +774,4 @@ public class AdminServicesImp implements AdminServices {
         }
         return node;
     }
-
 }

@@ -8,15 +8,15 @@ import ca.sait.vezorla.service.UserServices;
 import com.fasterxml.jackson.core.JsonProcessingException;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import lombok.AllArgsConstructor;
-import org.springframework.http.HttpStatus;
-import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 import org.springframework.web.multipart.MultipartFile;
 
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpSession;
 import java.io.IOException;
-import java.util.*;
+import java.util.Date;
+import java.util.List;
+import java.util.Optional;
 
 @AllArgsConstructor
 @RestController
@@ -85,7 +85,8 @@ public class AdminRestController {
      * Method to get the next PO num
      *
      * @return the json
-     * @throws JsonProcessingException
+     * @throws JsonProcessingException error when parsing JSON
+     * @author jjrr1717
      */
     @GetMapping("purchase_order/next")
     public String getNextPONum() throws JsonProcessingException {
@@ -102,8 +103,10 @@ public class AdminRestController {
      * @author matthewjflee
      */
     @PostMapping("inventory/create")
-    public boolean createProduct(@RequestBody Product product) throws InvalidInputException {
-        return adminServices.createProduct(product);
+    public boolean createProduct(@RequestBody Product product, HttpServletRequest request) throws InvalidInputException {
+        HttpSession session = request.getSession();
+
+        return adminServices.createProduct(product, session);
     }
 
     /**
@@ -115,25 +118,9 @@ public class AdminRestController {
      */
     @PutMapping("inventory/update")
     public boolean updateProduct(@RequestBody Product changed) {
-        //Fix date. Date comes in one day less so add one more day
-        Calendar cal = Calendar.getInstance();
-        cal.setTime(changed.getHarvestTime());
-        cal.add(Calendar.DATE, 1);
-        java.sql.Date date = new java.sql.Date(cal.getTimeInMillis());
-        changed.setHarvestTime(date);
-
-        //Parse the price
-        float floPrice = Float.parseFloat(changed.getPrice()) * 100;
-        long price = (long) floPrice;
-
-
-        String stringPrice = Objects.toString(price);
-        changed.setPrice(stringPrice);
-
-        //Find product
         Product product = null;
         Optional<Product> findProduct = userServices.getProduct(changed.getProdId());
-        if(findProduct.isPresent())
+        if (findProduct.isPresent())
             product = findProduct.get();
 
         return adminServices.updateProduct(product, changed);
@@ -148,13 +135,14 @@ public class AdminRestController {
      * @throws IOException thrown when compressing the bytes
      * @author matthewjflee
      */
-    @PostMapping("img/upload/{prodId}")
-    public boolean uploadImage(@RequestParam("imgFile") MultipartFile file, @PathVariable("prodId") Long prodId) throws IOException {
-        byte[] imgCompressed = adminServices.compressBytes(file.getBytes());
+    @PostMapping("img/upload")
+    public boolean uploadImage(@RequestParam("imgFile") MultipartFile file, @RequestParam("prodId") Optional<Long> prodId, HttpServletRequest request) throws IOException {
+        HttpSession session = request.getSession();
 
+        byte[] imgCompressed = adminServices.compressBytes(file.getBytes());
         Image image = new Image(file.getOriginalFilename(), file.getContentType(), imgCompressed);
 
-        adminServices.saveImage(image, prodId);
+        adminServices.saveImage(image, prodId, session);
 
         return true;
     }
@@ -172,14 +160,13 @@ public class AdminRestController {
         Image rawImage = null;
         Optional<Image> findImage = adminServices.getImage(id);
 
-        if(findImage.isPresent())
+        if (findImage.isPresent())
             rawImage = findImage.get();
 
+        assert rawImage != null;
         byte[] imgDecompressed = adminServices.decompressBytes(rawImage.getPicByte());
 
-        Image image = new Image(rawImage.getId(), rawImage.getName(), rawImage.getType(), imgDecompressed);
-
-        return image;
+        return new Image(rawImage.getId(), rawImage.getName(), rawImage.getType(), imgDecompressed);
     }
 
     /**
@@ -219,6 +206,7 @@ public class AdminRestController {
 
     /**
      * Method to create and save discount to database
+     *
      * @param discount to save
      * @return <code>true</code> if successful, otherwise
      * false.
@@ -230,6 +218,7 @@ public class AdminRestController {
 
     /**
      * Method to create and save warehouse to database
+     *
      * @param warehouse to create and save
      * @return <code>true</code> if successful, otherwise
      * false.
@@ -268,8 +257,8 @@ public class AdminRestController {
      *
      * @param request for the session
      * @return the json
-     * @throws JsonProcessingException
-     * @@author jjrr1717
+     * @throws JsonProcessingException error when parsing JSON
+     * @author jjrr1717
      */
     @GetMapping("order_history")
     public String viewOrderHistoryAdmin(HttpServletRequest request) throws JsonProcessingException {
@@ -284,8 +273,8 @@ public class AdminRestController {
      * @param request for the session
      * @param mapper  for the json
      * @return the json
-     * @throws JsonProcessingException
-     * @throws UnauthorizedException
+     * @throws JsonProcessingException error when parsing JSON
+     * @throws UnauthorizedException   if the email is invalid
      * @author jjrr1717
      */
     @GetMapping("email")
