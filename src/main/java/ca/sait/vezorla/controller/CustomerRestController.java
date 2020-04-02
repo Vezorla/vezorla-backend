@@ -113,7 +113,7 @@ public class CustomerRestController {
 
                 if (!lineItems.isEmpty()) {
 
-                    if (account != null) {
+                    if (account != null && account.isUserCreated()) {
                         accountServices.saveAccount(account, session);
                         accountServices.saveCart(cart);
                     } else
