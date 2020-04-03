@@ -106,11 +106,6 @@ public class ClientRestController {
         created = (currentAccount.getAccountType() == 'A') ? accountServices.saveAccount(updateAccount)
                 : accountServices.saveAccount(updateAccount, session);
 
-//        if(currentAccount.getAccountType() == 'A')
-//            created = accountServices.saveAccount(updateAccount);
-//        else
-//            created = accountServices.saveAccount(updateAccount, session);
-
         if (!created)
             throw new UnableToSaveException();
 
