@@ -93,6 +93,7 @@ public class ClientRestController {
     @PutMapping("account/update")
     public boolean updateAccount(@RequestBody Account sendAccount, HttpServletRequest request) throws InvalidInputException {
         Account account = null;
+        boolean created;
         HttpSession session = request.getSession();
         Optional<Account> findAccount = accountServices.findAccountByEmail(sendAccount.getEmail());
         if (findAccount.isPresent())
@@ -100,7 +101,16 @@ public class ClientRestController {
 
         Account updateAccount = accountServices.updateAccount(account, sendAccount);
 
-        boolean created = accountServices.saveAccount(updateAccount, session);
+        Account currentAccount = (Account) session.getAttribute("ACCOUNT");
+
+        created = (currentAccount.getAccountType() == 'A') ? accountServices.saveAccount(updateAccount)
+                : accountServices.saveAccount(updateAccount, session);
+
+//        if(currentAccount.getAccountType() == 'A')
+//            created = accountServices.saveAccount(updateAccount);
+//        else
+//            created = accountServices.saveAccount(updateAccount, session);
+
         if (!created)
             throw new UnableToSaveException();
 
