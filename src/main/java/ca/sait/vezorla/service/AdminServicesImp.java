@@ -555,6 +555,7 @@ public class AdminServicesImp implements AdminServices {
         //loop through invoices to get invoice details
         for (Invoice invoice : invoices) {
             ObjectNode invoiceNode = invoiceNodes.objectNode();
+            invoiceNode.put("email", invoice.getAccount().getEmail());
             invoiceNode.put("invoiceNum", invoice.getInvoiceNum());
             invoiceNode.put("total", ccu.formatAmount(invoice.getTotal()));
             String date = invoice.getDate() + "";
