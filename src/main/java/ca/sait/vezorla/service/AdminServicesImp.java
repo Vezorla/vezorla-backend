@@ -417,6 +417,7 @@ public class AdminServicesImp implements AdminServices {
         for (Lot lot : lots) {
             lot.setPurchaseOrder(po);
             lot.setLotNum(po.getPoNum() + "-" + counter);
+            System.out.println(lot.getLotNum());
             lotRepo.save(lot);
             counter++;
         }

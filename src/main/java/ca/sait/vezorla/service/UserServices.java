@@ -76,4 +76,6 @@ public interface UserServices {
     boolean checkIfLineItemInStock(long id, int updatedQty);
 
     ObjectNode getBannerMessage(ObjectMapper mapper);
+
+    ObjectNode getTopProduct(ObjectMapper mapper);
 }

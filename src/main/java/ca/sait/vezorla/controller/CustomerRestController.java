@@ -435,6 +435,7 @@ public class CustomerRestController {
 
     /**
      * Method to send banner information for home page
+     *
      * @param mapper for custom json
      * @return String of custom json
      * @throws JsonProcessingException
@@ -442,6 +443,20 @@ public class CustomerRestController {
     @GetMapping("banner")
     public String getBannerMessage(ObjectMapper mapper) throws JsonProcessingException {
         return mapper.writerWithDefaultPrettyPrinter().writeValueAsString(userServices.getBannerMessage(mapper));
+    }
+
+    /**
+     * Method to return the top product sold
+     * by Vezorla
+     *
+     * @return mapper for the json
+     * @throws JsonProcessingException
+     * @author jjrr1717
+     */
+    @GetMapping("top_product")
+    public String getTopProduct() throws JsonProcessingException {
+        ObjectMapper mapper = new ObjectMapper();
+        return mapper.writerWithDefaultPrettyPrinter().writeValueAsString(userServices.getTopProduct(mapper));
     }
 
 }
