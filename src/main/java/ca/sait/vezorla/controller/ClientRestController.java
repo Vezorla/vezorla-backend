@@ -113,11 +113,7 @@ public class ClientRestController {
     }
 
 
-    @PutMapping("account/forgot-password")
-    public boolean forgotPassword(@RequestBody String email) throws InvalidInputException {
-        email = email.replaceAll("\"", "");
-        return authenticationServices.forgotPassword(email);
-    }
+
 
     @GetMapping("order/{id}")
     public List<Invoice> getOrder(@PathVariable Long id) {

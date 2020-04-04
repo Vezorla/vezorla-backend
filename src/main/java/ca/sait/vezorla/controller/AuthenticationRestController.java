@@ -1,6 +1,7 @@
 package ca.sait.vezorla.controller;
 
 import ca.sait.vezorla.exception.AccountNotFoundException;
+import ca.sait.vezorla.exception.InvalidInputException;
 import ca.sait.vezorla.model.Account;
 import ca.sait.vezorla.service.AuthenticationServices;
 import com.fasterxml.jackson.core.JsonProcessingException;
@@ -19,6 +20,7 @@ import java.util.Optional;
 
 /**
  * Authentication
+ *
  * @author matthewjflee
  */
 @AllArgsConstructor
@@ -54,7 +56,7 @@ public class AuthenticationRestController {
 
         //Find account in DB
         Optional<Account> findAccount = authServices.login(email, password, session);
-        if(findAccount.isPresent()) {
+        if (findAccount.isPresent()) {
             Account account = findAccount.get();
             node.put("email", account.getEmail());
             node.put("admin", account.isAccountAdmin());
@@ -68,6 +70,7 @@ public class AuthenticationRestController {
 
     /**
      * Check the current role of the authenticated user
+     *
      * @param request: HTTP request
      * @return role
      * @throws JsonProcessingException thrown if there is a problem parsing JSON
@@ -83,12 +86,9 @@ public class AuthenticationRestController {
         Account account = (Account) session.getAttribute("ACCOUNT");
         Boolean tempAccount = (Boolean) session.getAttribute("TEMP-ACCOUNT");
 
-        if(tempAccount == null && account != null) {
-            System.out.println("no temp acc");
-
-                System.out.println("acc is here");
-                node.put("admin", account.isAccountAdmin());
-        } else
+        if (tempAccount == null && account != null)
+            node.put("admin", account.isAccountAdmin());
+        else
             throw new AccountNotFoundException();
 
         String output = mapper.writerWithDefaultPrettyPrinter().writeValueAsString(node);
@@ -113,9 +113,22 @@ public class AuthenticationRestController {
         session.invalidate();
         session = request.getSession(false); //Need second session getting to ensure session is invalidated.
 
-        if(session == null)
+        if (session == null)
             result = true;
 
         return result;
+    }
+
+    /**
+     * Password reset self service tool for a client
+     * @param email account email
+     * @return if the password was reset
+     * @throws InvalidInputException error if email is invalid
+     * @author kwistech
+     */
+    @PutMapping("account/forgot-password")
+    public boolean forgotPassword(@RequestBody String email) throws InvalidInputException {
+        email = email.replaceAll("\"", "");
+        return authServices.forgotPassword(email);
     }
 }

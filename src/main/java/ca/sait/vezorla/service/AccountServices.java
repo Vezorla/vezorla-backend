@@ -25,8 +25,6 @@ public interface AccountServices {
 
     boolean confirmAccount(Long id);
 
-    List<Invoice> getOrder(Long id);
-
     boolean saveAccount(Account account);
 
     boolean saveAccount(Account account, HttpSession session);

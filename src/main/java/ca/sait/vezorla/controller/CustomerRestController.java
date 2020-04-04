@@ -139,7 +139,7 @@ public class CustomerRestController {
      * @author matthewjflee, jjrr1717
      */
     @GetMapping("cart/view")
-    public String viewSessionCart(HttpServletRequest request) throws JsonProcessingException {
+    public String viewCart(HttpServletRequest request) throws JsonProcessingException {
         HttpSession session = request.getSession();
         ObjectMapper mapper = new ObjectMapper();
         Cart cart = userServices.getCart(session);
@@ -178,7 +178,7 @@ public class CustomerRestController {
      */
     @RequestMapping(value = "cart/get", method = RequestMethod.GET,
             produces = {"application/json"})
-    public String getSessionCartQuantity(HttpSession session) {
+    public String getCartQuantity(HttpSession session) {
         Cart cart = userServices.getCart(session);
         return userServices.getTotalCartQuantity(cart.getLineItems());
     }

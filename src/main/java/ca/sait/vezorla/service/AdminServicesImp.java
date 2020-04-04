@@ -217,6 +217,7 @@ public class AdminServicesImp implements AdminServices {
      * @param session user session to grab the image
      * @return <code>true</code> if the product exists
      * Will throw ProductAlreadyExistsException if the product already exists
+     * @author matthewjflee
      */
     public boolean createProduct(Product product, HttpSession session) throws InvalidInputException {
         //Validate
@@ -652,9 +653,8 @@ public class AdminServicesImp implements AdminServices {
 
         if (prodId.isPresent())
             updateProductImage(saved, prodId.get());
-        else {
+        else
             session.setAttribute("IMAGE_ID", saved.getId());
-        }
     }
 
     /**

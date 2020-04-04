@@ -48,10 +48,6 @@ public class AccountServicesImp implements AccountServices {
         return false;
     }
 
-    public List<Invoice> getOrder(Long id) {
-        return null;
-    }
-
     /**
      * Create and persist an account in the Accounts table
      *
