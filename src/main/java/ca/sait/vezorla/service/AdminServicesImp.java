@@ -109,10 +109,6 @@ public class AdminServicesImp implements AdminServices {
         return true;
     }
 
-    public void generatePDF(List<ProductQuantity> productQuantityList) {
-
-    }
-
     /**
      * Method to get all the products for admin view
      *
@@ -331,15 +327,13 @@ public class AdminServicesImp implements AdminServices {
         return productRepo.save(product);
     }
 
-
-    public List<Backup> getBackupList() {
-        return null;
-    }
-
-    public void getInvoice(Long id) {
-
-    }
-
+    /**
+     * View a single order
+     * @param id invoice ID
+     * @param mapper custom JSON
+     * @return invoice in JSON format
+     * @author jjrr1717
+     */
     public ObjectNode viewOrder(Long id, ObjectMapper mapper) {
         Invoice invoice = null;
         ObjectNode node = mapper.createObjectNode();

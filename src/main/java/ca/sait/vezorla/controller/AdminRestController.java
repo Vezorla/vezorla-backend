@@ -229,11 +229,6 @@ public class AdminRestController {
         return adminServices.createWarehouse(warehouse);
     }
 
-    @GetMapping("backup/get")
-    public List<Backup> getBackupList() {
-        return null;
-    }
-
     /**
      * Restore a previously taken backup to the Vezorla database
      *

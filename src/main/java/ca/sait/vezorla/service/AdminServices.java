@@ -31,8 +31,6 @@ public interface AdminServices {
 
     boolean exportData();
 
-    void generatePDF(List<ProductQuantity> productQuantityList);
-
     ObjectNode getAllProducts(ObjectMapper mapper);
 
     ObjectNode getAllProductsForPO(ObjectMapper mapper);
@@ -42,10 +40,6 @@ public interface AdminServices {
     boolean updateProduct(Product product, Product changed);
 
     Product saveProduct(Product product);
-
-    List<Backup> getBackupList();
-
-    void getInvoice(Long id);
 
     List<Invoice> getPendingBusinessOrder();
 
