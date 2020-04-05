@@ -40,7 +40,7 @@ public class AdminServicesImp implements AdminServices {
     private InvoiceRepo invoiceRepo;
     private DiscountRepo discountRepo;
     private AccountRepo accountRepo;
-    private ImageRepository imgRepo;
+    private ImageRepo imgRepo;
     private UserServices userServices;
 
     public void acceptBusinessOrder(Invoice invoice) {

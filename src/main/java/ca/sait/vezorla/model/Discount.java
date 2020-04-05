@@ -66,9 +66,6 @@ public class Discount implements Serializable {
     @ManyToOne
     private Product product;
 
-//    @ManyToMany(mappedBy = "discountList")
-//    private List<Account> accountList;
-
     @OneToMany(mappedBy = "code")
     private List<AccountDiscount> accountDiscounts;
 
@@ -76,10 +73,5 @@ public class Discount implements Serializable {
         this.code = code;
         this.description = description;
         this.percent = percent;
-    }
-
-    public Discount(String code, AccountDiscount... accountDiscounts) {
-        this.code = code;
-        this.accountDiscounts = Arrays.asList(accountDiscounts);
     }
 }

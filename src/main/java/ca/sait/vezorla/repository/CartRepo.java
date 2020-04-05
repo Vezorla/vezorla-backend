@@ -16,8 +16,8 @@ public interface CartRepo extends JpaRepository<Cart, Long> {
     @Query("FROM Cart c WHERE c.account.email = :email " +
             "AND c.orderNum = (SELECT MAX(cc.orderNum) " +
             "FROM Cart cc WHERE cc.account.email = :email)")
-    Cart findCartByAccount_Email(@Param("email") String email);
+    Cart findCartByAccountEmail(@Param("email") String email);
 
     @Query("FROM Cart c WHERE c.account.email = :email")
-    List<Cart> findCartsByAccount_Email(@Param("email") String email);
+    List<Cart> findCartsByAccountEmail(@Param("email") String email);
 }
