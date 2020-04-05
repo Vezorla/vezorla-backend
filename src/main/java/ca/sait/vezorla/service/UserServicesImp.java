@@ -919,4 +919,30 @@ public class UserServicesImp implements UserServices {
         return node;
     }
 
+    /**
+     * Method to return the top product sold by
+     * Vezorla
+     *
+     * @param mapper for the json
+     * @return ObjectNode for the json
+     * @author jjrr1717
+     */
+    public ObjectNode getTopProduct(ObjectMapper mapper) {
+        ObjectNode node = mapper.createObjectNode();
+
+        long prod_id = productRepo.findTopProduct();
+        Optional<Product> product = productRepo.findById(prod_id);
+
+        node.put("prodId", product.get().getProdId());
+        node.put("name", product.get().getName());
+        node.put("description", product.get().getDescription());
+        DateFormat df = new SimpleDateFormat("yyyy-MM-dd");
+        String date = df.format(product.get().getHarvestTime());
+        node.put("harvestTime", date);
+        node.put("imageMain", product.get().getImageMain());
+        node.put("price", product.get().getPrice());
+
+        return node;
+    }
+
 }
