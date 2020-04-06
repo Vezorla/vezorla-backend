@@ -43,10 +43,21 @@ public class AdminServicesImp implements AdminServices {
     private ImageRepo imgRepo;
     private UserServices userServices;
 
+    /**
+     * Not yet implemented
+     *
+     * @param invoice
+     */
     public void acceptBusinessOrder(Invoice invoice) {
 
     }
 
+    /**
+     * Not yet implemented
+     *
+     * @param account
+     * @return
+     */
     public boolean createAccount(Account account) {
         return false;
     }
@@ -63,10 +74,22 @@ public class AdminServicesImp implements AdminServices {
         return true;
     }
 
+    /**
+     * Not yet implemented
+     *
+     * @param type
+     * @param start
+     * @param end
+     */
     public void createReport(String type, Date start, Date end) {
 
     }
 
+    /**
+     * Not yet implemented
+     *
+     * @param id
+     */
     public void declineBusinessOrder(Long id) {
 
     }
@@ -335,6 +358,7 @@ public class AdminServicesImp implements AdminServices {
      * @author jjrr1717
      */
     public ObjectNode viewOrder(Long id, ObjectMapper mapper) {
+        CustomerClientUtil ccu = new CustomerClientUtil();
         Invoice invoice = null;
         ObjectNode node = mapper.createObjectNode();
         Optional<Invoice> findInvoice = invoiceRepo.findById(id);
@@ -349,11 +373,11 @@ public class AdminServicesImp implements AdminServices {
         node.put("date", date);
         node.put("pickup", invoice.isPickup());
         node.put("shipped", invoice.isShipped());
-        node.put("shippingCost", invoice.getShippingCost());
-        node.put("subtotal", invoice.getSubtotal());
-        node.put("discount", invoice.getDiscount());
-        node.put("taxes", invoice.getTaxes());
-        node.put("total", invoice.getTotal());
+        node.put("shippingCost", ccu.formatAmount(invoice.getShippingCost()));
+        node.put("subtotal", ccu.formatAmount(invoice.getSubtotal()));
+        node.put("discount", ccu.formatAmount(invoice.getDiscount()));
+        node.put("taxes", ccu.formatAmount(invoice.getTaxes()));
+        node.put("total", ccu.formatAmount(invoice.getTotal()));
 
         node.put("email", account.getEmail());
         node.put("firstName", account.getFirstName());
@@ -365,10 +389,21 @@ public class AdminServicesImp implements AdminServices {
         return node;
     }
 
+    /**
+     * Not yet implemented
+     *
+     * @return
+     */
     public List<Invoice> getPendingBusinessOrder() {
         return null;
     }
 
+    /**
+     * Not yet implemented
+     *
+     * @param id
+     * @return
+     */
     public Invoice getPendingBusinessOrderById(Long id) {
         return null;
     }
