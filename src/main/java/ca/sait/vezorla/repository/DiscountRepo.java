@@ -33,8 +33,9 @@ public interface DiscountRepo extends JpaRepository<Discount, String> {
 
     /**
      * Find the discount value by code
-     * @param code
-     * @return
+     * @param code discount code
+     * @return find the discount value
+     * @author jjrr1717
      */
     @Query("SELECT d.percent FROM Discount d " +
            "WHERE d.code = :code")
@@ -44,6 +45,7 @@ public interface DiscountRepo extends JpaRepository<Discount, String> {
      * Find the highlighted discount that will be
      * on home page banner.
      * @return bannerMessage
+     * @author jjrr1717
      */
     @Query("SELECT d.bannerMessage FROM Discount d WHERE d.isHighlighted = true")
     String findHighlightedDiscount();

@@ -15,6 +15,7 @@ import java.util.List;
 import java.util.Optional;
 
 /**
+ * Services for customers and clients
  * @author jjrr1717, matthewjflee
  */
 public interface UserServices {

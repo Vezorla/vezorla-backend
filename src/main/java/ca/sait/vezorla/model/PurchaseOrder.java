@@ -15,7 +15,7 @@ import lombok.NoArgsConstructor;
  * Entity class for purchase order
  * @author		Minh Lam
  * @version		1.0
- * */
+ */
 
 @Data
 @Entity

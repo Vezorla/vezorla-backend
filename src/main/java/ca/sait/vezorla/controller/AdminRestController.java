@@ -19,6 +19,11 @@ import java.util.Date;
 import java.util.List;
 import java.util.Optional;
 
+/**
+ * Admin rest controller
+ *
+ * @author matthewjflee
+ */
 @AllArgsConstructor
 @RestController
 @RequestMapping(AdminRestController.URL)

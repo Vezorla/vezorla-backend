@@ -3,6 +3,9 @@ package ca.sait.vezorla.service;
 import ca.sait.vezorla.exception.InvalidInputException;
 import ca.sait.vezorla.model.Invoice;
 
+/**
+ * Services to handle email sending
+ */
 public interface EmailServices {
 
     void sendContactUsEmail(String name, String senderEmail, String message) throws InvalidInputException;

@@ -1,4 +1,4 @@
-package ca.sait.vezorla.service;
+package ca.sait.vezorla.service.imp;
 
 import ca.sait.vezorla.controller.util.CustomerClientUtil;
 import ca.sait.vezorla.exception.InvalidInputException;
@@ -10,6 +10,7 @@ import ca.sait.vezorla.repository.AccountRepo;
 import ca.sait.vezorla.repository.CartRepo;
 import ca.sait.vezorla.repository.InvoiceRepo;
 import ca.sait.vezorla.repository.LineItemRepo;
+import ca.sait.vezorla.service.AccountServices;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import com.fasterxml.jackson.databind.node.ArrayNode;
 import com.fasterxml.jackson.databind.node.ObjectNode;
@@ -267,7 +268,7 @@ public class AccountServicesImp implements AccountServices {
         Account account = (Account) session.getAttribute("ACCOUNT");
 
         //obtain all the invoices for account
-        List<Invoice> invoices = invoiceRepo.findAllByAccount_Email(account.getEmail());
+        List<Invoice> invoices = invoiceRepo.findAllByAccountEmail(account.getEmail());
 
         //create custom json
         ObjectNode node = mapper.createObjectNode();

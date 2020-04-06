@@ -43,9 +43,6 @@ public class Invoice implements Serializable {
 	@Column(name = "date")
 	private Date date;
 
-	/**
-	 * I think we should get rid of this field
-	 */
 	@NotNull
 	@Column(name = "shipped")
 	private boolean shipped;

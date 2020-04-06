@@ -22,6 +22,10 @@ import java.util.Arrays;
 import java.util.Date;
 import java.util.List;
 
+/**
+ * Discounts
+ * @author matthewjflee, jjrr1717
+ */
 @AllArgsConstructor
 @NoArgsConstructor
 @Entity

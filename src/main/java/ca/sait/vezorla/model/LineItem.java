@@ -1,22 +1,21 @@
+
+package ca.sait.vezorla.model;
+
+import lombok.AllArgsConstructor;
+import lombok.Data;
+import lombok.NoArgsConstructor;
+
+import javax.persistence.*;
+import java.io.Serializable;
+
 /**
  * Class that represents a line item on in a cart
  * and on an invoice. This is a product that is
  * being purchased and all the information
  * associated with that purchase.
  *
- * @author Jocelyn Wegen
+ * @author jjrr1717
  */
-package ca.sait.vezorla.model;
-
-import com.fasterxml.jackson.annotation.JsonIgnore;
-import lombok.AllArgsConstructor;
-import lombok.Data;
-import lombok.NoArgsConstructor;
-import org.hibernate.annotations.Formula;
-
-import javax.persistence.*;
-import java.io.Serializable;
-
 @Entity
 @Data
 @AllArgsConstructor

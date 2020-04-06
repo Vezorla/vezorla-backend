@@ -24,7 +24,7 @@ import lombok.NoArgsConstructor;
  * Entity class for lot
  * @author		Minh Lam
  * @version		1.0
- * */
+ */
 
 @Entity
 @Data

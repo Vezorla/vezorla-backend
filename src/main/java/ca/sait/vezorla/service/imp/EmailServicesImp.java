@@ -1,10 +1,11 @@
-package ca.sait.vezorla.service;
+package ca.sait.vezorla.service.imp;
 
 import ca.sait.vezorla.controller.util.CustomerClientUtil;
 import ca.sait.vezorla.exception.InvalidInputException;
 import ca.sait.vezorla.model.Invoice;
 import ca.sait.vezorla.model.LineItem;
 import ca.sait.vezorla.repository.LineItemRepo;
+import ca.sait.vezorla.service.EmailServices;
 import lombok.AllArgsConstructor;
 import org.springframework.mail.MailException;
 import org.springframework.mail.SimpleMailMessage;

@@ -16,6 +16,10 @@ import java.io.Serializable;
 import java.util.ArrayList;
 import java.util.List;
 
+/**
+ * User's cart
+ * @author matthewjflee, jjrr1717
+ */
 @AllArgsConstructor
 @Entity
 @Data

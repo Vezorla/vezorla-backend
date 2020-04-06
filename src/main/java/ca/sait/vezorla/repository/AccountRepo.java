@@ -9,6 +9,9 @@ import org.springframework.stereotype.Repository;
 import java.util.List;
 import java.util.Optional;
 
+/**
+ * Repository to interact with the Accounts table
+ */
 @Repository
 public interface AccountRepo extends JpaRepository<Account, String> {
 
@@ -18,7 +21,7 @@ public interface AccountRepo extends JpaRepository<Account, String> {
      * @param email Account email
      * @return int number of Account got modify
      */
-    @Modifying //TODO MINH WHAT IS THIS?
+    @Modifying
     @Query("UPDATE Account a SET a.isConfirmed = true WHERE a.email = ?1")
     int confirm(String email);
 
@@ -31,6 +34,11 @@ public interface AccountRepo extends JpaRepository<Account, String> {
      */
     Optional<Account> findByEmailAndPassword(String email, String password);
 
+    /**
+     * Find all the user created accounts
+     * @return list of all accounts
+     * @author jjrr1717
+     */
     @Query(value = "FROM Account a WHERE a.userCreated = true")
     List<Account> findAllUserCreatedAccounts();
 }

@@ -16,7 +16,9 @@ import java.util.Date;
 import java.util.List;
 import java.util.Optional;
 
-
+/**
+ * Admin services
+ */
 public interface AdminServices {
 
     void acceptBusinessOrder(Invoice invoice);

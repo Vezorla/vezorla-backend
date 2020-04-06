@@ -6,6 +6,10 @@ import lombok.NoArgsConstructor;
 
 import javax.persistence.*;
 
+/**
+ * Product images
+ * @author matthewjflee, jjrr1717
+ */
 @AllArgsConstructor
 @NoArgsConstructor
 @Entity

@@ -13,6 +13,9 @@ import org.springframework.stereotype.Repository;
 
 import java.util.Optional;
 
+/**
+ * Repository to interact with the Products table
+ */
 @Repository
 public interface ProductRepo extends JpaRepository<Product, Long> {
 
@@ -27,10 +30,11 @@ public interface ProductRepo extends JpaRepository<Product, Long> {
     Integer findTotalQuantity(@Param("prod_num") Long prod_num);
 
     /**
-     * Method to find a product by it's name
+     * Method to find a product by its name
      *
      * @param productName of the product to find
      * @return Optional<Product> of the product found
+     * @author matthewjflee
      */
     Optional<Product> findByName(String productName);
 

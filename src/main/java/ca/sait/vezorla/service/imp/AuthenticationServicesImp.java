@@ -1,9 +1,12 @@
-package ca.sait.vezorla.service;
+package ca.sait.vezorla.service.imp;
 
 import ca.sait.vezorla.exception.AccountNotFoundException;
 import ca.sait.vezorla.exception.InvalidInputException;
 import ca.sait.vezorla.model.Account;
 import ca.sait.vezorla.repository.AccountRepo;
+import ca.sait.vezorla.service.AccountServices;
+import ca.sait.vezorla.service.AuthenticationServices;
+import ca.sait.vezorla.service.EmailServices;
 import lombok.AllArgsConstructor;
 import org.springframework.stereotype.Service;
 

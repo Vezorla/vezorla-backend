@@ -1,10 +1,13 @@
-package ca.sait.vezorla.service;
+package ca.sait.vezorla.service.imp;
 
 import ca.sait.vezorla.controller.util.CustomerClientUtil;
 import ca.sait.vezorla.exception.InvalidInputException;
 import ca.sait.vezorla.exception.UnauthorizedException;
 import ca.sait.vezorla.model.*;
 import ca.sait.vezorla.repository.*;
+import ca.sait.vezorla.service.AccountServices;
+import ca.sait.vezorla.service.EmailServices;
+import ca.sait.vezorla.service.UserServices;
 import com.fasterxml.jackson.core.JsonProcessingException;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import com.fasterxml.jackson.databind.node.ArrayNode;

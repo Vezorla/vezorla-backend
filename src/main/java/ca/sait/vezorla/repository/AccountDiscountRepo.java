@@ -15,6 +15,7 @@ import javax.transaction.Transactional;
  * Repo class to interface with the AccountDiscount
  * bridging table.
  *
+ * @author matthewjflee, jjrr1717
  */
 @Repository
 public class AccountDiscountRepo {

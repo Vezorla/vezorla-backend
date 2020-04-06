@@ -1,9 +1,3 @@
-/**
- * Class to represent a warehouse for Vezorla.
- * A Warehouse stores products.
- *
- * @author Jocelyn Wegen
- */
 package ca.sait.vezorla.model;
 
 import lombok.AllArgsConstructor;
@@ -13,11 +7,14 @@ import lombok.NoArgsConstructor;
 import javax.persistence.*;
 import javax.validation.constraints.NotNull;
 import javax.validation.constraints.Pattern;
-import javax.validation.constraints.Size;
 import java.util.List;
-import javax.persistence.OneToMany;
 
-
+/**
+ * Class to represent a warehouse for Vezorla.
+ * A Warehouse stores products.
+ *
+ * @author jjrr1717, matthewjflee
+ */
 @Entity
 @Data
 @Table(name = "warehouse")
