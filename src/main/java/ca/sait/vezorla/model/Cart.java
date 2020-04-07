@@ -9,7 +9,6 @@ package ca.sait.vezorla.model;
 import com.fasterxml.jackson.annotation.JsonIgnore;
 import lombok.AllArgsConstructor;
 import lombok.Data;
-import lombok.NoArgsConstructor;
 
 import javax.persistence.*;
 import java.io.Serializable;
@@ -17,7 +16,17 @@ import java.util.ArrayList;
 import java.util.List;
 
 /**
- * User's cart
+ * Cart class.
+ *
+ * This class models a table within the database. As such,
+ * each variable represents a column and any methods within this
+ * class manipulate these variables.
+ *
+ * Constructors are overloaded to provide the functionality
+ * needed within the application.
+ *
+ * User's cart.
+ *
  * @author matthewjflee, jjrr1717
  */
 @AllArgsConstructor
@@ -26,18 +35,48 @@ import java.util.List;
 @Table(name = "cart")
 public class Cart implements Serializable {
 
+    /**
+     * Cart order number.
+     *
+     * Annotated to be the Primary Key for the database
+     * table 'cart'
+     */
     @Id
     @Column(name = "order_num")
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     private Long orderNum;
 
+    /**
+     * Cart account number.
+     *
+     * Annotated as a column within the database
+     * table 'cart'
+     *
+     * Mapped by a many-to-one relationship within
+     * the database.
+     */
     @ManyToOne
     @JoinColumn(name = "account_num")
     private Account account;
 
+    /**
+     * Cart account.
+     *
+     * Annotated as a column within the database
+     * table 'cart'
+     */
     @Column(name = "from_account")
     private boolean fromAccount;
 
+    /**
+     * Cart line items.
+     *
+     * Annotated as a column within the database
+     * table 'cart'
+     *
+     * Mapped by a one-to-many relationship within
+     * the database.
+     */
     @JsonIgnore
     @OneToMany(mappedBy = "cart", cascade = {CascadeType.ALL})
     @Column
@@ -50,6 +89,12 @@ public class Cart implements Serializable {
         this.lineItems = new ArrayList<>();
     }
 
+    /**
+     * Argument constructor to fulfill Cart creation upon
+     * Account creation.
+     *
+     * @param account Account to be linked to the cart.
+     */
     public Cart(Account account) {
         this.account = account;
         this.fromAccount = true;
