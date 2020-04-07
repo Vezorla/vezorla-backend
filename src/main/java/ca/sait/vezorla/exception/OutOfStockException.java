@@ -4,12 +4,19 @@ import org.springframework.http.HttpStatus;
 import org.springframework.web.bind.annotation.ResponseStatus;
 
 /**
- * Thrown when a product is out of stock
+ * OutOfStockException class.
+ *
+ * This class outlines the OutOfStockException and is thrown when
+ * a product is out of stock.
  */
 @ResponseStatus(value = HttpStatus.FAILED_DEPENDENCY)
 public class OutOfStockException extends Exception {
 
-
+    /**
+     * Default constructor.
+     *
+     * Sets the Exception message.
+     */
     public OutOfStockException() {
         super("Out of Stock");
     }

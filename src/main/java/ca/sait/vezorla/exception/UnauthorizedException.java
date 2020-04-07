@@ -4,11 +4,19 @@ import org.springframework.http.HttpStatus;
 import org.springframework.web.bind.annotation.ResponseStatus;
 
 /**
- * Thrown when the user is not authorized
+ * UnauthorizedException class.
+ *
+ * This class outlines the UnauthorizedException and is
+ * thrown when the user is not authorized.
  */
 @ResponseStatus(value = HttpStatus.UNAUTHORIZED)
 public class UnauthorizedException extends Exception {
 
+    /**
+     * Default constructor.
+     *
+     * Sets the Exception message.
+     */
     public UnauthorizedException() {
         super("Not authorized");
     }
