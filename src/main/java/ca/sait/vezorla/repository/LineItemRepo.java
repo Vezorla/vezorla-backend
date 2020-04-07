@@ -11,13 +11,19 @@ import org.springframework.stereotype.Repository;
 import java.util.List;
 
 /**
- * Repository to interact with the Accounts table
+ * LineItemRepo interface.
+ *
+ * Repository interfaces are used to interact the the database
+ * via Spring (JPARepository) and its annotations.
+ *
+ * Repository to interact with the Accounts table.
  */
 @Repository
 public interface LineItemRepo extends JpaRepository<LineItem, Long> {
 
     /**
-     * Find the line items in an invoice
+     * Find the line items in an invoice.
+     *
      * @param invoice invoice
      * @return list of line items in the invoice
      * @author matthewjflee
@@ -26,7 +32,8 @@ public interface LineItemRepo extends JpaRepository<LineItem, Long> {
     List<LineItem> findLineItemByInvoice(@Param("invoice") Invoice invoice);
 
     /**
-     * Delete a line item from a cart
+     * Delete a line item from a cart.
+     *
      * @param lineNum line item ID
      * @param orderNum cart ID
      * @return the line item ID that was deleted
@@ -37,7 +44,8 @@ public interface LineItemRepo extends JpaRepository<LineItem, Long> {
     int deleteLineItemByLineNumAndCart_OrderNum(Long lineNum, Long orderNum);
 
     /**
-     * Query to find line items by order number
+     * Query to find line items by order number.
+     *
      * @param orderNum of order to obtain line items
      * @return a list of line items
      * @author jjrr1717

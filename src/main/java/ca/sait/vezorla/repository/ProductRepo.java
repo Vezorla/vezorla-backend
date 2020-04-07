@@ -14,7 +14,12 @@ import org.springframework.stereotype.Repository;
 import java.util.Optional;
 
 /**
- * Repository to interact with the Products table
+ * ProductRepo interface.
+ *
+ * Repository interfaces are used to interact the the database
+ * via Spring (JPARepository) and its annotations.
+ *
+ * Repository to interact with the Products table.
  */
 @Repository
 public interface ProductRepo extends JpaRepository<Product, Long> {

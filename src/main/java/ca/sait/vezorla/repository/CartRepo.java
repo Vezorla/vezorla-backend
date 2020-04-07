@@ -8,15 +8,19 @@ import org.springframework.stereotype.Repository;
 
 import java.util.List;
 
-import static org.hibernate.loader.Loader.SELECT;
-
 /**
- * Repository to interact with the Carts table
+ * CartRepo interface.
+ *
+ * Repository interfaces are used to interact the the database
+ * via Spring (JPARepository) and its annotations.
+ *
+ * Repository to interact with the Carts table.
  */
 @Repository
 public interface CartRepo extends JpaRepository<Cart, Long> {
     /**
-     * Find a from the email
+     * Find a from the email.
+     *
      * @param email account's email
      * @return Cart
      * @author matthewjflee
@@ -27,7 +31,8 @@ public interface CartRepo extends JpaRepository<Cart, Long> {
     Cart findCartByAccountEmail(@Param("email") String email);
 
     /**
-     * Find all the carts associated with an account
+     * Find all the carts associated with an account.
+     *
      * @param email user's email
      * @return list of all carts
      */

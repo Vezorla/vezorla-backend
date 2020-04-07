@@ -7,13 +7,19 @@ import org.springframework.data.jpa.repository.Query;
 import org.springframework.stereotype.Repository;
 
 /**
- * Repository to interact with the PurchaseOrder table
+ * PurchaseOrderRepo interface.
+ *
+ * Repository interfaces are used to interact the the database
+ * via Spring (JPARepository) and its annotations.
+ *
+ * Repository to interact with the PurchaseOrder table.
  */
 @Repository
 public interface PurchaseOrderRepo extends JpaRepository<PurchaseOrder, Long> {
 
     /**
-     * Find the most recent purchase odrer
+     * Find the most recent purchase order.
+     *
      * @return ID of the latest PO
      * @author jjrr1717
      */

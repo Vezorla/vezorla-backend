@@ -10,7 +10,12 @@ import java.sql.Date;
 import java.util.List;
 
 /**
- * Repo class to interface with the discounts table
+ * DiscountRepo interface.
+ *
+ * Repository interfaces are used to interact the the database
+ * via Spring (JPARepository) and its annotations.
+ *
+ * Repo class to interface with the discounts table.
  *
  * @author matthewjflee, jjrr1717
  */
@@ -18,9 +23,9 @@ import java.util.List;
 public interface DiscountRepo extends JpaRepository<Discount, String> {
 
     /**
-     * Find all valid discounts for the specified date
+     * Find all valid discounts for the specified date.
      *
-     * Use custom query to find the valid discounts in the accounts_discount bridging table
+     * Use custom query to find the valid discounts in the accounts_discount bridging table.
      *
      * @param date date to find
      * @return List of discounts
@@ -32,7 +37,8 @@ public interface DiscountRepo extends JpaRepository<Discount, String> {
     List<String> findValidDiscounts(@Param("date") Date date, @Param("email") String email);
 
     /**
-     * Find the discount value by code
+     * Find the discount value by code.
+     *
      * @param code discount code
      * @return find the discount value
      * @author jjrr1717
@@ -44,6 +50,7 @@ public interface DiscountRepo extends JpaRepository<Discount, String> {
     /**
      * Find the highlighted discount that will be
      * on home page banner.
+     *
      * @return bannerMessage
      * @author jjrr1717
      */

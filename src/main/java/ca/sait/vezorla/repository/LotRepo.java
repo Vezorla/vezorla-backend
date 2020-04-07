@@ -11,12 +11,19 @@ import org.springframework.stereotype.Repository;
 import java.util.List;
 
 /**
- * Repository to interact with the lots table
+ * LotRepo interface.
+ *
+ * Repository interfaces are used to interact the the database
+ * via Spring (JPARepository) and its annotations.
+ *
+ * Repository to interact with the lots table.
  */
 @Repository
 public interface LotRepo extends JpaRepository<Lot, String>{
+
     /**
      * Find all lots with quantity more than 0.
+     *
      * @param product product to find
      * @return list of lots
      * @author jjrr1717

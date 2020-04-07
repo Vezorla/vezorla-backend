@@ -9,12 +9,19 @@ import org.springframework.stereotype.Repository;
 import java.util.List;
 
 /**
- * Repository to interact with the Invoice table
+ * InvoiceRepo interface.
+ *
+ * Repository interfaces are used to interact the the database
+ * via Spring (JPARepository) and its annotations.
+ *
+ * Repository to interact with the Invoice table.
  */
 @Repository
 public interface InvoiceRepo extends JpaRepository<Invoice, Long> {
+
     /**
-     * Find all invoices associated the account
+     * Find all invoices associated the account.
+     *
      * @param email user's email
      * @return list of invoices
      * @author matthewjflee
@@ -23,7 +30,8 @@ public interface InvoiceRepo extends JpaRepository<Invoice, Long> {
     List<Invoice> findAllByAccountEmail(@Param("email") String email);
 
     /**
-     * Find the top products ordered
+     * Find the top products ordered.
+     *
      * @return list of invoices with the top products
      * @author matthewjflee
      */
