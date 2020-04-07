@@ -27,7 +27,14 @@ import java.util.List;
 import java.util.Optional;
 
 /**
- * Rest controller to handle customer functionality
+ * CustomerRestController class.
+ *
+ * Rest controller to handle customer functionality.
+ *
+ * This class maps the frontend to the backend. It does
+ * so by implementing Spring RestController annotation.
+ *
+ * Lombok is used to reduce boilerplate code for constructors.
  *
  * @author matthewjflee, jjrr1717
  */
@@ -44,7 +51,7 @@ public class CustomerRestController {
     private AccountServices accountServices;
 
     /**
-     * Get all products
+     * Get all products.
      *
      * @return List of all products
      * @author jjrr1717
@@ -56,7 +63,7 @@ public class CustomerRestController {
     }
 
     /**
-     * Return the product from Products repo
+     * Return the product from Products repo.
      *
      * @param id ID of product
      * @return product
@@ -70,7 +77,7 @@ public class CustomerRestController {
     }
 
     /**
-     * Return the quantity for the specified product
+     * Return the quantity for the specified product.
      *
      * @param id product ID
      * @return product's quantity
@@ -82,7 +89,7 @@ public class CustomerRestController {
     }
 
     /**
-     * Create a line item in the cart for a customer
+     * Create a line item in the cart for a customer.
      *
      * @param id       product id to add to a cart
      * @param quantity quantity to add
@@ -131,7 +138,7 @@ public class CustomerRestController {
     }
 
     /**
-     * View cart for a customer
+     * View cart for a customer.
      *
      * @param request user's request
      * @return user's cart
@@ -170,7 +177,7 @@ public class CustomerRestController {
     }
 
     /**
-     * Get the total number of products in the cart for a customer
+     * Get the total number of products in the cart for a customer.
      *
      * @param session user's session
      * @return JSON of user's cart
@@ -184,7 +191,7 @@ public class CustomerRestController {
     }
 
     /**
-     * Update a line item in the cart for a customer
+     * Update a line item in the cart for a customer.
      *
      * @param id       Line item ID
      * @param quantity quantity to change
@@ -201,7 +208,7 @@ public class CustomerRestController {
     }
 
     /**
-     * Remove a line item for a customer
+     * Remove a line item for a customer.
      *
      * @param id      line item to delete
      * @param request user's request
@@ -217,7 +224,10 @@ public class CustomerRestController {
     }
 
     /**
-     * Obtain customer's shipping information from front end
+     * Obtain customer's shipping information from front end.
+     *
+     * Note that the RequestMapping annotation must contain
+     * the values outlined in the code.
      *
      * @author matthewjflee, jjrr1717
      */
@@ -253,7 +263,8 @@ public class CustomerRestController {
     }
 
     /**
-     * Return the user's info and check if user's line items are out of stock
+     * Return the user's info and check if user's line items are out of stock.
+     *
      * @param request user request
      * @return user information
      * @throws JsonProcessingException error parsing JSON
@@ -277,7 +288,8 @@ public class CustomerRestController {
     }
 
     /**
-     * Check if the cart is empty or if a line item is out of stock
+     * Check if the cart is empty or if a line item is out of stock.
+     *
      * @param request user session
      * @return <code>true</code> if there no line items are out of stock
      * @throws OutOfStockException thrown if a line item is out of stock
@@ -295,8 +307,8 @@ public class CustomerRestController {
     }
 
     /**
-     * Subscribe user to the mailing list
-     * If the user's account does not exist, create a new account and save to the Accounts table
+     * Subscribe user to the mailing list.
+     * If the user's account does not exist, create a new account and save to the Accounts table.
      *
      * @param email user's email to subscribe
      * @author matthewjflee
@@ -315,8 +327,8 @@ public class CustomerRestController {
     }
 
     /**
-     * Return all valid discounts associated with the customer/client
-     * This method will query the database for all valid discounts for the account
+     * Return all valid discounts associated with the customer/client.
+     * This method will query the database for all valid discounts for the account.
      *
      * @return user's valid discounts
      * @author matthewjflee, jjrr1717
@@ -354,7 +366,7 @@ public class CustomerRestController {
 
     /**
      * Show details of order on the
-     * review page
+     * review page.
      *
      * @param request user request
      * @return user's order
@@ -377,11 +389,12 @@ public class CustomerRestController {
     }
 
     /**
-     * Send contact us email
+     * Send contact us email.
+     *
      * Returns <code>true</code> if email is sent
      * <code>false</code> if email fails to send
      *
-     * @param body user's email to vezorla
+     * @param body user's email to Vezorla
      * @author matthewjflee
      */
     @PostMapping("contact-us")
@@ -414,7 +427,7 @@ public class CustomerRestController {
     }
 
     /**
-     * Method to complete transactions after a successful payment
+     * Method to complete transactions after a successful payment.
      *
      * @param success boolean if payment was successful
      * @param request for the session
@@ -434,11 +447,12 @@ public class CustomerRestController {
     }
 
     /**
-     * Method to send banner information for home page
+     * Method to send banner information for home page.
      *
      * @param mapper for custom json
      * @return String of custom json
-     * @throws JsonProcessingException
+     * @throws JsonProcessingException If JSON is not
+     * processed correctly.
      */
     @GetMapping("banner")
     public String getBannerMessage(ObjectMapper mapper) throws JsonProcessingException {
@@ -447,10 +461,11 @@ public class CustomerRestController {
 
     /**
      * Method to return the top product sold
-     * by Vezorla
+     * by Vezorla.
      *
      * @return mapper for the json
-     * @throws JsonProcessingException
+     * @throws JsonProcessingException If JSON is not
+     * processed correctly.
      * @author jjrr1717
      */
     @GetMapping("top_product")

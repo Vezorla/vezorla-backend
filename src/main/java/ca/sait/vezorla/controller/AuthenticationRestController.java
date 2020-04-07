@@ -19,7 +19,12 @@ import javax.servlet.http.HttpSession;
 import java.util.Optional;
 
 /**
- * Authentication
+ * AuthenticationRestController Class.
+ *
+ * This class maps the frontend to the backend. It does
+ * so by implementing Spring RestController annotation.
+ *
+ * Lombok is used to reduce boilerplate code for constructors.
  *
  * @author matthewjflee
  */
@@ -32,7 +37,7 @@ public class AuthenticationRestController {
     private AuthenticationServices authServices;
 
     /**
-     * Find an account with that email and password
+     * Find an account with that email and password.
      *
      * @return email and role of client
      * @author matthewjflee
@@ -69,7 +74,7 @@ public class AuthenticationRestController {
     }
 
     /**
-     * Check the current role of the authenticated user
+     * Check the current role of the authenticated user.
      *
      * @param request: HTTP request
      * @return role
@@ -97,10 +102,10 @@ public class AuthenticationRestController {
     }
 
     /**
-     * Logout
+     * Logout.
      * Grab the session by passing <code>false</code>
      * This way, it does not create a session if one is not existing
-     * Will invalidate and check afterwards
+     * Will invalidate and check afterwards.
      *
      * @param request Http Request
      * @return result result if the session was invalidated
@@ -120,7 +125,7 @@ public class AuthenticationRestController {
     }
 
     /**
-     * Password reset self service tool for a client
+     * Password reset self service tool for a client.
      * @param email account email
      * @return if the password was reset
      * @throws InvalidInputException error if email is invalid

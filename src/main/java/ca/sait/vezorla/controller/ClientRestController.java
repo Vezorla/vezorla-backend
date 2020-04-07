@@ -22,6 +22,16 @@ import javax.servlet.http.HttpSession;
 import java.util.List;
 import java.util.Optional;
 
+/**
+ * ClientRestController Class.
+ *
+ * This class maps the frontend to the backend. It does
+ * so by implementing Spring RestController annotation.
+ *
+ * Lombok is used to reduce boilerplate code for constructors.
+ *
+ * @author matthewjflee
+ */
 @AllArgsConstructor
 @RestController
 @RequestMapping(ClientRestController.URL)
@@ -34,7 +44,7 @@ public class ClientRestController {
     private EmailServices emailServices;
 
     /**
-     * Create a new account
+     * Create a new account.
      *
      * @param body: JSON sending email and password
      * @author matthewjflee
@@ -82,7 +92,7 @@ public class ClientRestController {
     }
 
     /**
-     * Update an existing account's information
+     * Update an existing account's information.
      *
      * @param sendAccount account changed in the front-end
      * @param request     user request
@@ -112,9 +122,14 @@ public class ClientRestController {
         return created;
     }
 
-
-
-
+    /**
+     * Gets a specified order.
+     *
+     * Not implemented.
+     *
+     * @param id Order ID to get from the database.
+     * @return List containing the specified Invoice Order.
+     */
     @GetMapping("order/{id}")
     public List<Invoice> getOrder(@PathVariable Long id) {
         return null;
@@ -135,7 +150,7 @@ public class ClientRestController {
 
     /**
      * Method to view the order history from
-     * a client's account
+     * a client's account.
      *
      * @return the invoices to front-end
      * @author jjrr1717

@@ -4,6 +4,12 @@ import ca.sait.vezorla.exception.InvalidInputException;
 
 import java.util.regex.Pattern;
 
+/**
+ * CustomerClientUtil class.
+ *
+ * This class outlines the utilities used by the CustomerClient class.
+ * All validation checks implemented in this class.
+ */
 public class CustomerClientUtil {
 
     /**
@@ -31,8 +37,9 @@ public class CustomerClientUtil {
      * Validate Phone numbers inputted into
      * the web application
      *
-     * @param phoneNumber
-     * @throws InvalidInputException
+     * @param phoneNumber Phone number to validate.
+     * @throws InvalidInputException If the phone number does
+     * not match the specified regex.
      */
     public void validatePhoneNumber(String phoneNumber) throws InvalidInputException {
         Pattern pattern = Pattern.compile("^([\\+][0-9]{1,3}([ \\.\\-])?)?([\\(]{1}[0-9]{3}[\\)])?([0-9A-Z \\.\\-]{1,32})((x|ext|extension)?[0-9]{1,4}?)$");
@@ -41,6 +48,14 @@ public class CustomerClientUtil {
         }
     }
 
+    /**
+     * Validate Postal code entered into the
+     * web application.
+     *
+     * @param postalCode Postal code to be validated.
+     * @throws InvalidInputException If the postal code does
+     * not match the specified regex.
+     */
     public void validatePostalCode(String postalCode) throws InvalidInputException {
         Pattern pattern = Pattern.compile("^([A-Za-z]\\d[A-Za-z][-]?\\d[A-Za-z]\\d)");
         if (!pattern.matcher(postalCode).matches()) {
@@ -48,6 +63,15 @@ public class CustomerClientUtil {
         }
     }
 
+    /**
+     * Validate the email address entered into the
+     * web application.
+     *
+     * @param email Email to be verified.
+     * @return boolean True if valid, false otherwise.
+     * @throws InvalidInputException If the email does
+     * not match the specified regex.
+     */
     public boolean validateEmail(String email) throws InvalidInputException {
         final String EMAIL_REGEX = "^[\\w-\\+]+(\\.[\\w]+)*@[\\w-]+(\\.[\\w]+)*(\\.[a-z]{2,})$";
         Pattern pattern = Pattern.compile(EMAIL_REGEX);
