@@ -31,6 +31,14 @@ import java.util.zip.DataFormatException;
 import java.util.zip.Deflater;
 import java.util.zip.Inflater;
 
+/**
+ * AdminServicesImp class.
+ *
+ * This class implements the AdminServices interface.
+ *
+ * This class acts as the intermediary between the controllers
+ * and the repositories.
+ */
 @AllArgsConstructor
 @Service
 public class AdminServicesImp implements AdminServices {
@@ -45,16 +53,27 @@ public class AdminServicesImp implements AdminServices {
     private ImageRepo imgRepo;
     private UserServices userServices;
 
+    /**
+     * Constructor that uses an Invoice.
+     *
+     * @param invoice Invoice to be accepted.
+     */
     public void acceptBusinessOrder(Invoice invoice) {
 
     }
 
+    /**
+     * Creates an Account in the database.
+     *
+     * @param account Account to be created.
+     * @return Boolean true if created, false otherwise.
+     */
     public boolean createAccount(Account account) {
         return false;
     }
 
     /**
-     * Create a new discount
+     * Create a new discount.
      *
      * @param discount to add
      * @return <code>true</code> is successful, otherwise false
@@ -65,16 +84,29 @@ public class AdminServicesImp implements AdminServices {
         return true;
     }
 
+    /**
+     * Creates a Report in the database.
+     *
+     * @param type Report type.
+     * @param start Report start date.
+     * @param end Report end date.
+     */
     public void createReport(String type, Date start, Date end) {
 
     }
 
+    /**
+     * Declines a pending business order.
+     *
+     * @param id Invoice ID to be declined.
+     */
     public void declineBusinessOrder(Long id) {
 
     }
 
     /**
-     * Backup the Vezorla database
+     * Backup the Vezorla database.
+     *
      * Source: https://dzone.com/articles/how-to-backup-mysql-database-programmatically-usin
      *
      * @return <code>true</code> if successful
@@ -112,7 +144,7 @@ public class AdminServicesImp implements AdminServices {
     }
 
     /**
-     * Method to get all the products for admin view
+     * Method to get all the products for admin view.
      *
      * @param mapper for custom json
      * @return ObjectNode of custom json
@@ -151,7 +183,7 @@ public class AdminServicesImp implements AdminServices {
     }
 
     /**
-     * Method to get all the products for PO combo box
+     * Method to get all the products for PO combo box.
      *
      * @param mapper for custom json
      * @return ObjectNode of custom json
@@ -179,7 +211,7 @@ public class AdminServicesImp implements AdminServices {
     }
 
     /**
-     * Method to get all the warehouses for PO combo box
+     * Method to get all the warehouses for PO combo box.
      *
      * @param mapper for custom json
      * @return ObjectNode of custom json
@@ -208,8 +240,9 @@ public class AdminServicesImp implements AdminServices {
     }
 
     /**
-     * Create a new product in the Products table
-     * Will check if the product exists in the database
+     * Create a new product in the Products table.
+     *
+     * Will check if the product exists in the database.
      *
      * @param product product to create
      * @param session user session to grab the image
@@ -247,8 +280,9 @@ public class AdminServicesImp implements AdminServices {
     }
 
     /**
-     * Update a product
-     * Do not update a field if it is not present
+     * Update a product.
+     *
+     * Do not update a field if it is not present.
      *
      * @param product product to update
      * @param changed user sent product
@@ -290,7 +324,9 @@ public class AdminServicesImp implements AdminServices {
     }
 
     /**
-     * Fix date. Date comes in one day less so add one more day
+     * Fix date.
+     *
+     * Date comes in one day less so add one more day.
      *
      * @param date input
      * @return fixed date
@@ -305,7 +341,7 @@ public class AdminServicesImp implements AdminServices {
     }
 
     /**
-     * Parse price to remove any decimals and multiply it by 100 in the database
+     * Parse price to remove any decimals and multiply it by 100 in the database.
      *
      * @param inputPrice changed price
      * @return parsed price
@@ -319,7 +355,7 @@ public class AdminServicesImp implements AdminServices {
     }
 
     /**
-     * Save a product in the Products table
+     * Save a product in the Products table.
      *
      * @param product product to save
      * @return if it has been saved
@@ -330,7 +366,8 @@ public class AdminServicesImp implements AdminServices {
     }
 
     /**
-     * View a single order
+     * View a single order.
+     *
      * @param id invoice ID
      * @param mapper custom JSON
      * @return invoice in JSON format
@@ -367,16 +404,27 @@ public class AdminServicesImp implements AdminServices {
         return node;
     }
 
+    /**
+     * Gets all pending business orders from the database.
+     *
+     * @return List containing all pending Invoices.
+     */
     public List<Invoice> getPendingBusinessOrder() {
         return null;
     }
 
+    /**
+     * Gets a pending business orders from the database
+     * via id.
+     *
+     * @return Pending business order by id.
+     */
     public Invoice getPendingBusinessOrderById(Long id) {
         return null;
     }
 
     /**
-     * Method to save purchase order to database
+     * Method to save purchase order to database.
      *
      * @param purchaseOrder to save to database
      * @return purchase order saved to database
@@ -387,7 +435,7 @@ public class AdminServicesImp implements AdminServices {
     }
 
     /**
-     * Method to get the next PO num
+     * Method to get the next PO num.
      *
      * @param mapper for json
      * @return ObjectNode for json
@@ -507,7 +555,7 @@ public class AdminServicesImp implements AdminServices {
     }
 
     /**
-     * Restore the Vezorla database
+     * Restore the Vezorla database.
      *
      * @param file file to restore
      * @return <code>true</code> if successful
@@ -567,7 +615,7 @@ public class AdminServicesImp implements AdminServices {
     }
 
     /**
-     * Method to create and save warehouse to database
+     * Method to create and save warehouse to database.
      *
      * @param warehouse to save to database
      * @return <code>true</code> is successful, otherwise
@@ -583,7 +631,7 @@ public class AdminServicesImp implements AdminServices {
     }
 
     /**
-     * Compress the bytes of an image to persist into the database
+     * Compress the bytes of an image to persist into the database.
      *
      * @param data image data in bytes
      * @return the compressed bytes of the image
@@ -612,7 +660,7 @@ public class AdminServicesImp implements AdminServices {
     }
 
     /**
-     * Decompress the bytes of an image to display
+     * Decompress the bytes of an image to display.
      *
      * @param data image in bytes
      * @return bytes of the image decompressed
@@ -640,7 +688,7 @@ public class AdminServicesImp implements AdminServices {
     }
 
     /**
-     * Persist an image in the database
+     * Persist an image in the database.
      *
      * @param image  image to persist
      * @param prodId product image to update
@@ -656,9 +704,10 @@ public class AdminServicesImp implements AdminServices {
     }
 
     /**
-     * Update an image
+     * Update an image.
+     *
      * Go through the list of images and replace the oldest image
-     * Sorry we are out of time I know this is ugly
+     * Sorry we are out of time I know this is ugly.
      *
      * @param image  image to save
      * @param prodId product
@@ -741,7 +790,7 @@ public class AdminServicesImp implements AdminServices {
     }
 
     /**
-     * Get an image in the database
+     * Get an image in the database.
      *
      * @param id ID of the image
      * @return image
@@ -775,7 +824,7 @@ public class AdminServicesImp implements AdminServices {
     }
 
     /**
-     * Method to view all the clients
+     * Method to view all the clients.
      *
      * @param mapper to make the custom json
      * @return ObjectNode containing nodes for custom json
@@ -808,7 +857,7 @@ public class AdminServicesImp implements AdminServices {
     }
 
     /**
-     * Method to view a client
+     * Method to view a client.
      *
      * @param mapper to make the custom json
      * @return ObjectNode containing nodes for custom json

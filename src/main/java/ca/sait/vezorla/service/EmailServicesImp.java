@@ -5,7 +5,6 @@ import ca.sait.vezorla.exception.InvalidInputException;
 import ca.sait.vezorla.model.Invoice;
 import ca.sait.vezorla.model.LineItem;
 import ca.sait.vezorla.repository.LineItemRepo;
-import ca.sait.vezorla.service.EmailServices;
 import lombok.AllArgsConstructor;
 import org.springframework.mail.MailException;
 import org.springframework.mail.SimpleMailMessage;
@@ -15,7 +14,12 @@ import org.springframework.stereotype.Service;
 import java.util.List;
 
 /**
- * Service to send emails
+ * EmailServicesImp class.
+ *
+ * This class implements the EmailServices interface.
+ *
+ * This class acts as the intermediary between the controllers
+ * and the repositories.
  *
  * @author matthewjflee
  */
@@ -27,7 +31,7 @@ public class EmailServicesImp implements EmailServices {
     private LineItemRepo lineItemRepo;
 
     /**
-     * Send contact us email to vezorla.test@gmail.com
+     * Send contact us email to vezorla.test@gmail.com.
      *
      * @param senderEmail user's email
      * @param message message to send
@@ -52,7 +56,8 @@ public class EmailServicesImp implements EmailServices {
     }
 
     /**
-     * Send the user an email whenever they create an account
+     * Send the user an email whenever they create an account.
+     *
      * @param senderEmail user's email
      */
     public void sendCreateAccountEmail(String senderEmail) throws InvalidInputException {
@@ -66,10 +71,23 @@ public class EmailServicesImp implements EmailServices {
                 "See you soon!!");
     }
 
+    /**
+     * Sends the decline email.
+     *
+     * @param to Email to decline.
+     * @param additionText Message of the email.
+     */
     public void sendDeclineEmail(String to, String additionText) {
 
     }
 
+    /**
+     * Sends the forgot password email.
+     *
+     * @param email Email to send to.
+     * @param tempPassword Password to include in the email.
+     * @throws InvalidInputException If email inputs are invalid.
+     */
     public void sendForgotPassword(String email, String tempPassword) throws InvalidInputException {
 
         //Validate email
@@ -88,7 +106,8 @@ public class EmailServicesImp implements EmailServices {
     }
 
     /**
-     * Send invoice to user
+     * Send invoice to user.
+     *
      * @param to user's email
      * @param invoice user's invoice/receipt
      * @param total total cost
@@ -156,12 +175,18 @@ public class EmailServicesImp implements EmailServices {
         mailSender.send(mail);
     }
 
+    /**
+     * Sends the subscription emails.
+     *
+     * @param to Receivers email address
+     * @param additionText Message of the email.
+     */
     public void sendSubscriptionEmail(String to, String additionText) {
 
     }
 
     /**
-     * Verify email
+     * Verify email.
      *
      * @param email email to verify
      * @return if email is valid

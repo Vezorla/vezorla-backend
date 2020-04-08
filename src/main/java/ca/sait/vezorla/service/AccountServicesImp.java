@@ -10,7 +10,6 @@ import ca.sait.vezorla.repository.AccountRepo;
 import ca.sait.vezorla.repository.CartRepo;
 import ca.sait.vezorla.repository.InvoiceRepo;
 import ca.sait.vezorla.repository.LineItemRepo;
-import ca.sait.vezorla.service.AccountServices;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import com.fasterxml.jackson.databind.node.ArrayNode;
 import com.fasterxml.jackson.databind.node.ObjectNode;
@@ -22,6 +21,14 @@ import javax.transaction.Transactional;
 import java.util.List;
 import java.util.Optional;
 
+/**
+ * AccountServicesImp class.
+ *
+ * This class implements the AccountServices interface.
+ *
+ * This class acts as the intermediary between the controllers
+ * and the repositories.
+ */
 @Service
 @AllArgsConstructor
 public class AccountServicesImp implements AccountServices {
@@ -32,7 +39,7 @@ public class AccountServicesImp implements AccountServices {
     private LineItemRepo lineItemRepo;
 
     /**
-     * Find an account by email
+     * Find an account by email.
      *
      * @param email user's email
      * @return Account the account
@@ -42,12 +49,18 @@ public class AccountServicesImp implements AccountServices {
         return accountRepo.findById(email);
     }
 
+    /**
+     * Confirms the Account given the Account id.
+     *
+     * @param id Account ID.
+     * @return Boolean True if confirmed, false otherwise.
+     */
     public boolean confirmAccount(Long id) {
         return false;
     }
 
     /**
-     * Create and persist an account in the Accounts table
+     * Create and persist an account in the Accounts table.
      *
      * @param account to persist in database
      * @return boolean true if it was successfully added, otherwise false
@@ -59,7 +72,8 @@ public class AccountServicesImp implements AccountServices {
     }
 
     /**
-     * Save the account in the database
+     * Save the account in the database.
+     *
      * @param account account to save
      * @return if it was saved
      * @author matthewjflee
@@ -71,9 +85,11 @@ public class AccountServicesImp implements AccountServices {
     }
 
     /**
-     * Update the existing account with the fields
+     * Update the existing account with the fields.
+     *
      * The reason why this method has so many checks is if this is not done, it will replace the field with null
-     * in the accounts table
+     * in the accounts table.
+     *
      * @param account Account to be updated
      * @param changed new info
      * @return the account after updating
@@ -124,7 +140,8 @@ public class AccountServicesImp implements AccountServices {
     }
 
     /**
-     * Persist the user's cart in the database
+     * Persist the user's cart in the database.
+     *
      * @param cart cart to persist
      * @return if it was persisted
      * @author matthewjflee
@@ -135,7 +152,8 @@ public class AccountServicesImp implements AccountServices {
     }
 
     /**
-     * Find the most recent cart from the account
+     * Find the most recent cart from the account.
+     *
      * @param account account to find the cart from
      * @return cart
      * @author matthewjflee
@@ -149,7 +167,8 @@ public class AccountServicesImp implements AccountServices {
     }
 
     /**
-     * Create a new cart for a client
+     * Create a new cart for a client.
+     *
      * @param account account to create new cart for
      * @return cart
      * @author matthewjflee
@@ -164,7 +183,8 @@ public class AccountServicesImp implements AccountServices {
     }
 
     /**
-     * Persist line items in the database
+     * Persist line items in the database.
+     *
      * @param lineItems line items to save
      * @return if it was saved
      * @author matthewjflee
@@ -182,7 +202,8 @@ public class AccountServicesImp implements AccountServices {
     }
 
     /**
-     * Delete the line item from the database
+     * Delete the line item from the database.
+     *
      * @param lineNum line item to remove
      * @param cartID cart to delete line item from
      * @author matthewjflee
@@ -196,7 +217,7 @@ public class AccountServicesImp implements AccountServices {
 
     /**
      * Method to view an individual invoice
-     * from a client's account
+     * from a client's account.
      *
      * @param invoiceNum to view
      * @return the ObjectNode containing invoice information
@@ -228,7 +249,7 @@ public class AccountServicesImp implements AccountServices {
     /**
      * Method to get all the line items in an invoice into
      * an ArrayNode. Will be used in viewInvoice() to
-     * create the json.s
+     * create the json.
      *
      * @param invoice to access the line items
      * @param node    used to store the ArrayNode of line items.

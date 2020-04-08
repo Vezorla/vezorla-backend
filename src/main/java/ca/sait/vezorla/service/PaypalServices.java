@@ -11,8 +11,12 @@ import java.util.ArrayList;
 import java.util.List;
 
 /**
- * Services to handle Paypal
- * payments.
+ * PaypalServices class.
+ *
+ * This class acts as the intermediary between the controllers
+ * and the repositories.
+ *
+ * Contains all services to handle PayPal payments.
  *
  * Taken from: https://github.com/Java-Techie-jt/spring-boot-paypal-example/blob/master/src/main/java/com/javatechie/spring/paypal/api/PaypalService.java
  */
@@ -21,10 +25,28 @@ public class PaypalServices {
 
     private APIContext apiContext;
 
+    /**
+     * Constructor that requires the PayPal APIContext.
+     *
+     * @param apiContext PayPal API.
+     */
     public PaypalServices(APIContext apiContext){
         this.apiContext = apiContext;
     }
 
+    /**
+     * Creates a payment in the PayPal API.
+     *
+     * @param total Total of the order.
+     * @param currency Type of currency used.
+     * @param method Method of payment.
+     * @param intent Intent of the payment.
+     * @param description Order description.
+     * @param cancelUrl URL to cancel the payment.
+     * @param successUrl URL if payment is successful.
+     * @return Payment object used for payments.
+     * @throws PayPalRESTException If PayPal API error occurs.
+     */
     public Payment createPayment(
             Double total,
             String currency,
@@ -60,6 +82,14 @@ public class PaypalServices {
         return payment.create(apiContext);
     }
 
+    /**
+     * Executes the payment within the PayPal API.
+     *
+     * @param paymentId ID of payment.
+     * @param payerId ID of payer.
+     * @return Payment Object for payments.
+     * @throws PayPalRESTException If PayPal API error occurs.
+     */
     public Payment executePayment(String paymentId, String payerId) throws PayPalRESTException{
         Payment payment = new Payment();
         payment.setId(paymentId);
