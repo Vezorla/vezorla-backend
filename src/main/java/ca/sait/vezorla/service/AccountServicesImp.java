@@ -21,6 +21,14 @@ import javax.transaction.Transactional;
 import java.util.List;
 import java.util.Optional;
 
+/**
+ * AccountServicesImp class.
+ * <p>
+ * This class implements the AccountServices interface.
+ * <p>
+ * This class acts as the intermediary between the controllers
+ * and the repositories.
+ */
 @Service
 @AllArgsConstructor
 public class AccountServicesImp implements AccountServices {
@@ -31,7 +39,7 @@ public class AccountServicesImp implements AccountServices {
     private LineItemRepo lineItemRepo;
 
     /**
-     * Find an account by email
+     * Find an account by email.
      *
      * @param email user's email
      * @return Account the account
@@ -41,12 +49,18 @@ public class AccountServicesImp implements AccountServices {
         return accountRepo.findById(email);
     }
 
+    /**
+     * Confirms the Account given the Account id.
+     *
+     * @param id Account ID.
+     * @return Boolean True if confirmed, false otherwise.
+     */
     public boolean confirmAccount(Long id) {
         return false;
     }
 
     /**
-     * Create and persist an account in the Accounts table
+     * Create and persist an account in the Accounts table.
      *
      * @param account to persist in database
      * @return boolean true if it was successfully added, otherwise false
@@ -58,7 +72,8 @@ public class AccountServicesImp implements AccountServices {
     }
 
     /**
-     * Save the account in the database
+     * Save the account in the database.
+     *
      * @param account account to save
      * @return if it was saved
      * @author matthewjflee
@@ -70,9 +85,11 @@ public class AccountServicesImp implements AccountServices {
     }
 
     /**
-     * Update the existing account with the fields
+     * Update the existing account with the fields.
+     * <p>
      * The reason why this method has so many checks is if this is not done, it will replace the field with null
-     * in the accounts table
+     * in the accounts table.
+     *
      * @param account Account to be updated
      * @param changed new info
      * @return the account after updating
@@ -82,48 +99,49 @@ public class AccountServicesImp implements AccountServices {
     public Account updateAccount(Account account, Account changed) throws InvalidInputException {
         CustomerClientUtil customerClientUtil = new CustomerClientUtil();
 
-        if(changed.getEmail() != null)
+        if (changed.getEmail() != null)
             account.setEmail(changed.getEmail());
 
-        if(changed.getFirstName() != null)
+        if (changed.getFirstName() != null)
             account.setFirstName(changed.getFirstName());
 
-        if(changed.getLastName() != null)
+        if (changed.getLastName() != null)
             account.setLastName(changed.getLastName());
 
-        if(changed.getPhoneNum() != null) {
+        if (changed.getPhoneNum() != null) {
             customerClientUtil.validatePhoneNumber(changed.getPhoneNum());
             account.setPhoneNum(changed.getPhoneNum());
         }
 
-        if(changed.getAddress() != null)
+        if (changed.getAddress() != null)
             account.setAddress(changed.getAddress());
 
-        if(changed.getCity() != null)
+        if (changed.getCity() != null)
             account.setCity(changed.getCity());
 
-        if(changed.getProvince() != null)
+        if (changed.getProvince() != null)
             account.setProvince(changed.getProvince());
 
-        if(changed.getPassword() != null)
+        if (changed.getPassword() != null)
             account.setPassword(changed.getPassword());
 
-        if(changed.getPostalCode() != null) {
+        if (changed.getPostalCode() != null) {
             customerClientUtil.validatePostalCode(changed.getPostalCode());
             account.setPostalCode(changed.getPostalCode());
         }
 
-        if(changed.getCountry() != null)
+        if (changed.getCountry() != null)
             account.setCountry(changed.getCountry());
 
-        if(changed.getIsSubscript() != null)
+        if (changed.getIsSubscript() != null)
             account.setIsSubscript(changed.getIsSubscript());
 
         return account;
     }
 
     /**
-     * Persist the user's cart in the database
+     * Persist the user's cart in the database.
+     *
      * @param cart cart to persist
      * @return if it was persisted
      * @author matthewjflee
@@ -134,7 +152,8 @@ public class AccountServicesImp implements AccountServices {
     }
 
     /**
-     * Find the most recent cart from the account
+     * Find the most recent cart from the account.
+     *
      * @param account account to find the cart from
      * @return cart
      * @author matthewjflee
@@ -148,7 +167,8 @@ public class AccountServicesImp implements AccountServices {
     }
 
     /**
-     * Create a new cart for a client
+     * Create a new cart for a client.
+     *
      * @param account account to create new cart for
      * @return cart
      * @author matthewjflee
@@ -163,7 +183,8 @@ public class AccountServicesImp implements AccountServices {
     }
 
     /**
-     * Persist line items in the database
+     * Persist line items in the database.
+     *
      * @param lineItems line items to save
      * @return if it was saved
      * @author matthewjflee
@@ -181,9 +202,10 @@ public class AccountServicesImp implements AccountServices {
     }
 
     /**
-     * Delete the line item from the database
+     * Delete the line item from the database.
+     *
      * @param lineNum line item to remove
-     * @param cartID cart to delete line item from
+     * @param cartID  cart to delete line item from
      * @author matthewjflee
      */
     @Transactional
@@ -195,7 +217,7 @@ public class AccountServicesImp implements AccountServices {
 
     /**
      * Method to view an individual invoice
-     * from a client's account
+     * from a client's account.
      *
      * @param invoiceNum to view
      * @return the ObjectNode containing invoice information
@@ -227,7 +249,7 @@ public class AccountServicesImp implements AccountServices {
     /**
      * Method to get all the line items in an invoice into
      * an ArrayNode. Will be used in viewInvoice() to
-     * create the json.s
+     * create the json.
      *
      * @param invoice to access the line items
      * @param node    used to store the ArrayNode of line items.
@@ -267,7 +289,7 @@ public class AccountServicesImp implements AccountServices {
         Account account = (Account) session.getAttribute("ACCOUNT");
 
         //obtain all the invoices for account
-        List<Invoice> invoices = invoiceRepo.findAllByAccount_Email(account.getEmail());
+        List<Invoice> invoices = invoiceRepo.findAllByAccountEmail(account.getEmail());
 
         //create custom json
         ObjectNode node = mapper.createObjectNode();

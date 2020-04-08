@@ -12,7 +12,12 @@ import java.util.Calendar;
 import java.util.Optional;
 
 /**
- * Authentication services
+ * AuthenticationServicesImp services
+ *
+ * This class implements the AuthenticationServices interface.
+ *
+ * This class acts as the intermediary between the controllers
+ * and the repositories.
  *
  * @author matthewjflee
  */
@@ -25,7 +30,7 @@ public class AuthenticationServicesImp implements AuthenticationServices {
     private EmailServices emailServices;
 
     /**
-     * Generate a password for the user
+     * Generate a password for the user.
      *
      * @return generated password
      * @author kwistech
@@ -34,6 +39,14 @@ public class AuthenticationServicesImp implements AuthenticationServices {
         return "AceiteDeOlivaVezorla" + Calendar.getInstance().get(Calendar.DAY_OF_YEAR);
     }
 
+    /**
+     * Executes the forgot password use case.
+     *
+     * @param email Email to send reset password to.
+     * @return boolean true if successful, false otherwise.
+     * @throws InvalidInputException If forgot password inputs are
+     * invalid.
+     */
     public boolean forgotPassword(String email) throws InvalidInputException {
         Optional<Account> accountOptional = accountServices.findAccountByEmail(email);
 
@@ -52,7 +65,8 @@ public class AuthenticationServicesImp implements AuthenticationServices {
     }
 
     /**
-     * Check if the user's account is present
+     * Check if the user's account is present.
+     *
      * If it is, persist in session
      * If not, throw AccountNotFoundException
      *

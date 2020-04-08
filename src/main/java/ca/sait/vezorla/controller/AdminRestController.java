@@ -19,6 +19,16 @@ import java.util.Date;
 import java.util.List;
 import java.util.Optional;
 
+/**
+ * AdminRestController class.
+ *
+ * This class maps the frontend to the backend. It does
+ * so by implementing Spring RestController annotation.
+ *
+ * Lombok is used to reduce boilerplate code for constructors.
+ *
+ * @author matthewjflee
+ */
 @AllArgsConstructor
 @RestController
 @RequestMapping(AdminRestController.URL)
@@ -30,7 +40,7 @@ public class AdminRestController {
     private UserServices userServices;
 
     /**
-     * Method to get all the products for admin view
+     * Method to get all the products for admin view.
      *
      * @return String for the custom json
      * @throws JsonProcessingException thrown when there is an error parsing JSON
@@ -43,7 +53,7 @@ public class AdminRestController {
     }
 
     /**
-     * Method to get all the products for admin view
+     * Method to get all the products for PO for the admin view.
      *
      * @return String for the custom json
      * @throws JsonProcessingException thrown when there is an error parsing JSON
@@ -56,7 +66,7 @@ public class AdminRestController {
     }
 
     /**
-     * Method to get all the products for admin view
+     * Method to get all the Warehouses for PO for admin view.
      *
      * @return String for the custom json
      * @throws JsonProcessingException thrown when there is an error parsing JSON
@@ -69,7 +79,7 @@ public class AdminRestController {
     }
 
     /**
-     * View a single product
+     * View a single product.
      *
      * @param id ID of product
      * @return product info
@@ -83,7 +93,7 @@ public class AdminRestController {
     }
 
     /**
-     * Method to get the next PO num
+     * Method to get the next PO num.
      *
      * @return the json
      * @throws JsonProcessingException error when parsing JSON
@@ -96,11 +106,13 @@ public class AdminRestController {
     }
 
     /**
-     * Create a  new product in the database
+     * Create a new product in the database.
      *
      * @param product Product to create
+     * @param request HTTP request
      * @return <code>true</code> if saving is successful
      * Will throw a ProductAlreadyExistsException
+     * @throws InvalidInputException If Input is invalid
      * @author matthewjflee
      */
     @PostMapping("inventory/create")
@@ -111,7 +123,7 @@ public class AdminRestController {
     }
 
     /**
-     * Update a product
+     * Update a product.
      *
      * @param changed product to update
      * @return <code>true</code> if successful, <code>false</code> if not
@@ -128,10 +140,12 @@ public class AdminRestController {
     }
 
     /**
-     * Upload an image to the database
+     * Upload an image to the database.
      * Source: https://dzone.com/articles/upload-and-retrieve-filesimages-using-spring-boot
      *
      * @param file image
+     * @param request HTTP request
+     * @param prodId Product ID
      * @return if the image was persisted
      * @throws IOException thrown when compressing the bytes
      * @author matthewjflee
@@ -149,7 +163,7 @@ public class AdminRestController {
     }
 
     /**
-     * Get an image
+     * Get an image from the database.
      * Source: https://dzone.com/articles/upload-and-retrieve-filesimages-using-spring-boot
      *
      * @param id: ID of image
@@ -171,8 +185,8 @@ public class AdminRestController {
     }
 
     /**
-     * Create a new purchase order
-     * This will create lots
+     * Create a new purchase order.
+     * This method also will create Lots.
      *
      * @param body purchase order
      * @return <code>true</code> if it was created successfully
@@ -184,18 +198,36 @@ public class AdminRestController {
         return true;
     }
 
+    /**
+     * Gets a list of all the Invoices pending
+     * for business orders.
+     *
+     * Not implemented.
+     *
+     * @return List of all pending business orders.
+     */
     @GetMapping("business-order/pending")
     public List<Invoice> getPendingBusinessOrder() {
         return null;
     }
 
+    /**
+     * Creates a report given the type, start date
+     * and end date.
+     *
+     * Not implemented.
+     *
+     * @param type Type of the report.
+     * @param start Start date for the report.
+     * @param end End date for the report.
+     */
     @GetMapping("report/create")
     public void createReport(String type, Date start, Date end) {
 
     }
 
     /**
-     * Export the data in the Vezorla database
+     * Export the data in the Vezorla database.
      *
      * @return sql dump of data
      * @author jjrr1717
@@ -206,7 +238,7 @@ public class AdminRestController {
     }
 
     /**
-     * Method to create and save discount to database
+     * Method to create and save discount to database.
      *
      * @param discount to save
      * @return <code>true</code> if successful, otherwise
@@ -218,11 +250,12 @@ public class AdminRestController {
     }
 
     /**
-     * Method to create and save warehouse to database
+     * Method to create and save warehouse to database.
      *
      * @param warehouse to create and save
      * @return <code>true</code> if successful, otherwise
      * false.
+     * @throws InvalidInputException If input is invalid
      */
     @PostMapping("warehouse/create")
     public boolean createWarehouse(@RequestBody Warehouse warehouse) throws InvalidInputException {
@@ -230,10 +263,11 @@ public class AdminRestController {
     }
 
     /**
-     * Restore a previously taken backup to the Vezorla database
+     * Restore a previously taken backup to the Vezorla database.
      *
      * @param file file to restore the database with
      * @return <code>true</code> if it was successful
+     * @throws OutOfStockException If a product is out of stock
      * @author jjrr1717
      */
     @PostMapping("backup/restore")
@@ -241,6 +275,15 @@ public class AdminRestController {
         return adminServices.restoreBackup(file);
     }
 
+    /**
+     * Gets a specified order.
+     *
+     * @param id Order ID to get from the database.
+     * @return String Contains the order information.
+     * @throws JsonProcessingException If JSON does not
+     * process correctly.
+     * @author matthewjflee
+     */
     @GetMapping("orders/{id}")
     public String viewOrder(@PathVariable Long id) throws JsonProcessingException {
         ObjectMapper mapper = new ObjectMapper();
@@ -249,7 +292,7 @@ public class AdminRestController {
 
     /**
      * Method to view all the orders from the
-     * admin perspective
+     * admin perspective.
      *
      * @param request for the session
      * @return the json
@@ -264,7 +307,7 @@ public class AdminRestController {
     }
 
     /**
-     * Method to get admin email for the update admin account page
+     * Method to get admin email for the update admin account page.
      *
      * @param request for the session
      * @param mapper  for the json
@@ -280,9 +323,10 @@ public class AdminRestController {
     }
 
     /**
-     * Method to view all of the clients
+     * Method to view all of the clients.
      *
      * @return the clients to front-end
+     * @throws JsonProcessingException If JSON cannot be processed
      * @author jjrr1717
      */
     @GetMapping("clients")
@@ -292,9 +336,11 @@ public class AdminRestController {
     }
 
     /**
-     * Method to view a client
+     * Method to view a client.
      *
+     * @param email Client's email
      * @return the json of client to front end
+     * @throws JsonProcessingException If JSON cannot be processed
      * @author jjrr1717
      */
     @GetMapping("client/{email}")

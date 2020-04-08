@@ -12,16 +12,34 @@ import javax.persistence.PersistenceContext;
 import javax.transaction.Transactional;
 
 /**
+ * AccountDiscountRepo class.
+ *
+ * Repository classes are used to interact the the database
+ * via Spring and its annotations.
+ *
  * Repo class to interface with the AccountDiscount
  * bridging table.
  *
+ * @author matthewjflee, jjrr1717
  */
 @Repository
 public class AccountDiscountRepo {
 
+    /**
+     * EntityManager interacts with the persistence context.
+     */
     @PersistenceContext
     private EntityManager entityManager;
 
+    /**
+     * Transactional annotation
+     *
+     * Spring creates a proxy that implements the same interface(s)
+     * as the class you're annotating.
+     *
+     * @param accountDiscount AccountDiscount to add to the
+     *                        database.
+     */
     @Transactional
     public void insertWithQuery(AccountDiscount accountDiscount) {
         entityManager.createNativeQuery("INSERT INTO account_discount (account_email, discount_code) VALUES (?,?)")

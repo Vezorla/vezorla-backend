@@ -5,6 +5,9 @@ import ca.sait.vezorla.exception.InvalidInputException;
 import ca.sait.vezorla.exception.UnauthorizedException;
 import ca.sait.vezorla.model.*;
 import ca.sait.vezorla.repository.*;
+import ca.sait.vezorla.service.AccountServices;
+import ca.sait.vezorla.service.EmailServices;
+import ca.sait.vezorla.service.UserServices;
 import com.fasterxml.jackson.core.JsonProcessingException;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import com.fasterxml.jackson.databind.node.ArrayNode;
@@ -21,7 +24,12 @@ import java.util.List;
 import java.util.Optional;
 
 /**
- * User service
+ * UserServicesImp class.
+ *
+ * This class implements the UserServices interface.
+ *
+ * This class acts as the intermediary between the controllers
+ * and the repositories.
  *
  * @author matthewjflee, jjrr1717
  */
@@ -41,7 +49,7 @@ public class UserServicesImp implements UserServices {
     private ObjectMapper mapper;
 
     /**
-     * Return all products in the Products table
+     * Return all products in the Products table.
      *
      * @return array node of all products
      * @author jjrr1717
@@ -66,7 +74,7 @@ public class UserServicesImp implements UserServices {
     }
 
     /**
-     * Return a specified product
+     * Return a specified product.
      *
      * @param id Product ID
      * @return product
@@ -77,7 +85,7 @@ public class UserServicesImp implements UserServices {
     }
 
     /**
-     * Return a specified product
+     * Return a specified product.
      *
      * @param id product ID
      * @return product
@@ -101,7 +109,7 @@ public class UserServicesImp implements UserServices {
     }
 
     /**
-     * Return an array node of product info
+     * Return an array node of product info.
      *
      * @param ccu          format price
      * @param productsNode list to add to
@@ -133,7 +141,7 @@ public class UserServicesImp implements UserServices {
     }
 
     /**
-     * Get the customer's cart from the session
+     * Get the customer's cart from the session.
      *
      * @param session to access the cart
      * @return the cart
@@ -156,7 +164,7 @@ public class UserServicesImp implements UserServices {
     }
 
     /**
-     * Adding line item to cart
+     * Adding line item to cart.
      *
      * @param lineItems list of line items to set in the cart
      * @param cart      for the session
@@ -169,7 +177,7 @@ public class UserServicesImp implements UserServices {
     }
 
     /**
-     * Get the total quantity of all line items in the cart
+     * Get the total quantity of all line items in the cart.
      *
      * @param lineItems to count the total quantity in them
      * @return the quantity as a String
@@ -182,7 +190,7 @@ public class UserServicesImp implements UserServices {
     }
 
     /**
-     * Get the total quantity of the product from the Products database
+     * Get the total quantity of the product from the Products database.
      *
      * @param id the product's id to check.
      * @return the quantity
@@ -194,12 +202,12 @@ public class UserServicesImp implements UserServices {
     }
 
     /**
-     * Validate the order quantity before adding the product to the cart as a line item
+     * Validate the order quantity before adding the product to the cart as a line item.
      *
      * @param orderedQuantity the quantity wanted to add to the line item
      * @param inStockQuantity quantity currently in stock in database
-     * @return the difference. >=0 means there is enough stock. >0 means
-     * there is not enough stock.
+     * @return the difference. greater than or equal to zero means there is enough stock.
+     * Positive number means there is not enough stock.
      * @author matthewjflee, jjrr1717
      */
     public int validateOrderedQuantity(int orderedQuantity, int inStockQuantity) {
@@ -209,8 +217,9 @@ public class UserServicesImp implements UserServices {
     /**
      * Method to return the items out of stock that are on
      * an order.
+     *
      * Would have become out of stock sometime between the
-     * checkout process
+     * checkout process.
      *
      * @param cart    to check if any items are out of stock
      * @param session for the session
@@ -246,7 +255,7 @@ public class UserServicesImp implements UserServices {
     }
 
     /**
-     * Create a line item from the product for a customer
+     * Create a line item from the product for a customer.
      *
      * @param product  for the line item
      * @param quantity quantity for the line item
@@ -301,7 +310,6 @@ public class UserServicesImp implements UserServices {
 
         return -1;
     }
-
 
     /**
      * Method to update a line item that already exits in the cart.
@@ -378,7 +386,6 @@ public class UserServicesImp implements UserServices {
         return inStock;
 
     }
-
 
     /**
      * Remove a line item from the customer's cart
@@ -499,7 +506,7 @@ public class UserServicesImp implements UserServices {
     }
 
     /**
-     * Method to send information about the cart to the front-end
+     * Method to send information about the cart to the front-end.
      *
      * @param cart to view
      * @return ArrayNode containing the information for the cart to view
@@ -529,7 +536,7 @@ public class UserServicesImp implements UserServices {
 
     /**
      * Method to parse the json sent from
-     * the front end for the shipping information
+     * the front end for the shipping information.
      *
      * @param session user session
      * @return String boolean if account is created successfully for shipping info
@@ -550,7 +557,8 @@ public class UserServicesImp implements UserServices {
     }
 
     /**
-     * Create an account for the customer when they input shipping info and pesrsist in the Accounts table
+     * Create an account for the customer when they input shipping info and
+     * persists in the Accounts table.
      *
      * @param session user session
      * @param account customer info
@@ -701,7 +709,6 @@ public class UserServicesImp implements UserServices {
         }
     }
 
-
     /**
      * Method to obtain lots that contain
      * enough quantity to fulfill order.
@@ -763,7 +770,7 @@ public class UserServicesImp implements UserServices {
     }
 
     /**
-     * Method to save cart and line items to database
+     * Method to save cart and line items to database.
      *
      * @param session user session
      * @param invoice the line items belong to
@@ -786,7 +793,8 @@ public class UserServicesImp implements UserServices {
 
     /**
      * Apply line items to the invoice.
-     * Line items are found in the database
+     *
+     * Line items are found in the database.
      *
      * @param invoice the invoice to apply
      *                the line items to.
@@ -809,6 +817,7 @@ public class UserServicesImp implements UserServices {
      * @param account with information to fill fields
      * @param mapper  for the ObjectNode
      * @return Object node for custom json
+     * @author matthewjflee
      */
     public ObjectNode getUserInfo(Account account, ObjectMapper mapper) {
         //create custom json
@@ -855,7 +864,7 @@ public class UserServicesImp implements UserServices {
 
     /**
      * Method to save the discount used on
-     * a order to the Account_Discount table
+     * a order to the Account_Discount table.
      *
      * @param session for the session
      * @author jjrr1717
@@ -869,7 +878,7 @@ public class UserServicesImp implements UserServices {
     }
 
     /**
-     * Transactions after a successful payment occurs
+     * Transactions after a successful payment occurs.
      *
      * @param session user session
      * @throws UnauthorizedException thrown if there is no invoice in the session
@@ -904,7 +913,7 @@ public class UserServicesImp implements UserServices {
 
     /**
      * Method to get the banner message for the
-     * home page
+     * home page.
      *
      * @param mapper for the custom json
      * @return ObjectNode for custom json
@@ -921,7 +930,7 @@ public class UserServicesImp implements UserServices {
 
     /**
      * Method to return the top product sold by
-     * Vezorla
+     * Vezorla.
      *
      * @param mapper for the json
      * @return ObjectNode for the json
