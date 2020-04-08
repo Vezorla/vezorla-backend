@@ -35,6 +35,7 @@ public interface CartRepo extends JpaRepository<Cart, Long> {
      *
      * @param email user's email
      * @return list of all carts
+     * @author jjrr1717
      */
     @Query("FROM Cart c WHERE c.account.email = :email")
     List<Cart> findCartsByAccountEmail(@Param("email") String email);

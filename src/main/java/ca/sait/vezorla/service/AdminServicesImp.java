@@ -371,7 +371,7 @@ public class AdminServicesImp implements AdminServices {
      * @param id invoice ID
      * @param mapper custom JSON
      * @return invoice in JSON format
-     * @author jjrr1717
+     * @author matthewjflee
      */
     public ObjectNode viewOrder(Long id, ObjectMapper mapper) {
         Invoice invoice = null;

@@ -282,6 +282,7 @@ public class AdminRestController {
      * @return String Contains the order information.
      * @throws JsonProcessingException If JSON does not
      * process correctly.
+     * @author matthewjflee
      */
     @GetMapping("orders/{id}")
     public String viewOrder(@PathVariable Long id) throws JsonProcessingException {

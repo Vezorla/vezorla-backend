@@ -817,6 +817,7 @@ public class UserServicesImp implements UserServices {
      * @param account with information to fill fields
      * @param mapper  for the ObjectNode
      * @return Object node for custom json
+     * @author matthewjflee
      */
     public ObjectNode getUserInfo(Account account, ObjectMapper mapper) {
         //create custom json

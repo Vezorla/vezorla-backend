@@ -7,7 +7,6 @@ import ca.sait.vezorla.model.Account;
 import ca.sait.vezorla.model.Cart;
 import ca.sait.vezorla.model.Invoice;
 import ca.sait.vezorla.service.AccountServices;
-import ca.sait.vezorla.service.AuthenticationServices;
 import ca.sait.vezorla.service.EmailServices;
 import com.fasterxml.jackson.core.JsonProcessingException;
 import com.fasterxml.jackson.databind.ObjectMapper;
@@ -24,10 +23,10 @@ import java.util.Optional;
 
 /**
  * ClientRestController Class.
- *
+ * <p>
  * This class maps the frontend to the backend. It does
  * so by implementing Spring RestController annotation.
- *
+ * <p>
  * Lombok is used to reduce boilerplate code for constructors.
  *
  * @author matthewjflee
@@ -39,7 +38,6 @@ public class ClientRestController {
 
     protected static final String URL = "/api/client/";
 
-    private AuthenticationServices authenticationServices;
     private AccountServices accountServices;
     private EmailServices emailServices;
 
@@ -126,7 +124,7 @@ public class ClientRestController {
 
     /**
      * Gets a specified order.
-     *
+     * <p>
      * Not implemented.
      *
      * @param id Order ID to get from the database.
@@ -144,6 +142,7 @@ public class ClientRestController {
      * @param id of the invoice to view.
      * @return the invoice to front-end
      * @throws JsonProcessingException If JSON cannot be processed
+     * @author jjrr1717
      */
     @GetMapping("invoice/{id}")
     public String viewInvoice(@PathVariable Long id) throws JsonProcessingException {

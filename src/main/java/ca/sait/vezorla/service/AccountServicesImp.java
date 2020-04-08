@@ -23,9 +23,9 @@ import java.util.Optional;
 
 /**
  * AccountServicesImp class.
- *
+ * <p>
  * This class implements the AccountServices interface.
- *
+ * <p>
  * This class acts as the intermediary between the controllers
  * and the repositories.
  */
@@ -86,7 +86,7 @@ public class AccountServicesImp implements AccountServices {
 
     /**
      * Update the existing account with the fields.
-     *
+     * <p>
      * The reason why this method has so many checks is if this is not done, it will replace the field with null
      * in the accounts table.
      *
@@ -99,41 +99,41 @@ public class AccountServicesImp implements AccountServices {
     public Account updateAccount(Account account, Account changed) throws InvalidInputException {
         CustomerClientUtil customerClientUtil = new CustomerClientUtil();
 
-        if(changed.getEmail() != null)
+        if (changed.getEmail() != null)
             account.setEmail(changed.getEmail());
 
-        if(changed.getFirstName() != null)
+        if (changed.getFirstName() != null)
             account.setFirstName(changed.getFirstName());
 
-        if(changed.getLastName() != null)
+        if (changed.getLastName() != null)
             account.setLastName(changed.getLastName());
 
-        if(changed.getPhoneNum() != null) {
+        if (changed.getPhoneNum() != null) {
             customerClientUtil.validatePhoneNumber(changed.getPhoneNum());
             account.setPhoneNum(changed.getPhoneNum());
         }
 
-        if(changed.getAddress() != null)
+        if (changed.getAddress() != null)
             account.setAddress(changed.getAddress());
 
-        if(changed.getCity() != null)
+        if (changed.getCity() != null)
             account.setCity(changed.getCity());
 
-        if(changed.getProvince() != null)
+        if (changed.getProvince() != null)
             account.setProvince(changed.getProvince());
 
-        if(changed.getPassword() != null)
+        if (changed.getPassword() != null)
             account.setPassword(changed.getPassword());
 
-        if(changed.getPostalCode() != null) {
+        if (changed.getPostalCode() != null) {
             customerClientUtil.validatePostalCode(changed.getPostalCode());
             account.setPostalCode(changed.getPostalCode());
         }
 
-        if(changed.getCountry() != null)
+        if (changed.getCountry() != null)
             account.setCountry(changed.getCountry());
 
-        if(changed.getIsSubscript() != null)
+        if (changed.getIsSubscript() != null)
             account.setIsSubscript(changed.getIsSubscript());
 
         return account;
@@ -205,7 +205,7 @@ public class AccountServicesImp implements AccountServices {
      * Delete the line item from the database.
      *
      * @param lineNum line item to remove
-     * @param cartID cart to delete line item from
+     * @param cartID  cart to delete line item from
      * @author matthewjflee
      */
     @Transactional
