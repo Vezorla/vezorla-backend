@@ -253,6 +253,7 @@ public class Account implements Serializable {
      * @param phoneNum phone number
      * @param address address
      * @param city city
+     * @param province province
      * @param country country
      * @param postalCode postal
      */

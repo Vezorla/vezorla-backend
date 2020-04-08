@@ -128,6 +128,7 @@ public interface AdminServices {
      * Gets a pending business orders from the database
      * via id.
      *
+     * @param id Business order id
      * @return Pending business order by id.
      */
     Invoice getPendingBusinessOrderById(Long id);
@@ -216,6 +217,7 @@ public interface AdminServices {
      *
      * @param image  image to persist
      * @param prodId product image to update
+     * @param session User's session
      */
     void saveImage(Image image, Optional<Long> prodId, HttpSession session);
 
@@ -265,6 +267,7 @@ public interface AdminServices {
     /**
      * Method to view a client.
      *
+     * @param email Client email
      * @param mapper to make the custom json
      * @return ObjectNode containing nodes for custom json
      */

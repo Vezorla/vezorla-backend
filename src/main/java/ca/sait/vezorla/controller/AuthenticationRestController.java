@@ -39,7 +39,10 @@ public class AuthenticationRestController {
     /**
      * Find an account with that email and password.
      *
+     * @param body Contains the login information
+     * @param request HTTP request
      * @return email and role of client
+     * @throws JsonProcessingException If JSON cannot be processed
      * @author matthewjflee
      */
     @PostMapping("login")

@@ -38,7 +38,7 @@ public interface ProductRepo extends JpaRepository<Product, Long> {
      * Method to find a product by its name
      *
      * @param productName of the product to find
-     * @return Optional<Product> of the product found
+     * @return Optional of the product found
      * @author matthewjflee
      */
     Optional<Product> findByName(String productName);

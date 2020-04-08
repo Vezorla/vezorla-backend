@@ -109,8 +109,10 @@ public class AdminRestController {
      * Create a new product in the database.
      *
      * @param product Product to create
+     * @param request HTTP request
      * @return <code>true</code> if saving is successful
      * Will throw a ProductAlreadyExistsException
+     * @throws InvalidInputException If Input is invalid
      * @author matthewjflee
      */
     @PostMapping("inventory/create")
@@ -142,6 +144,8 @@ public class AdminRestController {
      * Source: https://dzone.com/articles/upload-and-retrieve-filesimages-using-spring-boot
      *
      * @param file image
+     * @param request HTTP request
+     * @param prodId Product ID
      * @return if the image was persisted
      * @throws IOException thrown when compressing the bytes
      * @author matthewjflee
@@ -251,6 +255,7 @@ public class AdminRestController {
      * @param warehouse to create and save
      * @return <code>true</code> if successful, otherwise
      * false.
+     * @throws InvalidInputException If input is invalid
      */
     @PostMapping("warehouse/create")
     public boolean createWarehouse(@RequestBody Warehouse warehouse) throws InvalidInputException {
@@ -262,6 +267,7 @@ public class AdminRestController {
      *
      * @param file file to restore the database with
      * @return <code>true</code> if it was successful
+     * @throws OutOfStockException If a product is out of stock
      * @author jjrr1717
      */
     @PostMapping("backup/restore")
@@ -319,6 +325,7 @@ public class AdminRestController {
      * Method to view all of the clients.
      *
      * @return the clients to front-end
+     * @throws JsonProcessingException If JSON cannot be processed
      * @author jjrr1717
      */
     @GetMapping("clients")
@@ -330,7 +337,9 @@ public class AdminRestController {
     /**
      * Method to view a client.
      *
+     * @param email Client's email
      * @return the json of client to front end
+     * @throws JsonProcessingException If JSON cannot be processed
      * @author jjrr1717
      */
     @GetMapping("client/{email}")

@@ -28,6 +28,7 @@ public interface DiscountRepo extends JpaRepository<Discount, String> {
      * Use custom query to find the valid discounts in the accounts_discount bridging table.
      *
      * @param date date to find
+     * @param email Discount email
      * @return List of discounts
      * @author jjrr1717, matthewjflee
      */

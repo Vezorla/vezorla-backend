@@ -286,7 +286,7 @@ public class AdminServicesImp implements AdminServices {
      *
      * @param product product to update
      * @param changed user sent product
-     * @return <code>true</code>> if successful
+     * @return <code>true</code> if successful
      * <code>false</code> if unsuccessful
      * @author matthewjflee
      */

@@ -54,6 +54,7 @@ public class CustomerRestController {
      * Get all products.
      *
      * @return List of all products
+     * @throws JsonProcessingException If JSON cannot be processed
      * @author jjrr1717
      */
     @GetMapping("inventory/products/all")
@@ -67,6 +68,7 @@ public class CustomerRestController {
      *
      * @param id ID of product
      * @return product
+     * @throws JsonProcessingException If JSON cannot be processed
      * @author matthewjflee, jjrr1717
      */
     @GetMapping("inventory/product/{id}")
@@ -95,6 +97,7 @@ public class CustomerRestController {
      * @param quantity quantity to add
      * @param request  user's request
      * @return line item created
+     * @throws JsonProcessingException If JSON cannot be processed
      * @author matthewjflee, jjrr1717
      */
     @RequestMapping(value = "cart/add/{id}", method = RequestMethod.PUT, produces = {"application/json"})
@@ -229,6 +232,12 @@ public class CustomerRestController {
      * Note that the RequestMapping annotation must contain
      * the values outlined in the code.
      *
+     * @param sendAccount Account to send to
+     * @param request HTTP request
+     * @throws JsonProcessingException If JSON is not processed
+     * @throws InvalidInputException If input is invalid
+     * @throws UnauthorizedException If user is unauthorized
+     * @return ResponseEntity contains the shipping info in a HTTP body
      * @author matthewjflee, jjrr1717
      */
     @RequestMapping(value = "/cart/checkout/shipping",
@@ -311,6 +320,8 @@ public class CustomerRestController {
      * If the user's account does not exist, create a new account and save to the Accounts table.
      *
      * @param email user's email to subscribe
+     * @return boolean true if subscribed, false otherwise
+     * @throws InvalidInputException If input is invalid
      * @author matthewjflee
      */
     @PostMapping("subscribe")
@@ -330,7 +341,10 @@ public class CustomerRestController {
      * Return all valid discounts associated with the customer/client.
      * This method will query the database for all valid discounts for the account.
      *
+     * @param request HTTP request
      * @return user's valid discounts
+     * @throws JsonProcessingException If JSON cannot be processed
+     * @throws UnauthorizedException If user in unauthorized
      * @author matthewjflee, jjrr1717
      */
     @GetMapping("discounts/get")
@@ -371,6 +385,7 @@ public class CustomerRestController {
      * @param request user request
      * @return user's order
      * @throws JsonProcessingException parsing error
+     * @throws UnauthorizedException If user is unauthorized
      * @author jjrr1717
      */
     @GetMapping("cart/review")
@@ -395,6 +410,8 @@ public class CustomerRestController {
      * <code>false</code> if email fails to send
      *
      * @param body user's email to Vezorla
+     * @return boolean true if successful, false otherwise
+     * @throws InvalidInputException If inut is invalid
      * @author matthewjflee
      */
     @PostMapping("contact-us")
@@ -431,6 +448,7 @@ public class CustomerRestController {
      *
      * @param success boolean if payment was successful
      * @param request for the session
+     * @return boolean true if successful, false otherwise
      * @throws UnauthorizedException if user is unauthorized
      * @throws InvalidInputException if phone number or postal code is invalid
      * @author jjrr1717

@@ -142,7 +142,8 @@ public class Product implements Serializable {
      *
      * Column cannot be null.
      *
-     * Number of product in database, must be >= 0.
+     * Number of product in database, must be greater than or
+     * equal to 0.
      *
      * Annotated to be a column within the database
      * table 'product'

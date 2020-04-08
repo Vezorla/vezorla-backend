@@ -206,8 +206,8 @@ public class UserServicesImp implements UserServices {
      *
      * @param orderedQuantity the quantity wanted to add to the line item
      * @param inStockQuantity quantity currently in stock in database
-     * @return the difference. >=0 means there is enough stock. >0 means
-     * there is not enough stock.
+     * @return the difference. greater than or equal to zero means there is enough stock.
+     * Positive number means there is not enough stock.
      * @author matthewjflee, jjrr1717
      */
     public int validateOrderedQuantity(int orderedQuantity, int inStockQuantity) {

@@ -44,6 +44,7 @@ public class PayPalController {
      * @param request the session
      * @return a String to redirect user
      * @throws UnauthorizedException if user is not authorized
+     * @throws InvalidInputException If input is invalid
      * @author jjrr1717
      */
     @PostMapping("/customer/cart/payment")

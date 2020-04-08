@@ -54,6 +54,7 @@ public interface AccountServices {
      * and the user's session..
      *
      * @param account Account to be saved.
+     * @param session User's session
      * @return Boolean True if saved, false otherwise.
      */
     boolean saveAccount(Account account, HttpSession session);

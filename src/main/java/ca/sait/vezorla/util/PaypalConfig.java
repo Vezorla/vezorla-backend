@@ -69,6 +69,7 @@ public class PaypalConfig {
      * the application.
      *
      * @return APIContext PayPal API.
+     * @throws PayPalRESTException If PayPal API runs an error.
      */
     @Bean
     public APIContext apiContext() throws PayPalRESTException {

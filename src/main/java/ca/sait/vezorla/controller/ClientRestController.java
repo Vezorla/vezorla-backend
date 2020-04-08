@@ -47,6 +47,8 @@ public class ClientRestController {
      * Create a new account.
      *
      * @param body: JSON sending email and password
+     * @return boolean true if created, false otherwise
+     * @throws InvalidInputException If input is invalid
      * @author matthewjflee
      */
     @PostMapping("create-account")
@@ -141,6 +143,7 @@ public class ClientRestController {
      *
      * @param id of the invoice to view.
      * @return the invoice to front-end
+     * @throws JsonProcessingException If JSON cannot be processed
      */
     @GetMapping("invoice/{id}")
     public String viewInvoice(@PathVariable Long id) throws JsonProcessingException {
@@ -152,7 +155,9 @@ public class ClientRestController {
      * Method to view the order history from
      * a client's account.
      *
+     * @param session User's session
      * @return the invoices to front-end
+     * @throws JsonProcessingException If JSON cannot be processed
      * @author jjrr1717
      */
     @GetMapping("order_history")
