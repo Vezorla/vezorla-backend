@@ -374,6 +374,7 @@ public class AdminServicesImp implements AdminServices {
      * @author matthewjflee
      */
     public ObjectNode viewOrder(Long id, ObjectMapper mapper) {
+        CustomerClientUtil ccu = new CustomerClientUtil();
         Invoice invoice = null;
         ObjectNode node = mapper.createObjectNode();
         Optional<Invoice> findInvoice = invoiceRepo.findById(id);
@@ -388,11 +389,11 @@ public class AdminServicesImp implements AdminServices {
         node.put("date", date);
         node.put("pickup", invoice.isPickup());
         node.put("shipped", invoice.isShipped());
-        node.put("shippingCost", invoice.getShippingCost());
-        node.put("subtotal", invoice.getSubtotal());
-        node.put("discount", invoice.getDiscount());
-        node.put("taxes", invoice.getTaxes());
-        node.put("total", invoice.getTotal());
+        node.put("shippingCost", ccu.formatAmount(invoice.getShippingCost()));
+        node.put("subtotal", ccu.formatAmount(invoice.getSubtotal()));
+        node.put("discount", ccu.formatAmount(invoice.getDiscount()));
+        node.put("taxes", ccu.formatAmount(invoice.getTaxes()));
+        node.put("total", ccu.formatAmount(invoice.getTotal()));
 
         node.put("email", account.getEmail());
         node.put("firstName", account.getFirstName());
