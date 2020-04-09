@@ -4,25 +4,24 @@ import ca.sait.vezorla.controller.util.CustomerClientUtil;
 import ca.sait.vezorla.exception.*;
 import ca.sait.vezorla.model.*;
 import ca.sait.vezorla.repository.*;
-import ca.sait.vezorla.service.AdminServices;
-import ca.sait.vezorla.service.UserServices;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import com.fasterxml.jackson.databind.node.ArrayNode;
 import com.fasterxml.jackson.databind.node.ObjectNode;
-import com.smattme.MysqlExportService;
-import com.smattme.MysqlImportService;
 import lombok.AllArgsConstructor;
+import org.apache.ibatis.jdbc.ScriptRunner;
 import org.json.JSONArray;
 import org.json.JSONObject;
 import org.springframework.stereotype.Service;
 import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.multipart.MultipartFile;
 
+import javax.mail.MessagingException;
 import javax.servlet.http.HttpSession;
-import java.io.ByteArrayOutputStream;
-import java.io.File;
-import java.io.IOException;
+import java.io.*;
+import java.sql.Connection;
+import java.sql.DriverManager;
 import java.sql.SQLException;
+import java.sql.Statement;
 import java.text.DateFormat;
 import java.text.ParseException;
 import java.text.SimpleDateFormat;
@@ -31,11 +30,12 @@ import java.util.zip.DataFormatException;
 import java.util.zip.Deflater;
 import java.util.zip.Inflater;
 
+
 /**
  * AdminServicesImp class.
- *
+ * <p>
  * This class implements the AdminServices interface.
- *
+ * <p>
  * This class acts as the intermediary between the controllers
  * and the repositories.
  */
@@ -52,6 +52,7 @@ public class AdminServicesImp implements AdminServices {
     private AccountRepo accountRepo;
     private ImageRepo imgRepo;
     private UserServices userServices;
+    private EmailServices emailServices;
 
     /**
      * Constructor that uses an Invoice.
@@ -87,9 +88,9 @@ public class AdminServicesImp implements AdminServices {
     /**
      * Creates a Report in the database.
      *
-     * @param type Report type.
+     * @param type  Report type.
      * @param start Report start date.
-     * @param end Report end date.
+     * @param end   Report end date.
      */
     public void createReport(String type, Date start, Date end) {
 
@@ -106,39 +107,78 @@ public class AdminServicesImp implements AdminServices {
 
     /**
      * Backup the Vezorla database.
-     *
+     * <p>
      * Source: https://dzone.com/articles/how-to-backup-mysql-database-programmatically-usin
      *
      * @return <code>true</code> if successful
      * @author jjrr1717, matthewjflee
      */
-    public boolean exportData() {
-        Properties properties = new Properties();
-        properties.setProperty(MysqlExportService.DB_NAME, "vezorla");
-        properties.setProperty(MysqlExportService.DB_USERNAME, "root");
-        properties.setProperty(MysqlExportService.DB_PASSWORD, "pass");
+    public boolean exportData() throws MessagingException {
+        String ip = "localhost";
+        String port = "3306";
+        String database = "vezorla";
+        String user = "root";
+        String pass = "pass";
+        String path = "C:\\Users\\783661\\Documents\\dumps\\";
 
+        String datePattern = "yyyy-MM-dd";
+        SimpleDateFormat sdf = new SimpleDateFormat(datePattern);
+        String date = sdf.format(new Date());
 
-        properties.setProperty(MysqlExportService.EMAIL_HOST, "smtp.gmail.com");
-        properties.setProperty(MysqlExportService.EMAIL_PORT, "587");
-        properties.setProperty(MysqlExportService.EMAIL_USERNAME, "vezorla.test@gmail.com");
-        properties.setProperty(MysqlExportService.EMAIL_PASSWORD, "NGB6DGZ98oXt6XmwxD7Q45povRzXHqGX8");
-        properties.setProperty(MysqlExportService.EMAIL_FROM, "vezorla.test@gmail.com");
-        properties.setProperty(MysqlExportService.EMAIL_TO, "vezorla.test@gmail.com");
+        path += "dump" + date + ".sql";
 
-        properties.setProperty(MysqlExportService.PRESERVE_GENERATED_ZIP, "true");
+        String dumpCommand = "C:\\Program Files\\MySQL\\MySQL Server 8.0\\bin\\mysqldump.exe " + database + " -h " + ip + " -u " + user + " -p" + pass
+                + " --ignore-table=vezorla.image --ignore-table=vezorla.spring_session_attributes --ignore-table=vezorla.spring_session";
+        Runtime rt = Runtime.getRuntime();
+        File file = new File(path);
 
-        //set the outputs temp dir
-        properties.setProperty(MysqlExportService.TEMP_DIR, new File("external").getPath());
-        MysqlExportService mysqlExportService = new MysqlExportService(properties);
-        mysqlExportService.getGeneratedZipFile();
+        PrintStream ps;
 
         try {
-            mysqlExportService.export();
-        } catch (IOException | ClassNotFoundException | SQLException ignore) {
+            PrintWriter pw = new PrintWriter(file);
+            pw.println("DROP TABLE IF EXISTS `spring_session`;");
+            pw.println("DROP TABLE IF EXISTS `spring_session_attributes`;");
+            pw.println("CREATE TABLE `spring_session` (\n" +
+                    "  `PRIMARY_ID` char(36) NOT NULL,\n" +
+                    "  `SESSION_ID` char(36) NOT NULL,\n" +
+                    "  `CREATION_TIME` bigint(20) NOT NULL,\n" +
+                    "  `LAST_ACCESS_TIME` bigint(20) NOT NULL,\n" +
+                    "  `MAX_INACTIVE_INTERVAL` int(11) NOT NULL,\n" +
+                    "  `EXPIRY_TIME` bigint(20) NOT NULL,\n" +
+                    "  `PRINCIPAL_NAME` varchar(100) DEFAULT NULL,\n" +
+                    "  PRIMARY KEY (`PRIMARY_ID`),\n" +
+                    "  UNIQUE KEY `SPRING_SESSION_IX1` (`SESSION_ID`),\n" +
+                    "  KEY `SPRING_SESSION_IX2` (`EXPIRY_TIME`),\n" +
+                    "  KEY `SPRING_SESSION_IX3` (`PRINCIPAL_NAME`)\n" +
+                    ");");
+            pw.println("CREATE TABLE `spring_session_attributes` (\n" +
+                    "  `SESSION_PRIMARY_ID` char(36) NOT NULL,\n" +
+                    "  `ATTRIBUTE_NAME` varchar(200) NOT NULL,\n" +
+                    "  `ATTRIBUTE_BYTES` blob NOT NULL,\n" +
+                    "  PRIMARY KEY (`SESSION_PRIMARY_ID`,`ATTRIBUTE_NAME`),\n" +
+                    "  CONSTRAINT `SPRING_SESSION_ATTRIBUTES_FK` FOREIGN KEY (`SESSION_PRIMARY_ID`) REFERENCES `spring_session` (`PRIMARY_ID`) ON DELETE CASCADE\n" +
+                    ");");
+
+            pw.close();
+
+            Process child = rt.exec(dumpCommand);
+            ps = new PrintStream(new FileOutputStream(file, true));
+            InputStream in = child.getInputStream();
+            int ch;
+            while ((ch = in.read()) != -1) {
+                ps.write(ch);
+                System.out.write(ch); //to view it by console
+            }
+
+            InputStream err = child.getErrorStream();
+            while ((ch = err.read()) != -1) {
+                System.out.write(ch);
+            }
+        } catch (Exception exc) {
+            exc.printStackTrace();
         }
 
-        mysqlExportService.clearTempFiles(false);
+        emailServices.sendBackupEmail(date, file);
 
         return true;
     }
@@ -241,7 +281,7 @@ public class AdminServicesImp implements AdminServices {
 
     /**
      * Create a new product in the Products table.
-     *
+     * <p>
      * Will check if the product exists in the database.
      *
      * @param product product to create
@@ -272,6 +312,7 @@ public class AdminServicesImp implements AdminServices {
             String price = parsePrice(product.getPrice());
             product.setPrice(price);
 
+
             productRepo.save(product);
         } else
             throw new ProductAlreadyExistsException();
@@ -281,7 +322,7 @@ public class AdminServicesImp implements AdminServices {
 
     /**
      * Update a product.
-     *
+     * <p>
      * Do not update a field if it is not present.
      *
      * @param product product to update
@@ -325,7 +366,7 @@ public class AdminServicesImp implements AdminServices {
 
     /**
      * Fix date.
-     *
+     * <p>
      * Date comes in one day less so add one more day.
      *
      * @param date input
@@ -368,7 +409,7 @@ public class AdminServicesImp implements AdminServices {
     /**
      * View a single order.
      *
-     * @param id invoice ID
+     * @param id     invoice ID
      * @param mapper custom JSON
      * @return invoice in JSON format
      * @author matthewjflee
@@ -562,23 +603,44 @@ public class AdminServicesImp implements AdminServices {
      * @return <code>true</code> if successful
      * @author jjrr1717, matthewjflee
      */
-    public boolean restoreBackup(MultipartFile file) throws OutOfStockException {
-        boolean result;
+    public boolean restoreBackup(MultipartFile file) {
+        //Convert MultipartFile to File
+        File convFile = new File(file.getOriginalFilename());
         try {
-            String sql = new String(file.getBytes());
-            result = MysqlImportService.builder()
-                    .setDatabase("vezorla")
-                    .setSqlString(sql)
-                    .setUsername("root")
-                    .setPassword("pass")
-                    .setDeleteExisting(true)
-                    .setDropExisting(true)
-                    .importDatabase();
-        } catch (SQLException | ClassNotFoundException | IOException | StringIndexOutOfBoundsException e) {
-            result = true;
+            convFile.createNewFile();
+            FileOutputStream fos = new FileOutputStream(convFile);
+            fos.write(file.getBytes());
+            fos.close();
+        } catch (IOException e) {
+            e.printStackTrace();
         }
 
-        return result;
+        //Run the sql script
+        try {
+            Class.forName("com.mysql.cj.jdbc.Driver");
+            Connection con = DriverManager.getConnection(
+                    "jdbc:mysql://localhost:3306/vezorla", "root", "pass");
+
+            try {
+                // Initialize object for ScripRunner
+                ScriptRunner sr = new ScriptRunner(con);
+
+                // Give the input file to Reader
+                Reader reader = new BufferedReader(
+                        new FileReader(convFile));
+
+                // Execute script
+                sr.runScript(reader);
+
+            } catch (Exception e) {
+                System.err.println("Failed to Execute"
+                        + " The error is " + e.getMessage());
+            }
+        } catch (ClassNotFoundException | SQLException e) {
+            e.printStackTrace();
+        }
+
+        return true;
     }
 
     /**
@@ -602,7 +664,7 @@ public class AdminServicesImp implements AdminServices {
         //loop through invoices to get invoice details
         for (Invoice invoice : invoices) {
             ObjectNode invoiceNode = invoiceNodes.objectNode();
-			invoiceNode.put("email", invoice.getAccount().getEmail());
+            invoiceNode.put("email", invoice.getAccount().getEmail());
             invoiceNode.put("invoiceNum", invoice.getInvoiceNum());
             invoiceNode.put("total", ccu.formatAmount(invoice.getTotal()));
             String date = invoice.getDate() + "";
@@ -706,7 +768,7 @@ public class AdminServicesImp implements AdminServices {
 
     /**
      * Update an image.
-     *
+     * <p>
      * Go through the list of images and replace the oldest image
      * Sorry we are out of time I know this is ugly.
      *
