@@ -121,7 +121,7 @@ public class AdminServicesImp implements AdminServices {
         String database = "vezorla";
         String user = "root";
         String pass = "pass";
-        String path = "C:\\Users\\783661\\Documents\\dumps\\";
+        String path = ".\\dump\\";
 
         String datePattern = "yyyy-MM-dd";
         SimpleDateFormat sdf = new SimpleDateFormat(datePattern);
@@ -176,11 +176,15 @@ public class AdminServicesImp implements AdminServices {
             while ((ch = err.read()) != -1) {
                 System.out.write(ch);
             }
+            ps.close();
         } catch (Exception exc) {
             exc.printStackTrace();
         }
 
         emailServices.sendBackupEmail(date, file);
+
+        //Delete file
+        file.delete();
 
         return true;
     }
