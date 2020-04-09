@@ -17,13 +17,13 @@ import java.util.Optional;
 
 /**
  * AdminServices interface.
- *
+ * <p>
  * This interface outlines the services as it relates to
  * Accounts.
- *
+ * <p>
  * This interface acts as the intermediary between the controllers
  * and the repositories.
- *
+ * <p>
  * Admin services.
  */
 public interface AdminServices {
@@ -54,9 +54,9 @@ public interface AdminServices {
     /**
      * Creates a report given specified parameters.
      *
-     * @param type Report type.
+     * @param type  Report type.
      * @param start Report start date.
-     * @param end Report end date.
+     * @param end   Report end date.
      */
     void createReport(String type, Date start, Date end);
 
@@ -97,7 +97,7 @@ public interface AdminServices {
      * @param session User's session.
      * @return Boolean true if created, false otherwise.
      * @throws InvalidInputException thrown if input is
-     * considered invalid.
+     *                               considered invalid.
      */
     boolean createProduct(Product product, HttpSession session) throws InvalidInputException;
 
@@ -154,7 +154,7 @@ public interface AdminServices {
      * Saves the lots to the database.
      *
      * @param lots Lots to be saved.
-     * @param po Purchase order of the lot.
+     * @param po   Purchase order of the lot.
      * @return Boolean true if saved, false otherwise.
      */
     boolean saveLots(List<Lot> lots, PurchaseOrder po);
@@ -162,7 +162,7 @@ public interface AdminServices {
     /**
      * Gets an order to be viewed.
      *
-     * @param id Order id to get.
+     * @param id     Order id to get.
      * @param mapper Object to contain order.
      * @return ObjectNode to contain order.
      */
@@ -172,7 +172,7 @@ public interface AdminServices {
      * Gets an order to be viewed with admin
      * privileges.
      *
-     * @param mapper Object to contain order.
+     * @param mapper  Object to contain order.
      * @param session User session.
      * @return ObjectNode to contain order.
      */
@@ -183,10 +183,8 @@ public interface AdminServices {
      *
      * @param file Backup file.
      * @return Boolean true if restored, false otherwise.
-     * @throws OutOfStockException If a product in the restore is
-     * out of stock.
      */
-    boolean restoreBackup(MultipartFile file) throws OutOfStockException;
+    boolean restoreBackup(MultipartFile file);
 
     /**
      * Creates a warehouse in the database.
@@ -216,8 +214,8 @@ public interface AdminServices {
     /**
      * Persist an image in the database
      *
-     * @param image  image to persist
-     * @param prodId product image to update
+     * @param image   image to persist
+     * @param prodId  product image to update
      * @param session User's session
      */
     void saveImage(Image image, Optional<Long> prodId, HttpSession session);
@@ -268,7 +266,7 @@ public interface AdminServices {
     /**
      * Method to view a client.
      *
-     * @param email Client email
+     * @param email  Client email
      * @param mapper to make the custom json
      * @return ObjectNode containing nodes for custom json
      */

@@ -79,6 +79,13 @@ public class EmailServicesImp implements EmailServices {
         mailSender.send(mail);
     }
 
+    /**
+     * Send admin an email with the backup
+     * @param date date of backup
+     * @param file sql script
+     * @throws MessagingException Cannot send email Minh is sorry
+     * @author matthewjflee
+     */
     public void sendBackupEmail(String date, File file) throws MessagingException {
         MimeMessage msg = mailSender.createMimeMessage();
         MimeMessageHelper helper = new MimeMessageHelper(msg, true);
@@ -87,7 +94,6 @@ public class EmailServicesImp implements EmailServices {
         helper.setSubject(date + " VEZORLA BACKUP");
         helper.setText(date + " VEZORLA BACKUP\n\nPlease see attached.");
 
-//        FileSystemResource file = new FileSystemResource(path);
         helper.addAttachment(date + " VEZORLA BACKUP.sql", file);
 
         mailSender.send(msg);

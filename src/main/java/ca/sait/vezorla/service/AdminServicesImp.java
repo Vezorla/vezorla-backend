@@ -7,8 +7,8 @@ import ca.sait.vezorla.repository.*;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import com.fasterxml.jackson.databind.node.ArrayNode;
 import com.fasterxml.jackson.databind.node.ObjectNode;
-import com.smattme.MysqlImportService;
 import lombok.AllArgsConstructor;
+import org.apache.ibatis.jdbc.ScriptRunner;
 import org.json.JSONArray;
 import org.json.JSONObject;
 import org.springframework.stereotype.Service;
@@ -18,7 +18,10 @@ import org.springframework.web.multipart.MultipartFile;
 import javax.mail.MessagingException;
 import javax.servlet.http.HttpSession;
 import java.io.*;
+import java.sql.Connection;
+import java.sql.DriverManager;
 import java.sql.SQLException;
+import java.sql.Statement;
 import java.text.DateFormat;
 import java.text.ParseException;
 import java.text.SimpleDateFormat;
@@ -26,6 +29,7 @@ import java.util.*;
 import java.util.zip.DataFormatException;
 import java.util.zip.Deflater;
 import java.util.zip.Inflater;
+
 
 /**
  * AdminServicesImp class.
@@ -599,23 +603,44 @@ public class AdminServicesImp implements AdminServices {
      * @return <code>true</code> if successful
      * @author jjrr1717, matthewjflee
      */
-    public boolean restoreBackup(MultipartFile file) throws OutOfStockException {
-        boolean result;
+    public boolean restoreBackup(MultipartFile file) {
+        //Convert MultipartFile to File
+        File convFile = new File(file.getOriginalFilename());
         try {
-            String sql = new String(file.getBytes());
-            result = MysqlImportService.builder()
-                    .setDatabase("vezorla")
-                    .setSqlString(sql)
-                    .setUsername("root")
-                    .setPassword("pass")
-                    .setDeleteExisting(true)
-                    .setDropExisting(true)
-                    .importDatabase();
-        } catch (SQLException | ClassNotFoundException | IOException | StringIndexOutOfBoundsException e) {
-            result = true;
+            convFile.createNewFile();
+            FileOutputStream fos = new FileOutputStream(convFile);
+            fos.write(file.getBytes());
+            fos.close();
+        } catch (IOException e) {
+            e.printStackTrace();
         }
 
-        return result;
+        //Run the sql script
+        try {
+            Class.forName("com.mysql.cj.jdbc.Driver");
+            Connection con = DriverManager.getConnection(
+                    "jdbc:mysql://localhost:3306/vezorla", "root", "pass");
+
+            try {
+                // Initialize object for ScripRunner
+                ScriptRunner sr = new ScriptRunner(con);
+
+                // Give the input file to Reader
+                Reader reader = new BufferedReader(
+                        new FileReader(convFile));
+
+                // Execute script
+                sr.runScript(reader);
+
+            } catch (Exception e) {
+                System.err.println("Failed to Execute"
+                        + " The error is " + e.getMessage());
+            }
+        } catch (ClassNotFoundException | SQLException e) {
+            e.printStackTrace();
+        }
+
+        return true;
     }
 
     /**

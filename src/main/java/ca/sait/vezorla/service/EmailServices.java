@@ -36,6 +36,12 @@ public interface EmailServices {
      */
     void sendCreateAccountEmail(String senderEmail) throws InvalidInputException;
 
+    /**
+     * Send admin an email with the backup
+     * @param date date of backup
+     * @param file sql script
+     * @throws MessagingException Cannot send email Minh is sorry
+     */
     void sendBackupEmail(String date, File file) throws MessagingException;
 
     /**
