@@ -12,6 +12,7 @@ import lombok.AllArgsConstructor;
 import org.springframework.web.bind.annotation.*;
 import org.springframework.web.multipart.MultipartFile;
 
+import javax.mail.MessagingException;
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpSession;
 import java.io.IOException;
@@ -233,7 +234,7 @@ public class AdminRestController {
      * @author jjrr1717
      */
     @GetMapping("backup/export")
-    public boolean exportData() {
+    public boolean exportData() throws MessagingException {
         return adminServices.exportData();
     }
 

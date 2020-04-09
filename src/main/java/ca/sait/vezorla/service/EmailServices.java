@@ -3,6 +3,9 @@ package ca.sait.vezorla.service;
 import ca.sait.vezorla.exception.InvalidInputException;
 import ca.sait.vezorla.model.Invoice;
 
+import javax.mail.MessagingException;
+import java.io.File;
+
 /**
  * EmailServices interface.
  *
@@ -32,6 +35,8 @@ public interface EmailServices {
      * @throws InvalidInputException If sender inputs are invalid.
      */
     void sendCreateAccountEmail(String senderEmail) throws InvalidInputException;
+
+    void sendBackupEmail(String date, File file) throws MessagingException;
 
     /**
      * Sends the decline email.

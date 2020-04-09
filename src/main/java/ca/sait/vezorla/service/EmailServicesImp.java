@@ -6,11 +6,16 @@ import ca.sait.vezorla.model.Invoice;
 import ca.sait.vezorla.model.LineItem;
 import ca.sait.vezorla.repository.LineItemRepo;
 import lombok.AllArgsConstructor;
+import org.springframework.core.io.FileSystemResource;
 import org.springframework.mail.MailException;
 import org.springframework.mail.SimpleMailMessage;
 import org.springframework.mail.javamail.JavaMailSender;
+import org.springframework.mail.javamail.MimeMessageHelper;
 import org.springframework.stereotype.Service;
 
+import javax.mail.MessagingException;
+import javax.mail.internet.MimeMessage;
+import java.io.File;
 import java.util.List;
 
 /**
@@ -59,6 +64,7 @@ public class EmailServicesImp implements EmailServices {
      * Send the user an email whenever they create an account.
      *
      * @param senderEmail user's email
+     * @author matthewjflee
      */
     public void sendCreateAccountEmail(String senderEmail) throws InvalidInputException {
         verifyEmail(senderEmail);
@@ -69,6 +75,22 @@ public class EmailServicesImp implements EmailServices {
         mail.setText("Welcome to Vezorla!" + "\n\n" +
                 "Please login at: https://www.vezorla.ca"+ "\n\n" +
                 "See you soon!!");
+
+        mailSender.send(mail);
+    }
+
+    public void sendBackupEmail(String date, File file) throws MessagingException {
+        MimeMessage msg = mailSender.createMimeMessage();
+        MimeMessageHelper helper = new MimeMessageHelper(msg, true);
+
+        helper.setTo("vezorla.test@gmail.com");
+        helper.setSubject(date + " VEZORLA BACKUP");
+        helper.setText(date + " VEZORLA BACKUP\n\nPlease see attached.");
+
+//        FileSystemResource file = new FileSystemResource(path);
+        helper.addAttachment(date + " VEZORLA BACKUP.sql", file);
+
+        mailSender.send(msg);
     }
 
     /**

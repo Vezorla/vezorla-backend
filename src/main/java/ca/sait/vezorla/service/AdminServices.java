@@ -9,6 +9,7 @@ import com.fasterxml.jackson.databind.ObjectMapper;
 import com.fasterxml.jackson.databind.node.ObjectNode;
 import org.springframework.web.multipart.MultipartFile;
 
+import javax.mail.MessagingException;
 import javax.servlet.http.HttpSession;
 import java.util.Date;
 import java.util.List;
@@ -71,7 +72,7 @@ public interface AdminServices {
      *
      * @return boolean true if exported, false otherwise.
      */
-    boolean exportData();
+    boolean exportData() throws MessagingException;
 
     /**
      * Returns all products in the database.
