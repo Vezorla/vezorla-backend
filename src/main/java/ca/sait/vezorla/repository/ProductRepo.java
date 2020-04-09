@@ -4,9 +4,8 @@
  */
 package ca.sait.vezorla.repository;
 
-import org.springframework.data.jpa.repository.JpaRepository;
-
 import ca.sait.vezorla.model.Product;
+import org.springframework.data.jpa.repository.JpaRepository;
 import org.springframework.data.jpa.repository.Query;
 import org.springframework.data.repository.query.Param;
 import org.springframework.stereotype.Repository;
@@ -15,10 +14,10 @@ import java.util.Optional;
 
 /**
  * ProductRepo interface.
- *
+ * <p>
  * Repository interfaces are used to interact the the database
  * via Spring (JPARepository) and its annotations.
- *
+ * <p>
  * Repository to interact with the Products table.
  */
 @Repository

@@ -20,11 +20,11 @@ import java.util.List;
 
 /**
  * Discount class.
- *
+ * <p>
  * This class models a table within the database. As such,
  * each variable represents a column and any methods within this
  * class manipulate these variables.
- *
+ * <p>
  * Constructors are overloaded to provide the functionality
  * needed within the application.
  *
@@ -39,7 +39,7 @@ public class Discount implements Serializable {
 
     /**
      * Discount code.
-     *
+     * <p>
      * Annotated to be the Primary Key for the database
      * table 'discount'
      */
@@ -48,7 +48,7 @@ public class Discount implements Serializable {
 
     /**
      * Discount type.
-     *
+     * <p>
      * Annotated to be a column within the database
      * table 'discount'
      */
@@ -57,9 +57,9 @@ public class Discount implements Serializable {
 
     /**
      * Discount percent.
-     *
+     * <p>
      * Minimum value is zero.
-     *
+     * <p>
      * Annotated to be a column within the database
      * table 'discount'
      */
@@ -69,9 +69,9 @@ public class Discount implements Serializable {
 
     /**
      * Discount highlight boolean.
-     *
+     * <p>
      * Determines if the discount is to be used.
-     *
+     * <p>
      * Annotated to be a column within the database
      * table 'discount'
      */
@@ -81,16 +81,16 @@ public class Discount implements Serializable {
 
     /**
      * Discount banner message.
-     *
+     * <p>
      * Annotated to be a column within the database
      * table 'discount'
      */
-    @Column(name="banner_message")
+    @Column(name = "banner_message")
     private String bannerMessage;
 
     /**
      * Discount description.
-     *
+     * <p>
      * Annotated to be a column within the database
      * table 'discount'
      */
@@ -99,9 +99,9 @@ public class Discount implements Serializable {
 
     /**
      * Discount start date.
-     *
+     * <p>
      * Dates enforce activation and expiry times.
-     *
+     * <p>
      * Annotated to be a column within the database
      * table 'discount'
      */
@@ -110,9 +110,9 @@ public class Discount implements Serializable {
 
     /**
      * Discount end date.
-     *
+     * <p>
      * Dates enforce activation and expiry times.
-     *
+     * <p>
      * Annotated to be a column within the database
      * table 'discount'
      */
@@ -121,7 +121,7 @@ public class Discount implements Serializable {
 
     /**
      * Discount minimum order value.
-     *
+     * <p>
      * Annotated to be a column within the database
      * table 'discount'
      */
@@ -130,7 +130,7 @@ public class Discount implements Serializable {
 
     /**
      * Discount active boolean.
-     *
+     * <p>
      * Annotated to be a column within the database
      * table 'discount'
      */
@@ -140,12 +140,12 @@ public class Discount implements Serializable {
 
     /**
      * Discount product.
-     *
+     * <p>
      * Product to have discount on.
-     *
+     * <p>
      * Mapped by a many-to-one relationship within
      * the database.
-     *
+     * <p>
      * Annotated to be a column within the database
      * table 'discount'
      */
@@ -155,12 +155,12 @@ public class Discount implements Serializable {
 
     /**
      * Discount accountDiscounts.
-     *
+     * <p>
      * Maps discount code as foreign key in AccountDiscount.
-     *
+     * <p>
      * Mapped by a one-to-many relationship within
      * the database.
-     *
+     * <p>
      * Annotated to be a column within the database
      * table 'discount'
      */
@@ -170,11 +170,11 @@ public class Discount implements Serializable {
     /**
      * Constructor for a Discount.
      *
-     * @param code Discount code.
+     * @param code        Discount code.
      * @param description Description of the Discount.
-     * @param percent Percentage of the Discount.
+     * @param percent     Percentage of the Discount.
      */
-    public Discount(String code, String description, float percent){
+    public Discount(String code, String description, float percent) {
         this.code = code;
         this.description = description;
         this.percent = percent;

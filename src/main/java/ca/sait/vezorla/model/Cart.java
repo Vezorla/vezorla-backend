@@ -17,14 +17,14 @@ import java.util.List;
 
 /**
  * Cart class.
- *
+ * <p>
  * This class models a table within the database. As such,
  * each variable represents a column and any methods within this
  * class manipulate these variables.
- *
+ * <p>
  * Constructors are overloaded to provide the functionality
  * needed within the application.
- *
+ * <p>
  * User's cart.
  *
  * @author matthewjflee, jjrr1717
@@ -37,7 +37,7 @@ public class Cart implements Serializable {
 
     /**
      * Cart order number.
-     *
+     * <p>
      * Annotated to be the Primary Key for the database
      * table 'cart'
      */
@@ -48,10 +48,10 @@ public class Cart implements Serializable {
 
     /**
      * Cart account number.
-     *
+     * <p>
      * Annotated as a column within the database
      * table 'cart'
-     *
+     * <p>
      * Mapped by a many-to-one relationship within
      * the database.
      */
@@ -61,7 +61,7 @@ public class Cart implements Serializable {
 
     /**
      * Cart account.
-     *
+     * <p>
      * Annotated as a column within the database
      * table 'cart'
      */
@@ -70,10 +70,10 @@ public class Cart implements Serializable {
 
     /**
      * Cart line items.
-     *
+     * <p>
      * Annotated as a column within the database
      * table 'cart'
-     *
+     * <p>
      * Mapped by a one-to-many relationship within
      * the database.
      */

@@ -14,13 +14,13 @@ import java.util.Optional;
 
 /**
  * UserServices interface.
- *
+ * <p>
  * This interface outlines the services as it relates to
  * Authentication.
- *
+ * <p>
  * This interface acts as the intermediary between the controllers
  * and the repositories.
- *
+ * <p>
  * Services for customers and clients.
  *
  * @author jjrr1717, matthewjflee
@@ -38,7 +38,7 @@ public interface UserServices {
     /**
      * Gets a product to display to the user.
      *
-     * @param id Product id
+     * @param id     Product id
      * @param mapper Object to convert products into JSON.
      * @return Node that contains all the products.
      */
@@ -66,7 +66,7 @@ public interface UserServices {
      * Gets the lots that have enough product
      * to fulfill an order.
      *
-     * @param qty Number required to fulfill an order
+     * @param qty     Number required to fulfill an order
      * @param product Product to get for the order
      * @return Lost of all the lots that can fulfill
      * the order.
@@ -76,8 +76,8 @@ public interface UserServices {
     /**
      * Removes a line item from a user's cart.
      *
-     * @param id LineItem id to remove
-     * @param cart Cart to remove from
+     * @param id      LineItem id to remove
+     * @param cart    Cart to remove from
      * @param session User's session that holds the cart
      * @return boolean true if removed, false otherwise
      */
@@ -86,10 +86,10 @@ public interface UserServices {
     /**
      * Update a line item in the Cart.
      *
-     * @param id LineItem id to remove
+     * @param id       LineItem id to remove
      * @param quantity Quantity of the line item
-     * @param cart Cart to remove from
-     * @param session User's session that holds the cart
+     * @param cart     Cart to remove from
+     * @param session  User's session that holds the cart
      * @return boolean true if updated, false otherwise
      */
     boolean updateLineItem(long id, int quantity, Cart cart, HttpSession session);
@@ -106,8 +106,8 @@ public interface UserServices {
      * Adds line items to a users cart.
      *
      * @param lineItems LineItem to add.
-     * @param cart Cart to add to.
-     * @param session User's session to update.
+     * @param cart      Cart to add to.
+     * @param session   User's session to update.
      */
     void addLineItemToSessionCart(List<LineItem> lineItems, Cart cart, HttpSession session);
 
@@ -140,9 +140,9 @@ public interface UserServices {
     /**
      * Creates a line item in a user's Cart.
      *
-     * @param product Product to add
+     * @param product  Product to add
      * @param quantity Quantity of product to add
-     * @param cart User's Cart to add to
+     * @param cart     User's Cart to add to
      * @return List of line items for the Cart
      */
     List<LineItem> createLineItem(Product product, int quantity, Cart cart);
@@ -150,7 +150,7 @@ public interface UserServices {
     /**
      * Gets the selected discount for the user's order.
      *
-     * @param code Discount code
+     * @param code    Discount code
      * @param session User's session to store discount
      */
     void getSelectedDiscount(String code, HttpSession session);
@@ -169,17 +169,17 @@ public interface UserServices {
      * @param session User's session
      * @param account Account to get information from
      * @return String Shipping information
-     * @throws InvalidInputException If the shipping information
-     * is invalid
+     * @throws InvalidInputException   If the shipping information
+     *                                 is invalid
      * @throws JsonProcessingException If the shipping information
-     * cannot be converted to JSON
+     *                                 cannot be converted to JSON
      */
     String getShippingInfo(HttpSession session, Account account) throws InvalidInputException, JsonProcessingException;
 
     /**
      * Creates the discount code and percentage.
      *
-     * @param session User's session
+     * @param session   User's session
      * @param arrayNode Object to convert discount code to
      *                  JSON
      * @return ArrayNode Object to convert discount code to
@@ -191,10 +191,10 @@ public interface UserServices {
      * Gets all the information to be displays on the
      * Review Order Page.
      *
-     * @param session User's session
+     * @param session       User's session
      * @param mainArrayNode Contains all information
      *                      to be displayed
-     * @param cart User's Cart
+     * @param cart          User's Cart
      * @return Contains all information to be displayed
      */
     ArrayNode reviewOrder(HttpSession session, ArrayNode mainArrayNode, Cart cart);
@@ -203,7 +203,7 @@ public interface UserServices {
      * Returns the items from an order to the database
      * that are out of stock.
      *
-     * @param cart User's Cart
+     * @param cart    User's Cart
      * @param session User's session
      * @return Contains all the out of sock items
      */
@@ -242,13 +242,13 @@ public interface UserServices {
 
     /**
      * Gets all the user's shipping information.
-     *
+     * <p>
      * Note: only gets this information if the user
      * has an account or are a returning customer.
      *
      * @param account User's account
-     * @param mapper Contains all the users shipping
-     *               information
+     * @param mapper  Contains all the users shipping
+     *                information
      * @return Contains all the users shipping information
      * in JSON
      */
@@ -273,7 +273,7 @@ public interface UserServices {
     /**
      * Contains all the methods that will be called when a
      * successful transaction occurs.
-     *
+     * <p>
      * Set Invoice to null
      * Save the invoice
      * decrease the inventory
@@ -290,7 +290,7 @@ public interface UserServices {
     /**
      * Checks to see if a LineItem is in stock.
      *
-     * @param id LineItem id
+     * @param id         LineItem id
      * @param updatedQty New quantity
      * @return boolean true if in stock, false otherwise
      */

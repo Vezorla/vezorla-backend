@@ -8,10 +8,10 @@ import java.util.Optional;
 
 /**
  * AuthenticationServices interface.
- *
+ * <p>
  * This interface outlines the services as it relates to
  * Authentication.
- *
+ * <p>
  * This interface acts as the intermediary between the controllers
  * and the repositories.
  *
@@ -32,16 +32,16 @@ public interface AuthenticationServices {
      * @param email Email to send reset password to.
      * @return boolean true if successful, false otherwise.
      * @throws InvalidInputException If forgot password inputs are
-     * invalid.
+     *                               invalid.
      */
     boolean forgotPassword(String email) throws InvalidInputException;
 
     /**
      * Handles account logins.
      *
-     * @param email Account email.
+     * @param email    Account email.
      * @param password Account password.
-     * @param session Session for the login.
+     * @param session  Session for the login.
      * @return Optional list containing the Account if found, else
      * null inside the list.
      */

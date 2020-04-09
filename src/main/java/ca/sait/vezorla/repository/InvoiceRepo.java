@@ -10,10 +10,10 @@ import java.util.List;
 
 /**
  * InvoiceRepo interface.
- *
+ * <p>
  * Repository interfaces are used to interact the the database
  * via Spring (JPARepository) and its annotations.
- *
+ * <p>
  * Repository to interact with the Invoice table.
  */
 @Repository

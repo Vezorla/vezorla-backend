@@ -11,18 +11,18 @@ import java.util.List;
 
 /**
  * PurchaseOrder class.
- *
+ * <p>
  * This class models a table within the database. As such,
  * each variable represents a column and any methods within this
  * class manipulate these variables.
- *
+ * <p>
  * Constructors are overloaded to provide the functionality
  * needed within the application.
- *
+ * <p>
  * Entity class for purchase order.
  *
- * @author		Minh Lam
- * @version		1.0
+ * @author Minh Lam
+ * @version 1.0
  */
 @Data
 @Entity
@@ -33,7 +33,7 @@ public class PurchaseOrder {
 
 	/**
 	 * PurchaseOrder number.
-	 *
+	 * <p>
 	 * Annotated to be the Primary Key for the database
 	 * table 'purchase_order'
 	 */
@@ -43,9 +43,9 @@ public class PurchaseOrder {
 
 	/**
 	 * PurchaseOrder date ordered.
-	 *
+	 * <p>
 	 * Column cannot be null.
-	 *
+	 * <p>
 	 * Annotated to be a column within the database
 	 * table 'purchase_order'
 	 */
@@ -54,7 +54,7 @@ public class PurchaseOrder {
 
 	/**
 	 * PurchaseOrder date received.
-	 *
+	 * <p>
 	 * Annotated to be a column within the database
 	 * table 'purchase_order'
 	 */
@@ -62,7 +62,7 @@ public class PurchaseOrder {
 
 	/**
 	 * PurchaseOrder received boolean.
-	 *
+	 * <p>
 	 * Annotated to be a column within the database
 	 * table 'purchase_order'
 	 */
@@ -70,10 +70,10 @@ public class PurchaseOrder {
 
 	/**
 	 * PurchaseOrder lot list.
-	 *
+	 * <p>
 	 * Mapped by a one-to-many relationship within
 	 * the database.
-	 *
+	 * <p>
 	 * Annotated to be a column within the database
 	 * table 'purchase_order'
 	 */

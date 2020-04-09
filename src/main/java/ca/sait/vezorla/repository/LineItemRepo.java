@@ -12,10 +12,10 @@ import java.util.List;
 
 /**
  * LineItemRepo interface.
- *
+ * <p>
  * Repository interfaces are used to interact the the database
  * via Spring (JPARepository) and its annotations.
- *
+ * <p>
  * Repository to interact with the Accounts table.
  */
 @Repository
@@ -34,7 +34,7 @@ public interface LineItemRepo extends JpaRepository<LineItem, Long> {
     /**
      * Delete a line item from a cart.
      *
-     * @param lineNum line item ID
+     * @param lineNum  line item ID
      * @param orderNum cart ID
      * @return the line item ID that was deleted
      * @author matthewjflee

@@ -1,10 +1,6 @@
 package ca.sait.vezorla.repository;
 
 import ca.sait.vezorla.model.AccountDiscount;
-import org.springframework.data.jpa.repository.JpaRepository;
-import org.springframework.data.jpa.repository.Modifying;
-import org.springframework.data.jpa.repository.Query;
-import org.springframework.data.repository.query.Param;
 import org.springframework.stereotype.Repository;
 
 import javax.persistence.EntityManager;
@@ -13,10 +9,10 @@ import javax.transaction.Transactional;
 
 /**
  * AccountDiscountRepo class.
- *
+ * <p>
  * Repository classes are used to interact the the database
  * via Spring and its annotations.
- *
+ * <p>
  * Repo class to interface with the AccountDiscount
  * bridging table.
  *
@@ -33,7 +29,7 @@ public class AccountDiscountRepo {
 
     /**
      * Transactional annotation
-     *
+     * <p>
      * Spring creates a proxy that implements the same interface(s)
      * as the class you're annotating.
      *

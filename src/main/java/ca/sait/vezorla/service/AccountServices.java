@@ -13,10 +13,10 @@ import java.util.Optional;
 
 /**
  * AccountServices interface.
- *
+ * <p>
  * This interface outlines the services as it relates to
  * Accounts.
- *
+ * <p>
  * This interface acts as the intermediary between the controllers
  * and the repositories.
  *
@@ -112,7 +112,7 @@ public interface AccountServices {
      * Deletes a lineItem from the database.
      *
      * @param lineNum Line number to be deleted.
-     * @param cartID Cart ID.
+     * @param cartID  Cart ID.
      */
     void deleteLineItem(Long lineNum, Long cartID);
 
@@ -120,7 +120,7 @@ public interface AccountServices {
      * Gets the Invoice to be viewed.
      *
      * @param invoiceNum Invoice number to get.
-     * @param mapper Maps the Invoice to an Object.
+     * @param mapper     Maps the Invoice to an Object.
      * @return ObjectNode that contains the Invoice.
      */
     ObjectNode viewInvoice(Long invoiceNum, ObjectMapper mapper);
@@ -128,7 +128,7 @@ public interface AccountServices {
     /**
      * Gets the past orders via a session.
      *
-     * @param mapper Maps the Invoice to an Object.
+     * @param mapper  Maps the Invoice to an Object.
      * @param session User's session.
      * @return ObjectNode that contains the past orders.
      */

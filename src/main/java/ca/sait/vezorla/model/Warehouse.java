@@ -11,14 +11,14 @@ import java.util.List;
 
 /**
  * Warehouse class.
- *
+ * <p>
  * This class models a table within the database. As such,
  * each variable represents a column and any methods within this
  * class manipulate these variables.
- *  *
+ * *
  * Constructors are overloaded to provide the functionality
  * needed within the application.
- *
+ * <p>
  * Class to represent a warehouse for Vezorla.
  * A Warehouse stores products.
  *
@@ -33,7 +33,7 @@ public class Warehouse {
 
     /**
      * Warehouse number.
-     *
+     * <p>
      * Annotated to be the Primary Key for the database
      * table 'warehouse'
      */
@@ -44,9 +44,9 @@ public class Warehouse {
 
     /**
      * Warehouse address.
-     *
+     * <p>
      * Column cannot be null.
-     *
+     * <p>
      * Annotated to be a column within the database
      * table 'warehouse'
      */
@@ -56,9 +56,9 @@ public class Warehouse {
 
     /**
      * Warehouse province.
-     *
+     * <p>
      * Column cannot be null.
-     *
+     * <p>
      * Annotated to be a column within the database
      * table 'warehouse'
      */
@@ -68,9 +68,9 @@ public class Warehouse {
 
     /**
      * Warehouse city.
-     *
+     * <p>
      * Column cannot be null.
-     *
+     * <p>
      * Annotated to be a column within the database
      * table 'warehouse'
      */
@@ -80,11 +80,11 @@ public class Warehouse {
 
     /**
      * Warehouse postal code.
-     *
+     * <p>
      * Column cannot be null.
-     *
+     * <p>
      * Postal code must follow specified regex.
-     *
+     * <p>
      * Annotated to be a column within the database
      * table 'warehouse'
      */
@@ -95,11 +95,11 @@ public class Warehouse {
 
     /**
      * Warehouse phone number.
-     *
+     * <p>
      * Column cannot be null.
-     *
+     * <p>
      * Phone number must follow specified regex.
-     *
+     * <p>
      * Annotated to be a column within the database
      * table 'warehouse'
      */
@@ -110,9 +110,9 @@ public class Warehouse {
 
     /**
      * Warehouse active boolean.
-     *
+     * <p>
      * Column cannot be null.
-     *
+     * <p>
      * Annotated to be a column within the database
      * table 'warehouse'
      */
@@ -122,12 +122,12 @@ public class Warehouse {
 
     /**
      * Warehouse lots.
-     *
+     * <p>
      * Lots contained within the Warehouse.
-     *
+     * <p>
      * Mapped by a one-to-many relationship within
      * the database.
-     *
+     * <p>
      * Annotated to be a column within the database
      * table 'warehouse'
      */

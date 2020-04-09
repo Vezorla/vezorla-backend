@@ -1,7 +1,10 @@
 package ca.sait.vezorla.service;
 
 import ca.sait.vezorla.controller.util.CustomerClientUtil;
-import ca.sait.vezorla.exception.*;
+import ca.sait.vezorla.exception.AccountNotFoundException;
+import ca.sait.vezorla.exception.InvalidInputException;
+import ca.sait.vezorla.exception.ProductAlreadyExistsException;
+import ca.sait.vezorla.exception.UnauthorizedException;
 import ca.sait.vezorla.model.*;
 import ca.sait.vezorla.repository.*;
 import com.fasterxml.jackson.databind.ObjectMapper;
@@ -21,7 +24,6 @@ import java.io.*;
 import java.sql.Connection;
 import java.sql.DriverManager;
 import java.sql.SQLException;
-import java.sql.Statement;
 import java.text.DateFormat;
 import java.text.ParseException;
 import java.text.SimpleDateFormat;
@@ -504,7 +506,6 @@ public class AdminServicesImp implements AdminServices {
         for (Lot lot : lots) {
             lot.setPurchaseOrder(po);
             lot.setLotNum(po.getPoNum() + "-" + counter);
-            System.out.println(lot.getLotNum());
             lotRepo.save(lot);
             counter++;
         }

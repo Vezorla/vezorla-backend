@@ -15,14 +15,14 @@ import java.util.List;
 
 /**
  * Product class.
- *
+ * <p>
  * This class models a table within the database. As such,
  * each variable represents a column and any methods within this
  * class manipulate these variables.
- *
+ * <p>
  * Constructors are overloaded to provide the functionality
  * needed within the application.
- *
+ * <p>
  * Entity class for product.
  *
  * @author Minh Lam
@@ -37,7 +37,7 @@ public class Product implements Serializable {
 
     /**
      * Lot product id.
-     *
+     * <p>
      * Annotated to be the Primary Key for the database
      * table 'product'
      */
@@ -48,9 +48,9 @@ public class Product implements Serializable {
 
     /**
      * Product name.
-     *
+     * <p>
      * Column cannot be null.
-     *
+     * <p>
      * Annotated to be a column within the database
      * table 'product'
      */
@@ -60,9 +60,9 @@ public class Product implements Serializable {
 
     /**
      * Product description.
-     *
+     * <p>
      * Column cannot be null.
-     *
+     * <p>
      * Annotated to be a column within the database
      * table 'product'
      */
@@ -72,7 +72,7 @@ public class Product implements Serializable {
 
     /**
      * Product sub description.
-     *
+     * <p>
      * Annotated to be a column within the database
      * table 'product'
      */
@@ -81,7 +81,7 @@ public class Product implements Serializable {
 
     /**
      * Product harvest time.
-     *
+     * <p>
      * Annotated to be a column within the database
      * table 'product'
      */
@@ -90,9 +90,9 @@ public class Product implements Serializable {
 
     /**
      * Product main image.
-     *
+     * <p>
      * Can be set to first, second, or third image.
-     *
+     * <p>
      * Annotated to be a column within the database
      * table 'product'
      */
@@ -102,7 +102,7 @@ public class Product implements Serializable {
 
     /**
      * Product first image.
-     *
+     * <p>
      * Annotated to be a column within the database
      * table 'product'
      */
@@ -111,7 +111,7 @@ public class Product implements Serializable {
 
     /**
      * Product second image.
-     *
+     * <p>
      * Annotated to be a column within the database
      * table 'product'
      */
@@ -120,7 +120,7 @@ public class Product implements Serializable {
 
     /**
      * Product third image.
-     *
+     * <p>
      * Annotated to be a column within the database
      * table 'product'
      */
@@ -129,7 +129,7 @@ public class Product implements Serializable {
 
     /**
      * Product active boolean.
-     *
+     * <p>
      * Annotated to be a column within the database
      * table 'product'
      */
@@ -139,12 +139,12 @@ public class Product implements Serializable {
 
     /**
      * Product threshold.
-     *
+     * <p>
      * Column cannot be null.
-     *
+     * <p>
      * Number of product in database, must be greater than or
      * equal to 0.
-     *
+     * <p>
      * Annotated to be a column within the database
      * table 'product'
      */
@@ -155,9 +155,9 @@ public class Product implements Serializable {
 
     /**
      * Product price.
-     *
+     * <p>
      * Column cannot be null.
-     *
+     * <p>
      * Annotated to be a column within the database
      * table 'product'
      */
@@ -167,9 +167,9 @@ public class Product implements Serializable {
 
     /**
      * Product old price.
-     *
+     * <p>
      * Previous set price.
-     *
+     * <p>
      * Annotated to be a column within the database
      * table 'product'
      */
@@ -178,12 +178,12 @@ public class Product implements Serializable {
 
     /**
      * Product product.
-     *
+     * <p>
      * Represents a foreign key in lotList.
-     *
+     * <p>
      * Mapped by a one-to-many relationship within
      * the database.
-     *
+     * <p>
      * Annotated to be a column within the database
      * table 'product'
      */
@@ -193,12 +193,12 @@ public class Product implements Serializable {
 
     /**
      * Product product.
-     *
+     * <p>
      * Represents a foreign key in discounts.
-     *
+     * <p>
      * Mapped by a one-to-many relationship within
      * the database.
-     *
+     * <p>
      * Annotated to be a column within the database
      * table 'product'
      */
@@ -208,12 +208,12 @@ public class Product implements Serializable {
 
     /**
      * Product product.
-     *
+     * <p>
      * Represents a foreign key in line items.
-     *
+     * <p>
      * Mapped by a one-to-many relationship within
      * the database.
-     *
+     * <p>
      * Annotated to be a column within the database
      * table 'product'
      */

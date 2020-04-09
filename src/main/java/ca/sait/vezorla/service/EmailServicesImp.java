@@ -6,7 +6,6 @@ import ca.sait.vezorla.model.Invoice;
 import ca.sait.vezorla.model.LineItem;
 import ca.sait.vezorla.repository.LineItemRepo;
 import lombok.AllArgsConstructor;
-import org.springframework.core.io.FileSystemResource;
 import org.springframework.mail.MailException;
 import org.springframework.mail.SimpleMailMessage;
 import org.springframework.mail.javamail.JavaMailSender;
@@ -20,9 +19,9 @@ import java.util.List;
 
 /**
  * EmailServicesImp class.
- *
+ * <p>
  * This class implements the EmailServices interface.
- *
+ * <p>
  * This class acts as the intermediary between the controllers
  * and the repositories.
  *
@@ -39,12 +38,12 @@ public class EmailServicesImp implements EmailServices {
      * Send contact us email to vezorla.test@gmail.com.
      *
      * @param senderEmail user's email
-     * @param message message to send
+     * @param message     message to send
      * @throws MailException thrown when the email is not sent
      * @author matthewjflee
      */
     public void sendContactUsEmail(String name, String senderEmail, String message) throws MailException,
-                                                                                    InvalidInputException {
+            InvalidInputException {
         //Validate email
         verifyEmail(senderEmail);
 
@@ -73,7 +72,7 @@ public class EmailServicesImp implements EmailServices {
         mail.setFrom("vezorla.test@gmail.com");
         mail.setSubject("Welcome to Vezorla!");
         mail.setText("Welcome to Vezorla!" + "\n\n" +
-                "Please login at: https://www.vezorla.ca"+ "\n\n" +
+                "Please login at: https://www.vezorla.ca" + "\n\n" +
                 "See you soon!!");
 
         mailSender.send(mail);
@@ -81,6 +80,7 @@ public class EmailServicesImp implements EmailServices {
 
     /**
      * Send admin an email with the backup
+     *
      * @param date date of backup
      * @param file sql script
      * @throws MessagingException Cannot send email Minh is sorry
@@ -102,7 +102,7 @@ public class EmailServicesImp implements EmailServices {
     /**
      * Sends the decline email.
      *
-     * @param to Email to decline.
+     * @param to           Email to decline.
      * @param additionText Message of the email.
      */
     public void sendDeclineEmail(String to, String additionText) {
@@ -112,7 +112,7 @@ public class EmailServicesImp implements EmailServices {
     /**
      * Sends the forgot password email.
      *
-     * @param email Email to send to.
+     * @param email        Email to send to.
      * @param tempPassword Password to include in the email.
      * @throws InvalidInputException If email inputs are invalid.
      */
@@ -136,15 +136,15 @@ public class EmailServicesImp implements EmailServices {
     /**
      * Send invoice to user.
      *
-     * @param to user's email
+     * @param to      user's email
      * @param invoice user's invoice/receipt
-     * @param total total cost
-     * @throws MailException thrown if email is not sent
+     * @param total   total cost
+     * @throws MailException         thrown if email is not sent
      * @throws InvalidInputException thrown if email is not valid
      * @author matthewjflee
      */
     public void sendInvoiceEmail(String to, Invoice invoice, double total) throws MailException,
-                                                                InvalidInputException {
+            InvalidInputException {
         verifyEmail(to);
 
         //Set up email
@@ -166,7 +166,7 @@ public class EmailServicesImp implements EmailServices {
         List<LineItem> lineItems = lineItemRepo.findLineItemByInvoice(invoice);
         CustomerClientUtil ccu = new CustomerClientUtil();
 
-        for(LineItem li : lineItems) {
+        for (LineItem li : lineItems) {
             sb.append(li.getCurrentName())
                     .append("\nQuantity: ")
                     .append(li.getQuantity())
@@ -206,7 +206,7 @@ public class EmailServicesImp implements EmailServices {
     /**
      * Sends the subscription emails.
      *
-     * @param to Receivers email address
+     * @param to           Receivers email address
      * @param additionText Message of the email.
      */
     public void sendSubscriptionEmail(String to, String additionText) {

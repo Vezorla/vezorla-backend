@@ -4,33 +4,18 @@ import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
 import org.springframework.web.servlet.config.annotation.CorsRegistry;
 import org.springframework.web.servlet.config.annotation.WebMvcConfigurer;
-//
-//@Configuration
-//@EnableJdbcHttpSession
-//public class HttpSessionConfig extends AbstractHttpSessionApplicationInitializer {
-//
-//    @Bean
-//    public EmbeddedDatabase dataSource() {
-//        return new EmbeddedDatabaseBuilder()
-//                .addScript("org/springframework/session/jdbc/schema-mysql.sql").build();
-//    }
-//
-//    @Bean
-//    public PlatformTransactionManager transactionManager(DataSource dataSource) {
-//        return new DataSourceTransactionManager(dataSource);
-//    }
-//}
+
 
 /**
  * Temporary config class to allow for the front end to interact with the backend.
- *
+ * <p>
  * This is necessary as currently, the front and backends are on different domains,
  * which causes the session bug we have seen earlier
  * (where the front end is unable to persist the session and it continues to query
  * the backend and thus creating a multiple new sessions)
- *
+ * <p>
  * This class will be removed prior to deployment as the front and back will be on the same domain.
- *
+ * <p>
  * Hopefully.
  */
 @Configuration
