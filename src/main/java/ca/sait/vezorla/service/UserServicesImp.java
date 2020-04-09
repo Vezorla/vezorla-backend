@@ -13,6 +13,7 @@ import com.fasterxml.jackson.databind.ObjectMapper;
 import com.fasterxml.jackson.databind.node.ArrayNode;
 import com.fasterxml.jackson.databind.node.ObjectNode;
 import lombok.AllArgsConstructor;
+import net.bytebuddy.implementation.bind.MethodDelegationBinder;
 import org.springframework.stereotype.Service;
 
 import javax.servlet.http.HttpSession;
@@ -25,9 +26,9 @@ import java.util.Optional;
 
 /**
  * UserServicesImp class.
- *
+ * <p>
  * This class implements the UserServices interface.
- *
+ * <p>
  * This class acts as the intermediary between the controllers
  * and the repositories.
  *
@@ -217,7 +218,7 @@ public class UserServicesImp implements UserServices {
     /**
      * Method to return the items out of stock that are on
      * an order.
-     *
+     * <p>
      * Would have become out of stock sometime between the
      * checkout process.
      *
@@ -440,6 +441,7 @@ public class UserServicesImp implements UserServices {
 
         //get all discounts within that time range
         List<String> stringDiscounts = discountRepo.findValidDiscounts(sqlDate, email);
+        System.out.println(stringDiscounts);
         //list of Discounts
         List<Discount> discounts = new ArrayList<>();
 
@@ -793,7 +795,7 @@ public class UserServicesImp implements UserServices {
 
     /**
      * Apply line items to the invoice.
-     *
+     * <p>
      * Line items are found in the database.
      *
      * @param invoice the invoice to apply
