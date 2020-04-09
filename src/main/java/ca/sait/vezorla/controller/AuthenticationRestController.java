@@ -20,10 +20,10 @@ import java.util.Optional;
 
 /**
  * AuthenticationRestController Class.
- *
+ * <p>
  * This class maps the frontend to the backend. It does
  * so by implementing Spring RestController annotation.
- *
+ * <p>
  * Lombok is used to reduce boilerplate code for constructors.
  *
  * @author matthewjflee
@@ -39,7 +39,7 @@ public class AuthenticationRestController {
     /**
      * Find an account with that email and password.
      *
-     * @param body Contains the login information
+     * @param body    Contains the login information
      * @param request HTTP request
      * @return email and role of client
      * @throws JsonProcessingException If JSON cannot be processed
@@ -129,6 +129,7 @@ public class AuthenticationRestController {
 
     /**
      * Password reset self service tool for a client.
+     *
      * @param email account email
      * @return if the password was reset
      * @throws InvalidInputException error if email is invalid

@@ -7,10 +7,10 @@ import java.util.Optional;
 
 /**
  * ImageRepo interface.
- *
+ * <p>
  * Repository interfaces are used to interact the the database
  * via Spring (JPARepository) and its annotations.
- *
+ * <p>
  * Repository to interact with the Image table.
  */
 public interface ImageRepo extends JpaRepository<Image, Long> {

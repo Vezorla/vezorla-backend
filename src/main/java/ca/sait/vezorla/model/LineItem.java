@@ -10,16 +10,16 @@ import java.io.Serializable;
 
 /**
  * LineItem class.
- *
+ * <p>
  * Class that represents a line item on in a cart
  * and on an invoice. This is a product that is
  * being purchased and all the information
  * associated with that purchase.
- *
+ * <p>
  * This class models a table within the database. As such,
  * each variable represents a column and any methods within this
  * class manipulate these variables.
- *
+ * <p>
  * Constructors are overloaded to provide the functionality
  * needed within the application.
  *
@@ -34,7 +34,7 @@ public class LineItem implements Serializable {
 
     /**
      * LineItem number.
-     *
+     * <p>
      * Annotated to be the Primary Key for the database
      * table 'line_item'
      */
@@ -45,7 +45,7 @@ public class LineItem implements Serializable {
 
     /**
      * LineItem quantity.
-     *
+     * <p>
      * Annotated to be a column within the database
      * table 'line_item'
      */
@@ -54,7 +54,7 @@ public class LineItem implements Serializable {
 
     /**
      * LineItem current name.
-     *
+     * <p>
      * Annotated to be a column within the database
      * table 'line_item'
      */
@@ -63,7 +63,7 @@ public class LineItem implements Serializable {
 
     /**
      * LineItem current price.
-     *
+     * <p>
      * Annotated to be a column within the database
      * table 'line_item'
      */
@@ -72,10 +72,10 @@ public class LineItem implements Serializable {
 
     /**
      * LineItem order number.
-     *
+     * <p>
      * Mapped by a many-to-one relationship within
      * the database.
-     *
+     * <p>
      * Annotated to be a column within the database
      * table 'line_item'
      */
@@ -85,10 +85,10 @@ public class LineItem implements Serializable {
 
     /**
      * LineItem invoice number.
-     *
+     * <p>
      * Mapped by a many-to-one relationship within
      * the database.
-     *
+     * <p>
      * Annotated to be a column within the database
      * table 'line_item'
      */
@@ -98,10 +98,10 @@ public class LineItem implements Serializable {
 
     /**
      * LineItem lot number.
-     *
+     * <p>
      * Mapped by a many-to-one relationship within
      * the database.
-     *
+     * <p>
      * Annotated to be a column within the database
      * table 'line_item'
      */
@@ -111,10 +111,10 @@ public class LineItem implements Serializable {
 
     /**
      * LineItem product number.
-     *
+     * <p>
      * Mapped by a many-to-one relationship within
      * the database.
-     *
+     * <p>
      * Annotated to be a column within the database
      * table 'line_item'
      */
@@ -125,11 +125,11 @@ public class LineItem implements Serializable {
     /**
      * Constructor for LineItem.
      *
-     * @param quantity Quantity of product in line item.
-     * @param currentName Name of the line item.
+     * @param quantity     Quantity of product in line item.
+     * @param currentName  Name of the line item.
      * @param currentPrice Price of the line item
-     * @param cart Cart of the line item.
-     * @param product Product linked to the line item.
+     * @param cart         Cart of the line item.
+     * @param product      Product linked to the line item.
      */
     public LineItem(int quantity, String currentName, long currentPrice, Cart cart, Product product) {
         this.quantity = quantity;

@@ -13,19 +13,19 @@ import java.util.List;
 
 /**
  * Invoice class.
- *
+ * <p>
  * Entity class for invoice.
- *
+ * <p>
  * This class models a table within the database. As such,
  * each variable represents a column and any methods within this
  * class manipulate these variables.
- *
+ * <p>
  * Constructors are overloaded to provide the functionality
  * needed within the application.
  *
- * @author		Minh Lam
- * @version		1.0
- * */
+ * @author Minh Lam
+ * @version 1.0
+ */
 @AllArgsConstructor
 @NoArgsConstructor
 @Data
@@ -35,7 +35,7 @@ public class Invoice implements Serializable {
 
 	/**
 	 * Invoice number.
-	 *
+	 * <p>
 	 * Annotated to be the Primary Key for the database
 	 * table 'invoice'
 	 */
@@ -46,10 +46,10 @@ public class Invoice implements Serializable {
 
 	/**
 	 * Invoice account number.
-	 *
+	 * <p>
 	 * Mapped by a many-to-one relationship within
 	 * the database.
-	 *
+	 * <p>
 	 * Annotated to be a column within the database
 	 * table 'invoice'
 	 */
@@ -59,10 +59,10 @@ public class Invoice implements Serializable {
 
 	/**
 	 * Invoice line items.
-	 *
+	 * <p>
 	 * Mapped by a one-to-many relationship within
 	 * the database.
-	 *
+	 * <p>
 	 * Annotated to be a column within the database
 	 * table 'invoice'
 	 */
@@ -71,9 +71,9 @@ public class Invoice implements Serializable {
 
 	/**
 	 * Invoice date.
-	 *
+	 * <p>
 	 * Column cannot be null.
-	 *
+	 * <p>
 	 * Annotated to be a column within the database
 	 * table 'invoice'
 	 */
@@ -83,9 +83,9 @@ public class Invoice implements Serializable {
 
 	/**
 	 * Invoice shipped boolean.
-	 *
+	 * <p>
 	 * Column cannot be null.
-	 *
+	 * <p>
 	 * Annotated to be a column within the database
 	 * table 'invoice'
 	 */
@@ -95,9 +95,9 @@ public class Invoice implements Serializable {
 
 	/**
 	 * Invoice pickup boolean.
-	 *
+	 * <p>
 	 * Column cannot be null.
-	 *
+	 * <p>
 	 * Annotated to be a column within the database
 	 * table 'invoice'
 	 */
@@ -107,9 +107,9 @@ public class Invoice implements Serializable {
 
 	/**
 	 * Invoice shipping cost boolean.
-	 *
+	 * <p>
 	 * Column cannot be null.
-	 *
+	 * <p>
 	 * Annotated to be a column within the database
 	 * table 'invoice'
 	 */
@@ -119,7 +119,7 @@ public class Invoice implements Serializable {
 
 	/**
 	 * Invoice subtotal.
-	 *
+	 * <p>
 	 * Annotated to be a column within the database
 	 * table 'invoice'
 	 */
@@ -128,7 +128,7 @@ public class Invoice implements Serializable {
 
 	/**
 	 * Invoice discount.
-	 *
+	 * <p>
 	 * Annotated to be a column within the database
 	 * table 'invoice'
 	 */
@@ -137,7 +137,7 @@ public class Invoice implements Serializable {
 
 	/**
 	 * Invoice taxes.
-	 *
+	 * <p>
 	 * Annotated to be a column within the database
 	 * table 'invoice'
 	 */
@@ -146,7 +146,7 @@ public class Invoice implements Serializable {
 
 	/**
 	 * Invoice total.
-	 *
+	 * <p>
 	 * Annotated to be a column within the database
 	 * table 'invoice'
 	 */
@@ -157,13 +157,13 @@ public class Invoice implements Serializable {
 	 * Constructor for Invoice.
 	 *
 	 * @param shippingCost Cost of shipping the order to the customer/client.
-	 * @param subtotal Total before taxes/discount.
-	 * @param discount Discount amount.
-	 * @param taxes Total taxes for the order.
-	 * @param total Compelte total for the order.
+	 * @param subtotal     Total before taxes/discount.
+	 * @param discount     Discount amount.
+	 * @param taxes        Total taxes for the order.
+	 * @param total        Compelte total for the order.
 	 */
 	//constructor for temp invoice
-	public Invoice(long shippingCost, long subtotal, long discount, long taxes, long total){
+	public Invoice(long shippingCost, long subtotal, long discount, long taxes, long total) {
 		this.shippingCost = shippingCost;
 		this.subtotal = subtotal;
 		this.discount = discount;

@@ -28,12 +28,12 @@ import java.util.Optional;
 
 /**
  * CustomerRestController class.
- *
+ * <p>
  * Rest controller to handle customer functionality.
- *
+ * <p>
  * This class maps the frontend to the backend. It does
  * so by implementing Spring RestController annotation.
- *
+ * <p>
  * Lombok is used to reduce boilerplate code for constructors.
  *
  * @author matthewjflee, jjrr1717
@@ -85,7 +85,7 @@ public class CustomerRestController {
      * @return product's quantity
      * @author jjrr1717, matthewjflee
      */
-    @RequestMapping(value = "inventory/product/quantity/{id}", method = RequestMethod.GET, produces = {"application/json"})
+    @RequestMapping(value = "inventory/product/quantity/{id}", method = RequestMethod.GET, produces = {"application/json" })
     public int getProductQuantity(@PathVariable Long id) {
         return userServices.getProductQuantity(id);
     }
@@ -100,7 +100,7 @@ public class CustomerRestController {
      * @throws JsonProcessingException If JSON cannot be processed
      * @author matthewjflee, jjrr1717
      */
-    @RequestMapping(value = "cart/add/{id}", method = RequestMethod.PUT, produces = {"application/json"})
+    @RequestMapping(value = "cart/add/{id}", method = RequestMethod.PUT, produces = {"application/json" })
     public String createLineItem(@PathVariable Long id, @RequestBody int quantity, HttpServletRequest request) throws JsonProcessingException {
         List<LineItem> lineItems;
         HttpSession session = request.getSession();
@@ -187,7 +187,7 @@ public class CustomerRestController {
      * @author matthewjflee, jjrr1717
      */
     @RequestMapping(value = "cart/get", method = RequestMethod.GET,
-            produces = {"application/json"})
+            produces = {"application/json" })
     public String getCartQuantity(HttpSession session) {
         Cart cart = userServices.getCart(session);
         return userServices.getTotalCartQuantity(cart.getLineItems());
@@ -203,7 +203,7 @@ public class CustomerRestController {
      * @author matthewjflee, jjrr1717
      */
     @PutMapping("cart/update/{id}/{quantity}")
-    public boolean updateLineItem(@PathVariable Long id, @PathVariable int quantity, HttpServletRequest request)  {
+    public boolean updateLineItem(@PathVariable Long id, @PathVariable int quantity, HttpServletRequest request) {
         HttpSession session = request.getSession();
         Cart cart = userServices.getCart(session);
 
@@ -228,22 +228,22 @@ public class CustomerRestController {
 
     /**
      * Obtain customer's shipping information from front end.
-     *
+     * <p>
      * Note that the RequestMapping annotation must contain
      * the values outlined in the code.
      *
      * @param sendAccount Account to send to
-     * @param request HTTP request
-     * @throws JsonProcessingException If JSON is not processed
-     * @throws InvalidInputException If input is invalid
-     * @throws UnauthorizedException If user is unauthorized
+     * @param request     HTTP request
      * @return ResponseEntity contains the shipping info in a HTTP body
+     * @throws JsonProcessingException If JSON is not processed
+     * @throws InvalidInputException   If input is invalid
+     * @throws UnauthorizedException   If user is unauthorized
      * @author matthewjflee, jjrr1717
      */
     @RequestMapping(value = "/cart/checkout/shipping",
             method = RequestMethod.POST,
-            consumes = {"application/json"},
-            produces = {"application/json"})
+            consumes = {"application/json" },
+            produces = {"application/json" })
     @ResponseBody
     public ResponseEntity<String> getShippingInfo(@RequestBody Account sendAccount,
                                                   HttpServletRequest request)
@@ -277,7 +277,7 @@ public class CustomerRestController {
      * @param request user request
      * @return user information
      * @throws JsonProcessingException error parsing JSON
-     * @throws OutOfStockException error if the line item is out of stock
+     * @throws OutOfStockException     error if the line item is out of stock
      */
     @GetMapping(value = "info")
     public String getUserInfo(HttpServletRequest request) throws JsonProcessingException, OutOfStockException {
@@ -344,7 +344,7 @@ public class CustomerRestController {
      * @param request HTTP request
      * @return user's valid discounts
      * @throws JsonProcessingException If JSON cannot be processed
-     * @throws UnauthorizedException If user in unauthorized
+     * @throws UnauthorizedException   If user in unauthorized
      * @author matthewjflee, jjrr1717
      */
     @GetMapping("discounts/get")
@@ -385,7 +385,7 @@ public class CustomerRestController {
      * @param request user request
      * @return user's order
      * @throws JsonProcessingException parsing error
-     * @throws UnauthorizedException If user is unauthorized
+     * @throws UnauthorizedException   If user is unauthorized
      * @author jjrr1717
      */
     @GetMapping("cart/review")
@@ -405,7 +405,7 @@ public class CustomerRestController {
 
     /**
      * Send contact us email.
-     *
+     * <p>
      * Returns <code>true</code> if email is sent
      * <code>false</code> if email fails to send
      *
@@ -470,7 +470,7 @@ public class CustomerRestController {
      * @param mapper for custom json
      * @return String of custom json
      * @throws JsonProcessingException If JSON is not
-     * processed correctly.
+     *                                 processed correctly.
      */
     @GetMapping("banner")
     public String getBannerMessage(ObjectMapper mapper) throws JsonProcessingException {
@@ -483,7 +483,7 @@ public class CustomerRestController {
      *
      * @return mapper for the json
      * @throws JsonProcessingException If JSON is not
-     * processed correctly.
+     *                                 processed correctly.
      * @author jjrr1717
      */
     @GetMapping("top_product")

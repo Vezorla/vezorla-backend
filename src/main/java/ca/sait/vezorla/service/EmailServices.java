@@ -8,10 +8,10 @@ import java.io.File;
 
 /**
  * EmailServices interface.
- *
+ * <p>
  * This interface outlines the services as it relates to
  * Emails.
- *
+ * <p>
  * This interface acts as the intermediary between the controllers
  * and the repositories.
  */
@@ -21,9 +21,9 @@ public interface EmailServices {
      * Sends the message from the Contact Us page to the
      * admin email account.
      *
-     * @param name Name of the sender.
+     * @param name        Name of the sender.
      * @param senderEmail Email of the sender.
-     * @param message Message of the sender.
+     * @param message     Message of the sender.
      * @throws InvalidInputException If sender inputs are invalid.
      */
     void sendContactUsEmail(String name, String senderEmail, String message) throws InvalidInputException;
@@ -38,6 +38,7 @@ public interface EmailServices {
 
     /**
      * Send admin an email with the backup
+     *
      * @param date date of backup
      * @param file sql script
      * @throws MessagingException Cannot send email Minh is sorry
@@ -47,7 +48,7 @@ public interface EmailServices {
     /**
      * Sends the decline email.
      *
-     * @param to Email to decline.
+     * @param to           Email to decline.
      * @param additionText Message of the email.
      */
     void sendDeclineEmail(String to, String additionText);
@@ -55,7 +56,7 @@ public interface EmailServices {
     /**
      * Sends the forgot password email.
      *
-     * @param email Email to send to.
+     * @param email        Email to send to.
      * @param tempPassword Password to include in the email.
      * @throws InvalidInputException If email inputs are invalid.
      */
@@ -64,9 +65,9 @@ public interface EmailServices {
     /**
      * Sends an invoice in an email.
      *
-     * @param to Receivers email address.
+     * @param to      Receivers email address.
      * @param invoice Invoice to be sent.
-     * @param total Total amount on the invoice.
+     * @param total   Total amount on the invoice.
      * @throws InvalidInputException If email inputs are invalid.
      */
     void sendInvoiceEmail(String to, Invoice invoice, double total) throws InvalidInputException;
@@ -74,7 +75,7 @@ public interface EmailServices {
     /**
      * Sends the subscription emails.
      *
-     * @param to Receivers email address
+     * @param to           Receivers email address
      * @param additionText Message of the email.
      */
     void sendSubscriptionEmail(String to, String additionText);

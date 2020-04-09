@@ -13,9 +13,9 @@ import java.util.Optional;
 
 /**
  * AuthenticationServicesImp services
- *
+ * <p>
  * This class implements the AuthenticationServices interface.
- *
+ * <p>
  * This class acts as the intermediary between the controllers
  * and the repositories.
  *
@@ -45,7 +45,7 @@ public class AuthenticationServicesImp implements AuthenticationServices {
      * @param email Email to send reset password to.
      * @return boolean true if successful, false otherwise.
      * @throws InvalidInputException If forgot password inputs are
-     * invalid.
+     *                               invalid.
      */
     public boolean forgotPassword(String email) throws InvalidInputException {
         Optional<Account> accountOptional = accountServices.findAccountByEmail(email);
@@ -66,7 +66,7 @@ public class AuthenticationServicesImp implements AuthenticationServices {
 
     /**
      * Check if the user's account is present.
-     *
+     * <p>
      * If it is, persist in session
      * If not, throw AccountNotFoundException
      *

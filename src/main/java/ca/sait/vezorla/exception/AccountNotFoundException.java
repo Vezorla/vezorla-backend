@@ -5,10 +5,10 @@ import org.springframework.web.bind.annotation.ResponseStatus;
 
 /**
  * AccountNotFoundException class.
- *
+ * <p>
  * This class outlines the AccountNotFoundException and is
  * thrown when the specified account is not found in the Accounts table.
- *
+ * <p>
  * Returns a 401 http status.
  *
  * @author matthewjflee
@@ -18,7 +18,7 @@ public class AccountNotFoundException extends RuntimeException {
 
     /**
      * Default constructor.
-     *
+     * <p>
      * Sets the RuntimeException message.
      */
     public AccountNotFoundException() {

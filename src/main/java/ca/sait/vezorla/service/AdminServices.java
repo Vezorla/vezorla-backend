@@ -2,7 +2,6 @@ package ca.sait.vezorla.service;
 
 
 import ca.sait.vezorla.exception.InvalidInputException;
-import ca.sait.vezorla.exception.OutOfStockException;
 import ca.sait.vezorla.exception.UnauthorizedException;
 import ca.sait.vezorla.model.*;
 import com.fasterxml.jackson.databind.ObjectMapper;

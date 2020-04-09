@@ -5,7 +5,7 @@ import org.springframework.web.bind.annotation.ResponseStatus;
 
 /**
  * InvalidInputException class.
- *
+ * <p>
  * This class outlines the InvalidInputException and is thrown when
  * invalid input for email and postal code is entered into the system.
  *
@@ -16,7 +16,7 @@ public class InvalidInputException extends Exception {
 
     /**
      * Default constructor.
-     *
+     * <p>
      * Sets the Exception message.
      */
     public InvalidInputException() {

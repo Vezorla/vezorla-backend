@@ -5,7 +5,7 @@ import org.springframework.web.bind.annotation.ResponseStatus;
 
 /**
  * OutOfStockException class.
- *
+ * <p>
  * This class outlines the OutOfStockException and is thrown when
  * a product is out of stock.
  */
@@ -14,7 +14,7 @@ public class OutOfStockException extends Exception {
 
     /**
      * Default constructor.
-     *
+     * <p>
      * Sets the Exception message.
      */
     public OutOfStockException() {

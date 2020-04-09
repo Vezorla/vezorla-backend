@@ -14,18 +14,18 @@ import java.util.List;
 
 /**
  * Lot class.
- *
+ * <p>
  * This class models a table within the database. As such,
  * each variable represents a column and any methods within this
  * class manipulate these variables.
- *
+ * <p>
  * Constructors are overloaded to provide the functionality
  * needed within the application.
- *
+ * <p>
  * Entity class for lot.
  *
- * @author		Minh Lam
- * @version		1.0
+ * @author Minh Lam
+ * @version 1.0
  */
 @Entity
 @Data
@@ -36,7 +36,7 @@ public class Lot implements Serializable {
 
 	/**
 	 * Lot number.
-	 *
+	 * <p>
 	 * Annotated to be the Primary Key for the database
 	 * table 'lot'
 	 */
@@ -45,7 +45,7 @@ public class Lot implements Serializable {
 
 	/**
 	 * Lot quantity.
-	 *
+	 * <p>
 	 * Annotated to be a column within the database
 	 * table 'lot'
 	 */
@@ -54,9 +54,9 @@ public class Lot implements Serializable {
 
 	/**
 	 * Lot cost.
-	 *
+	 * <p>
 	 * Column cannot be null.
-	 *
+	 * <p>
 	 * Annotated to be a column within the database
 	 * table 'lot'
 	 */
@@ -66,7 +66,7 @@ public class Lot implements Serializable {
 
 	/**
 	 * Lot best before date.
-	 *
+	 * <p>
 	 * Annotated to be a column within the database
 	 * table 'lot'
 	 */
@@ -75,10 +75,10 @@ public class Lot implements Serializable {
 
 	/**
 	 * Lot product.
-	 *
+	 * <p>
 	 * Mapped by a many-to-one relationship within
 	 * the database.
-	 *
+	 * <p>
 	 * Annotated to be a column within the database
 	 * table 'lot'
 	 */
@@ -88,10 +88,10 @@ public class Lot implements Serializable {
 
 	/**
 	 * Lot purchase order.
-	 *
+	 * <p>
 	 * Mapped by a many-to-one relationship within
 	 * the database.
-	 *
+	 * <p>
 	 * Annotated to be a column within the database
 	 * table 'lot'
 	 */
@@ -101,10 +101,10 @@ public class Lot implements Serializable {
 
 	/**
 	 * Lot line item list.
-	 *
+	 * <p>
 	 * Mapped by a one-to-many relationship within
 	 * the database.
-	 *
+	 * <p>
 	 * Annotated to be a column within the database
 	 * table 'lot'
 	 */
@@ -114,10 +114,10 @@ public class Lot implements Serializable {
 
 	/**
 	 * Lot warehouse.
-	 *
+	 * <p>
 	 * Mapped by a many-to-one relationship within
 	 * the database.
-	 *
+	 * <p>
 	 * Annotated to be a column within the database
 	 * table 'lot'
 	 */

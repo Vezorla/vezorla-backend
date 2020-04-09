@@ -11,10 +11,10 @@ import java.util.Optional;
 
 /**
  * AccountRepo interface.
- *
+ * <p>
  * Repository interfaces are used to interact the the database
  * via Spring (JPARepository) and its annotations.
- *
+ * <p>
  * Repository to interact with the Accounts table.
  */
 @Repository
@@ -22,7 +22,7 @@ public interface AccountRepo extends JpaRepository<Account, String> {
 
     /**
      * Confirm the account after creation.
-     *
+     * <p>
      * This is done to confirm the user's account after creation.
      *
      * @param email Account email

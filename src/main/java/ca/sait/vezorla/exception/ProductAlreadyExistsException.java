@@ -5,7 +5,7 @@ import org.springframework.web.bind.annotation.ResponseStatus;
 
 /**
  * ProductAlreadyExistsException class.
- *
+ * <p>
  * This class outlines the ProductAlreadyExistsException and is
  * thrown if the product already exists (Error 409).
  *
@@ -16,7 +16,7 @@ public class ProductAlreadyExistsException extends RuntimeException {
 
     /**
      * Default constructor.
-     *
+     * <p>
      * Sets the RuntimeException message.
      */
     public ProductAlreadyExistsException() {

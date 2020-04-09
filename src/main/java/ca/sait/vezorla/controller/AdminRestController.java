@@ -22,10 +22,10 @@ import java.util.Optional;
 
 /**
  * AdminRestController class.
- *
+ * <p>
  * This class maps the frontend to the backend. It does
  * so by implementing Spring RestController annotation.
- *
+ * <p>
  * Lombok is used to reduce boilerplate code for constructors.
  *
  * @author matthewjflee
@@ -144,9 +144,9 @@ public class AdminRestController {
      * Upload an image to the database.
      * Source: https://dzone.com/articles/upload-and-retrieve-filesimages-using-spring-boot
      *
-     * @param file image
+     * @param file    image
      * @param request HTTP request
-     * @param prodId Product ID
+     * @param prodId  Product ID
      * @return if the image was persisted
      * @throws IOException thrown when compressing the bytes
      * @author matthewjflee
@@ -202,7 +202,7 @@ public class AdminRestController {
     /**
      * Gets a list of all the Invoices pending
      * for business orders.
-     *
+     * <p>
      * Not implemented.
      *
      * @return List of all pending business orders.
@@ -215,12 +215,12 @@ public class AdminRestController {
     /**
      * Creates a report given the type, start date
      * and end date.
-     *
+     * <p>
      * Not implemented.
      *
-     * @param type Type of the report.
+     * @param type  Type of the report.
      * @param start Start date for the report.
-     * @param end End date for the report.
+     * @param end   End date for the report.
      */
     @GetMapping("report/create")
     public void createReport(String type, Date start, Date end) {
@@ -282,7 +282,7 @@ public class AdminRestController {
      * @param id Order ID to get from the database.
      * @return String Contains the order information.
      * @throws JsonProcessingException If JSON does not
-     * process correctly.
+     *                                 process correctly.
      * @author matthewjflee
      */
     @GetMapping("orders/{id}")

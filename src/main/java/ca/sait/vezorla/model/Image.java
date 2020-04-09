@@ -8,13 +8,13 @@ import javax.persistence.*;
 
 /**
  * Image class.
- *
+ * <p>
  * Represents a Product Image.
- *
+ * <p>
  * This class models a table within the database. As such,
  * each variable represents a column and any methods within this
  * class manipulate these variables.
- *
+ * <p>
  * Constructors are overloaded to provide the functionality
  * needed within the application.
  *
@@ -29,7 +29,7 @@ public class Image {
 
     /**
      * Image id.
-     *
+     * <p>
      * Annotated to be the Primary Key for the database
      * table 'image'
      */
@@ -40,7 +40,7 @@ public class Image {
 
     /**
      * Image name.
-     *
+     * <p>
      * Annotated to be a column within the database
      * table 'image'
      */
@@ -49,7 +49,7 @@ public class Image {
 
     /**
      * Image type.
-     *
+     * <p>
      * Annotated to be a column within the database
      * table 'image'
      */
@@ -58,10 +58,10 @@ public class Image {
 
     /**
      * Image picByte.
-     *
+     * <p>
      * Image bytes can have large lengths so we specify a value
      * which is more than the default length for picByte column.
-     *
+     * <p>
      * Annotated to be a column within the database
      * table 'image'
      */
@@ -74,8 +74,8 @@ public class Image {
      * Constructor for a Product Image within
      * the database.
      *
-     * @param name Name of the Image.
-     * @param type Type of Image.
+     * @param name    Name of the Image.
+     * @param type    Type of Image.
      * @param picByte Number of bytes to store in the database.
      */
     public Image(String name, String type, byte[] picByte) {

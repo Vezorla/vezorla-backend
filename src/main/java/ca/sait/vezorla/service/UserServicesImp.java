@@ -5,15 +5,11 @@ import ca.sait.vezorla.exception.InvalidInputException;
 import ca.sait.vezorla.exception.UnauthorizedException;
 import ca.sait.vezorla.model.*;
 import ca.sait.vezorla.repository.*;
-import ca.sait.vezorla.service.AccountServices;
-import ca.sait.vezorla.service.EmailServices;
-import ca.sait.vezorla.service.UserServices;
 import com.fasterxml.jackson.core.JsonProcessingException;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import com.fasterxml.jackson.databind.node.ArrayNode;
 import com.fasterxml.jackson.databind.node.ObjectNode;
 import lombok.AllArgsConstructor;
-import net.bytebuddy.implementation.bind.MethodDelegationBinder;
 import org.springframework.stereotype.Service;
 
 import javax.servlet.http.HttpSession;
@@ -441,7 +437,6 @@ public class UserServicesImp implements UserServices {
 
         //get all discounts within that time range
         List<String> stringDiscounts = discountRepo.findValidDiscounts(sqlDate, email);
-        System.out.println(stringDiscounts);
         //list of Discounts
         List<Discount> discounts = new ArrayList<>();
 
