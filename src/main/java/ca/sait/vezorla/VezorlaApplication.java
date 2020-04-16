@@ -2,6 +2,7 @@ package ca.sait.vezorla;
 
 import org.springframework.boot.SpringApplication;
 import org.springframework.boot.autoconfigure.SpringBootApplication;
+import org.springframework.boot.web.servlet.support.SpringBootServletInitializer;
 
 /**
  * VezorlaApplication class.
@@ -13,7 +14,7 @@ import org.springframework.boot.autoconfigure.SpringBootApplication;
  * through the programs classes, methods, and variables.
  */
 @SpringBootApplication
-public class VezorlaApplication {
+public class VezorlaApplication extends SpringBootServletInitializer {
 
     /**
      * Main method of the VezorlaApplication.
